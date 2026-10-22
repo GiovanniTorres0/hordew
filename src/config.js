@@ -55,7 +55,7 @@ const ZOMBIES = {
 };
 
 const BUILDINGS = {
-  torreta: { name: 'Torreta', cost: 60, range: 230, fireDelay: 550, damage: 1 },
+  torreta: { name: 'Torreta', cost: 60, costStep: 10, range: 230, fireDelay: 550, damage: 1 },
   espinhos: { name: 'Espinhos', cost: 25, dps: 2, slow: 0.45, durability: 25 },
 };
 

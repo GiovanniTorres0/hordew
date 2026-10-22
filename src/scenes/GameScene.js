@@ -6,7 +6,7 @@ class GameScene extends Phaser.Scene {
   init(data) {
     this.levelIndex = (data && data.level) || 0;
     this.level = LEVELS[this.levelIndex];
-    this.money = START_MONEY;
+    this.money = START_MONEY + 100 * this.levelIndex;
     this.wave = 0;
     this.state = 'intermission';
     this.won = false;
@@ -329,7 +329,7 @@ class GameScene extends Phaser.Scene {
 
   endWave() {
     this.state = 'between';
-    const bonus = 30 + this.wave * 10;
+    const bonus = 25 + this.wave * 5;
     this.money += bonus;
     if (this.wave >= this.level.wavesToWin) return this.victory();
     this.hud.banner(`Horda ${this.wave} vencida! +$${bonus}`);
@@ -351,9 +351,14 @@ class GameScene extends Phaser.Scene {
     return { cx, cy, key: `${cx},${cy}` };
   }
 
+  // Cada torreta nova fica mais cara, para não dar para cobrir o mapa
+  buildCost(type) {
+    const def = BUILDINGS[type];
+    return type === 'torreta' ? def.cost + def.costStep * this.turrets.length : def.cost;
+  }
+
   canBuildAt({ cx, cy, key }) {
-    const def = BUILDINGS[this.buildType];
-    return cx - GRID / 2 >= FINAL_LINE_X + 10 && cy - GRID / 2 >= HUD_H && !this.occupied.has(key) && this.money >= def.cost;
+    return cx - GRID / 2 >= FINAL_LINE_X + 10 && cy - GRID / 2 >= HUD_H && !this.occupied.has(key) && this.money >= this.buildCost(this.buildType);
   }
 
   updateGhost() {
@@ -368,7 +373,7 @@ class GameScene extends Phaser.Scene {
     const cell = this.snap(pointer);
     if (!this.canBuildAt(cell)) return;
     const def = BUILDINGS[this.buildType];
-    this.money -= def.cost;
+    this.money -= this.buildCost(this.buildType);
     this.occupied.add(cell.key);
     if (this.buildType === 'torreta') {
       const base = this.add.image(cell.cx, cell.cy, 'turret_base').setDepth(1);

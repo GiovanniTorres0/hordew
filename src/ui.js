@@ -37,7 +37,7 @@ class Hud {
 
     const sel = (t) => (s.buildType === t ? '▶' : '');
     this.toolText.setText(
-      `${sel('torreta')}[1] Torreta $${BUILDINGS.torreta.cost}   ${sel('espinhos')}[2] Espinhos $${BUILDINGS.espinhos.cost}   ` +
+      `${sel('torreta')}[1] Torreta $${s.buildCost('torreta')}   ${sel('espinhos')}[2] Espinhos $${s.buildCost('espinhos')}   ` +
       `[Esc/botão direito] Cancelar   Arma: ${s.weapon.name}`,
     );
 

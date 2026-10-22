@@ -1,6 +1,6 @@
 // Gera a composição de uma horda. Cada horda fica maior e com zumbis mais fortes.
 function buildWave(n, levelIndex) {
-  const diff = n + levelIndex * 4; // níveis seguintes começam mais difíceis
+  const diff = n + levelIndex * 2; // níveis seguintes começam mais difíceis
   const count = 6 + Math.floor(diff * 2.5);
   const list = [];
   for (let i = 0; i < count; i++) {
@@ -16,7 +16,7 @@ function buildWave(n, levelIndex) {
 
   return {
     zombies: list,
-    hpMul: 1 + 0.12 * (diff - 1),
+    hpMul: 1 + 0.15 * (diff - 1),
     // Intervalo entre zumbis diminui com a horda (ms)
     spawnDelay: Math.max(450, 1500 - diff * 70),
   };
