@@ -67,10 +67,25 @@ jobs:
               echo "$BRANCH"
               git -C src log -1 --format='%cd' --date=format:'%d/%m/%Y %H:%M'
               git -C src log -1 --format='%s'
+              git -C src log -1 --format='%h'
             } > "$DEST/.preview-info"
           fi
 
           mkdir -p site/preview
+          # versions.json: lido pela barra de versões dentro do jogo (src/versions.js)
+          jesc() { sed -e 's/\\/\\\\/g' -e 's/"/\\"/g'; }
+          {
+            echo '['
+            sep=''
+            for f in $(ls -t site/preview/*/.preview-info 2>/dev/null); do
+              d=$(basename "$(dirname "$f")")
+              b=$(sed -n 1p "$f" | jesc); dt=$(sed -n 2p "$f" | jesc); msg=$(sed -n 3p "$f" | jesc); sha=$(sed -n 4p "$f" | jesc)
+              echo "$sep{\"slug\":\"$d\",\"branch\":\"$b\",\"date\":\"$dt\",\"msg\":\"$msg\",\"sha\":\"$sha\"}"
+              sep=','
+            done
+            echo ']'
+          } > site/preview/versions.json
+
           {
             echo '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">'
             echo '<meta name="viewport" content="width=device-width,initial-scale=1">'
