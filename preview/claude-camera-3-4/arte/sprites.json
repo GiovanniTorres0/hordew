@@ -334,18 +334,20 @@
     "w_pistola": {
       "tamanho": 22,
       "modelo": "modelo_arma",
-      "desc": "a 9mm semi-automatic pistol with a black slide and worn grip",
+      "desc": "a compact 9mm Glock-style semi-automatic pistol in strict side profile, perfectly horizontal, muzzle pointing right, square black polymer slide with scratched paint and rust spots, short angled grip with chipped worn texture, small trigger guard, the whole gun short and boxy, dirty and battered from heavy use",
       "medida": "largura",
       "espelhar": false,
-      "animar": false
+      "animar": false,
+      "rodadas": 1
     },
     "w_mp7": {
       "tamanho": 30,
       "modelo": "modelo_arma",
-      "desc": "a compact MP7 submachine gun with a short barrel, folded stock and a long magazine under the grip",
+      "desc": "a tiny compact MP7 personal defense weapon in strict side profile, perfectly horizontal, muzzle pointing right, very short stubby black boxy body barely longer than a pistol, a long straight magazine inserted inside the pistol grip, a thin collapsed stock tucked flush under the rear, a small vertical foregrip under the stubby barrel, scratched worn black polymer with dirt and grime",
       "medida": "largura",
       "espelhar": false,
-      "animar": false
+      "animar": false,
+      "rodadas": 1
     },
     "w_escopeta": {
       "tamanho": 44,
@@ -353,15 +355,18 @@
       "desc": "a pump-action shotgun with a long dark barrel, wooden pump and wooden stock",
       "medida": "largura",
       "espelhar": false,
-      "animar": false
+      "animar": false,
+      "rodadas": 1,
+      "escolha": 3
     },
     "w_handcannon": {
       "tamanho": 27,
       "modelo": "modelo_arma",
-      "desc": "a huge .50 caliber Desert Eagle style pistol with a long heavy silver slide",
+      "desc": "a huge handgun, a Desert Eagle .50 pistol in strict side profile, perfectly horizontal, muzzle pointing right, a long thick triangular-faced slide of dull scratched silver steel with grime in the grooves, short pistol grip with worn black rubber, a big trigger guard, chunky square muzzle, the overall shape of a pistol with only a grip at the back",
       "medida": "largura",
       "espelhar": false,
-      "animar": false
+      "animar": false,
+      "rodadas": 1
     },
     "w_ak47": {
       "tamanho": 44,
@@ -369,63 +374,72 @@
       "desc": "an AK-47 assault rifle with a wooden stock, wooden handguard and a curved banana magazine",
       "medida": "largura",
       "espelhar": false,
-      "animar": false
+      "animar": false,
+      "rodadas": 1,
+      "escolha": 3
     },
     "w_besta": {
       "tamanho": 38,
       "modelo": "modelo_arma",
-      "desc": "a hunting crossbow with a wooden stock and a dark bow limb, a loaded bolt",
+      "desc": "a hunting crossbow seen from the side, perfectly horizontal, pointing right, a wooden rifle-like stock with a short grip, and at the front end a wide dark recurved bow limb standing vertically, its two tips sticking far up and down, a taut string pulled back to the middle, a loaded bolt with a steel tip lying on top aiming right, worn scratched wood and frayed string",
       "medida": "largura",
       "espelhar": false,
-      "animar": false
+      "animar": false,
+      "rodadas": 1
     },
     "w_chamas": {
       "tamanho": 44,
       "modelo": "modelo_arma",
-      "desc": "a homemade flamethrower with a long nozzle, a small pilot flame at the tip and a rusty fuel tank",
+      "desc": "a homemade flamethrower in strict side profile, perfectly horizontal, nozzle pointing right, a fat rusty red fuel canister strapped under the middle of the gun with wire and duct tape, a rubber hose looping from the canister to the body, a long thin pipe nozzle with a small orange pilot flame at the right tip, a pistol grip and a crude metal stock at the left, scrap metal welded together, dented and dirty",
       "medida": "largura",
       "espelhar": false,
-      "animar": false
+      "animar": false,
+      "rodadas": 1
     },
     "w_m79": {
       "tamanho": 36,
       "modelo": "modelo_arma",
-      "desc": "an M79 grenade launcher with a short wide barrel and a wooden stock",
+      "desc": "an M79 grenade launcher in strict side profile, perfectly horizontal, muzzle pointing right, a very short and very fat round steel barrel as thick as a soda can, open wide dark muzzle, a chunky wooden stock as long as the barrel, a flip-up leaf sight on top of the barrel, the whole weapon short and stubby, scratched wood and dull rusty metal",
       "medida": "largura",
       "espelhar": false,
-      "animar": false
+      "animar": false,
+      "rodadas": 1
     },
     "w_aa12": {
       "tamanho": 42,
       "modelo": "modelo_arma",
-      "desc": "an AA-12 automatic combat shotgun with a big drum magazine and a black boxy body",
+      "desc": "an AA-12 automatic combat shotgun in strict side profile, perfectly horizontal, muzzle pointing right, a thick black boxy receiver with a flat top carry rail, a huge round drum magazine hanging under the middle of the gun, much wider than the gun is tall, a pistol grip behind the drum, a short thick barrel with a perforated shroud, a solid fixed stock, chipped black paint, scratches and grime",
       "medida": "largura",
       "espelhar": false,
-      "animar": false
+      "animar": false,
+      "rodadas": 1
     },
     "base0": {
       "tamanho": 240,
       "modelo": "modelo_objeto",
-      "desc": "a small two-story suburban wooden house fortified by survivors, windows boarded up with planks, sandbags and barbed wire around the porch, a dim yellow light behind the boards, sheet metal patches on the walls",
+      "desc": "a small two-story suburban wooden house turned into a survivor fortress, every window nailed shut with crossed planks and only thin slits of dim yellow light between the boards, the front door barricaded with planks and a rusty corrugated metal sheet, a waist-high wall of stacked sandbags all along the porch, coils of barbed wire on wooden posts in front, sheet metal patches nailed on the walls, a crooked chimney, peeling paint",
       "medida": "largura",
       "espelhar": false,
-      "animar": false
+      "animar": false,
+      "rodadas": 1
     },
     "base1": {
       "tamanho": 240,
       "modelo": "modelo_objeto",
-      "desc": "a small corner convenience store fortified by survivors, shattered shop windows covered with plywood and metal sheets, a faded torn awning, shopping carts and sandbags piled in front, a dim yellow light inside",
+      "desc": "a small corner convenience store turned into a survivor fortress, the big shop windows completely covered with nailed plywood boards and rusty corrugated metal sheets, a torn faded striped awning sagging over the entrance, a barricade of overturned shopping carts and stacked sandbags piled in front of the door, a dim yellow light leaking through gaps in the boards, a flat roof with an empty broken sign frame, grimy concrete walls",
       "medida": "largura",
       "espelhar": false,
-      "animar": false
+      "animar": false,
+      "rodadas": 1
     },
     "base2": {
       "tamanho": 240,
       "modelo": "modelo_objeto",
-      "desc": "a small old stone chapel fortified by survivors, a crooked bell tower, a heavy wooden door reinforced with planks, broken stained glass windows boarded up, sandbags and candles at the entrance",
+      "desc": "a small old stone chapel turned into a survivor fortress, a crooked bell tower with a cracked bell, the heavy wooden door barricaded with thick planks nailed across in an X, the broken pointed stained glass windows boarded up with planks, a low wall of stacked sandbags across the entrance, melted candles on the sandbags, a dim yellow light through the gaps, moss and cracks on the grey stones",
       "medida": "largura",
       "espelhar": false,
-      "animar": false
+      "animar": false,
+      "rodadas": 1
     }
   },
   "modelo_zumbi": "Juaner_dsstyle, game asset, full body side view of an undead ZOMBIE monster moving toward the RIGHT edge of the image in the pose described: {desc}. It is dead and rotting, menacing and grotesque, not a living human, in torn bloodstained rags, muted desaturated colors. Whole body visible with empty margin around it, floating isolated on a plain flat solid magenta background, no text.",
