@@ -419,7 +419,8 @@ class GameScene extends Phaser.Scene {
   fireBullet(x, y, angle, offset, shot, damageMul = 1) {
     const bullet = this.bullets.get(x + Math.cos(angle) * offset, y + Math.sin(angle) * offset);
     if (!bullet) return;
-    bullet.setTexture(shot.tex || 'bullet').setActive(true).setVisible(true).setDepth(3.5).setRotation(angle).setAlpha(1).setScale(1);
+    // Rastro com a ponta na posição da bala: a cauda fica para trás e nunca nasce atrás do cano
+    bullet.setTexture(shot.tex || 'bullet').setOrigin(shot.tex ? 0.5 : 0.85, 0.5).setActive(true).setVisible(true).setDepth(3.5).setRotation(angle).setAlpha(1).setScale(1);
     bullet.body.enable = true;
     bullet.body.setSize(Math.min(bullet.width, 10), Math.min(bullet.height, 10));
     bullet.damage = shot.damage * damageMul;

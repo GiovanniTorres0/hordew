@@ -129,9 +129,9 @@ function makeTextures(scene) {
   done('base', BASE_W, BASE_H);
 
   // Balas e projéteis. A bala comum é um rastro: cauda apagada atrás, ponta clara na frente (gira com o tiro)
-  for (let i = 0; i < 16; i++) g.fillStyle(0xffe9a8, (i / 16) ** 2 * 0.8).fillRect(i, 1.5, 1, 2);
-  g.fillStyle(0xfff6d8).fillCircle(17, 2.5, 2.2);
-  done('bullet', 20, 5);
+  for (let i = 0; i < 10; i++) g.fillStyle(0xffd88a, (i / 10) ** 2 * 0.7).fillRect(i, 1.5, 1, 1.5);
+  g.fillStyle(0xfff2c4).fillCircle(11, 2.25, 1.6);
+  done('bullet', 13, 5);
   // Clarão do cano
   g.fillStyle(0xffd27a, 0.9).fillTriangle(0, 3, 12, 6, 0, 9).fillTriangle(4, 0, 9, 6, 4, 12);
   g.fillStyle(0xfff6d8).fillCircle(4, 6, 3);

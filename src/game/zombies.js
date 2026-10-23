@@ -26,6 +26,13 @@ const ZombieLogic = {
     const z = this.zombies.create(x, y, def.tex).setDepth(2);
     z.body.setCircle(def.radius, z.width / 2 - def.radius, z.height / 2 - def.radius);
     if (def.boss) z.body.pushable = false;
+    // O chefe com arte antiga (desenho pequeno) é ampliado para ser o maior zumbi; o círculo de colisão compensa
+    z.baseScale = def.boss && !ANIM_FRAMES[def.tex] ? Math.max(1, 120 / z.height) : 1;
+    if (z.baseScale > 1) {
+      z.setScale(z.baseScale);
+      const r = def.radius / z.baseScale;
+      z.body.setCircle(r, z.width / 2 - r, z.height / 2 - r);
+    }
     this.addShadow(z, def.radius * 2.6);
     z.def = def;
     z.hp = z.maxHp = def.hp * this.waveHpMul;
@@ -137,7 +144,7 @@ const ZombieLogic = {
     // menor em quem já tem quadros de animação
     const anim = this.animate(z, contact ? 'ataque' : 'andar', Phaser.Math.Clamp(speed / 45, 0.6, 2.2));
     z.setAngle(contact ? 0 : Math.sin((now + z.wobble) / 160) * (anim ? 3 : 6));
-    z.setScale(1, 1 + Math.sin((now + z.wobble) / 120) * 0.04);
+    z.setScale(z.baseScale, z.baseScale * (1 + Math.sin((now + z.wobble) / 120) * 0.04));
 
     if (contact) {
       if (isPlayer) this.hurtPlayer(def.dps * dt);
@@ -359,8 +366,9 @@ const ZombieLogic = {
     if (z.mode === 'pull') z.pullDamage += amount;
     if (z.mode === 'sit') this.startleWitch(z);
     if (!silent) {
-      z.setTintFill(0xffffff);
-      this.time.delayedCall(60, () => z.active && z.clearTint());
+      // Acerto: pisca avermelhado (silhueta branca chapada destoava do traço desenhado)
+      z.setTint(0xff7a6a);
+      this.time.delayedCall(70, () => z.active && z.clearTint());
     }
     if (z.hp > 0) return;
 
