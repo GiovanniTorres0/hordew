@@ -136,7 +136,7 @@
       "escolha": 6
     },
     "pet_gato": {
-      "tamanho": 20,
+      "tamanho": 27,
       "pet": true,
       "desc": "a scrawny gray striped tabby cat with scruffy fur, a torn notched ear, wide staring eyes, bony legs, tail up, walking, dull muted colors",
       "rodadas": 1,
@@ -172,13 +172,16 @@
       "modelo": "modelo_objeto",
       "desc": "a short thick rusty black iron cannon barrel lying perfectly horizontal, muzzle pointing to the RIGHT, a round breech knob at the left end, two iron reinforcement rings, ONLY the barrel floating in the air, NO stand, NO pole, NO pivot, NO base, NO wheels, nothing under it",
       "medida": "largura",
-      "rodadas": 1
+      "rodadas": 2,
+      "escolha": 64,
+      "espelhar": false
     },
     "tesla": {
       "tamanho": 78,
       "modelo": "modelo_objeto",
       "desc": "a tall rickety tesla coil tower on three crooked wooden tripod legs, a big thick copper wire coil wrapped around the upper half, a dark iron ball on the very top, three thick jagged pale cyan lightning arcs leaping from the iron ball, the arcs drawn as solid bold zigzag lines, no glow cloud",
-      "rodadas": 1
+      "rodadas": 2,
+      "pendente": "2 rodadas sem aprovação: Nenhuma chega a 8 de média. A 60 é a melhor (7,7): os raios saem da esfera e aparecem no tamanho real, mas tem duas esferas e a bobina parece corda, não cobre. A 64 tem raios grossos, mas eles saem da bobina e uma fumaça no topo faz a esfera parecer bomba. A 61 e a 62 têm raios soltos com brilho, em 3 pedaços. Na 63 os raios parecem fumaça ou chama branca, e a 65 tem raios soltos e fumaça. Fica com a arte antiga desenhada por código."
     },
     "flame_base": {
       "tamanho": 44,
@@ -194,21 +197,26 @@
       "modelo": "modelo_objeto",
       "desc": "a rusty iron flamethrower nozzle lying perfectly horizontal pointing to the RIGHT: a fat round fuel cylinder at the left end, a long narrowing metal pipe to the right with a flared tip and a tiny blue pilot flame at the tip, ONLY the nozzle floating in the air, NO stand, NO pole, NO pivot, NO base, nothing under it",
       "medida": "largura",
-      "rodadas": 1
+      "rodadas": 2,
+      "escolha": 63,
+      "espelhar": false
     },
     "barricade": {
       "tamanho": 48,
       "modelo": "modelo_objeto",
       "desc": "a crude barricade seen in three-quarter view from slightly above: two thick crooked wooden posts with three crooked planks nailed across at different angles, a big dented rusty corrugated sheet metal panel nailed over the middle, protruding rusty nails, NO ground patch under it",
       "medida": "largura",
-      "rodadas": 1
+      "rodadas": 2,
+      "pendente": "2 rodadas sem aprovação: As seis sementes estão de frente e chapadas, sem 3/4. O painel do meio é de tábuas, sem a chapa de metal ondulada. A 60, a 62, a 63 e a 64 trazem um pedaço de chão solto embaixo, e a 61 e a 65 vêm com chão colado. Parecem placas ou cercas, não barricadas. Fica com a arte antiga desenhada por código."
     },
     "mine": {
       "tamanho": 30,
       "modelo": "modelo_objeto",
       "desc": "a flat round rusty iron landmine shaped like a low wide disc lying FLAT on the ground, seen from slightly above so the top face is clearly visible, a bright red button in the center of the top face, half sunk in a small low mound of dirt, no text, no letters",
       "medida": "largura",
-      "rodadas": 1
+      "rodadas": 2,
+      "escolha": 64,
+      "espelhar": false
     },
     "floodlight": {
       "tamanho": 82,
@@ -223,7 +231,8 @@
       "modelo": "modelo_objeto",
       "desc": "five or six THICK sharpened wooden stakes and two or three heavy rusty iron spikes, short and chunky, angled outward in different directions like a hedgehog, sticking out of a small low mound of dark dirt, wide silhouette",
       "medida": "largura",
-      "rodadas": 1
+      "rodadas": 2,
+      "pendente": "2 rodadas sem aprovação: As estacas continuam finas como varetas, sem os espetos de ferro grossos. A 46 px de noite o monte escuro e as estacas somem no fundo. A 60 e a 64 têm o leque mais largo, mas também viram fios no tamanho real. Fica com a arte antiga desenhada por código."
     },
     "crate": {
       "tamanho": 34,
@@ -249,7 +258,8 @@
       "desc": "a crooked dead spooky tree with twisted bare branches and a few dark leaves, a gnarled trunk",
       "rodadas": 1,
       "escolha": 31,
-      "espelhar": false
+      "espelhar": false,
+      "fundo_largo": true
     },
     "lamp": {
       "tamanho": 100,
@@ -284,7 +294,7 @@
       "escolha": 52
     },
     "ground1": {
-      "tamanho": 320,
+      "tamanho": 170,
       "modelo": "modelo_chao",
       "textura": true,
       "desc": "Centro: a weathered gray concrete sidewalk of large square slabs, cracked and stained, dirt and weeds in the cracks",

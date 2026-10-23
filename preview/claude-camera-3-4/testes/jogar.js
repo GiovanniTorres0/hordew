@@ -143,8 +143,8 @@ function servidor() {
     let x = 20, y = 20, alt = 0;
     Object.keys(ANIM_FRAMES).forEach((k) => {
       const [fw, fh] = ANIM_FRAMES[k];
-      const esc = Math.min(1.6, 100 / fh);
-      if (x + fw * esc * 4 > 1260) { x = 20; y += alt + 16; alt = 0; }
+      const esc = Math.min(1.4, 72 / fh);
+      if (x + fw * esc * 4 > 1260) { x = 20; y += alt + 10; alt = 0; }
       for (let i = 0; i < 4; i++) itens.push(s.add.image(x + (i + 0.5) * fw * esc, y + fh * esc / 2, k, i).setScale(esc).setScrollFactor(0).setDepth(51));
       x += fw * esc * 4 + 24;
       alt = Math.max(alt, fh * esc);

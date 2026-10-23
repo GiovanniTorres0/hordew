@@ -47,6 +47,12 @@ def recortar(caminho, s):
     img = Image.open(caminho).convert("RGB")
     rgb = np.array(img)
     fundo = mascara_fundo(rgb)
+    if s.get("fundo_largo"):
+        # Sombra rosa escura e pouco saturada colada ao objeto (ex.: base da árvore): cresce o fundo por ela
+        f = rgb.astype(np.float32) / 255
+        mx, mn = f.max(-1), f.min(-1)
+        rosado = (f[..., 0] > f[..., 1] + 0.03) & (f[..., 2] > f[..., 1] + 0.02) & ((mx - mn) > 0.05)
+        fundo = ndimage.binary_propagation(fundo, mask=fundo | rosado)
     corpo = ~fundo
     # Remove ilhas soltas (respingos, restos de sombra) e fica com o personagem
     rotulos, n = ndimage.label(corpo)
@@ -61,6 +67,10 @@ def recortar(caminho, s):
     excesso = np.clip(m - f[..., 1], 0, None)
     for c in (0, 2):
         f[..., c] = np.where(perto, f[..., c] - excesso * 0.85, f[..., c])
+    if s.get("fundo_largo"):
+        # Objeto cinza e marrom (árvore): o rosa que sobra vira avermelhado ou lilás; corta o excesso
+        f[..., 2] = np.minimum(f[..., 2], f[..., 1] + 4)
+        f[..., 0] = np.minimum(f[..., 0], f[..., 1] + 8)
     alfa = ndimage.gaussian_filter(alfa, 0.7) * corpo + 0
     rgba = np.dstack([np.clip(f, 0, 255), alfa * 255]).astype(np.uint8)
 
