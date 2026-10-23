@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hordew: progresso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Rubik+Dirt&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+  /* Mesma paleta do jogo (src/ui.js): ferro, ferrugem, papel velho */
+  :root {
+    --fundo: #15110e;
+    --placa: #241d18;
+    --borda: #4a3a2c;
+    --texto: #e9dcc6;
+    --apagado: #a8977f;
+    --ouro: #e0a84a;
+    --sangue: #b3321f;
+    --verde: #8fae4f;
+    --papel: #e8dcc0;
+    --tinta: #2b2118;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--fundo);
+    color: var(--texto);
+    font: 17px/1.55 Oswald, "Arial Narrow", sans-serif;
+  }
+  main { max-width: 920px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 {
+    font: 400 clamp(38px, 8vw, 64px)/1 "Rubik Dirt", Impact, sans-serif;
+    margin: 0 0 6px;
+    color: var(--ouro);
+  }
+  h2 {
+    font: 400 26px/1.2 "Rubik Dirt", Impact, sans-serif;
+    margin: 44px 0 14px;
+    color: var(--texto);
+  }
+  a { color: var(--ouro); }
+  .sub { color: var(--apagado); margin: 0 0 28px; }
+
+  /* Painel do total */
+  .total {
+    background: var(--placa);
+    border: 2px solid var(--borda);
+    border-radius: 6px;
+    padding: 22px 22px 18px;
+  }
+  .total .linha { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .total .num { font: 400 64px/1 "Rubik Dirt", Impact, sans-serif; color: var(--ouro); }
+  .total .rot { color: var(--apagado); }
+  .barra {
+    height: 14px;
+    background: #0d0a08;
+    border: 1px solid var(--borda);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 12px;
+  }
+  .barra > span { display: block; height: 100%; background: linear-gradient(90deg, #8a3a1a, var(--ouro)); }
+  .agora { margin: 14px 0 0; }
+  .agora b { color: var(--ouro); font-weight: 600; }
+
+  /* Etapas */
+  .etapas { display: grid; gap: 12px; }
+  .etapa {
+    background: var(--placa);
+    border: 1px solid var(--borda);
+    border-left: 5px solid var(--cor, var(--ouro));
+    border-radius: 5px;
+    padding: 14px 16px;
+  }
+  .etapa .topo { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+  .etapa h3 { margin: 0; font-size: 20px; font-weight: 600; }
+  .etapa .pct { font-size: 22px; font-weight: 600; color: var(--cor, var(--ouro)); white-space: nowrap; }
+  .etapa .barra { height: 8px; margin: 8px 0 10px; }
+  .etapa .barra > span { background: var(--cor, var(--ouro)); }
+  .etapa p { margin: 0; color: var(--apagado); }
+  .etapa p + p { margin-top: 4px; }
+  .etapa .falta { color: var(--texto); }
+  .etapa .falta::before { content: "Falta: "; color: var(--sangue); font-weight: 600; }
+
+  /* Bilhete de próximos passos (papel do jogo) */
+  .bilhete {
+    background: var(--papel);
+    color: var(--tinta);
+    font: 16px/1.6 "Special Elite", "Courier New", monospace;
+    padding: 20px 24px;
+    border-radius: 2px;
+    transform: rotate(-0.4deg);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .45);
+  }
+  .bilhete ol { margin: 0; padding-left: 22px; }
+
+  /* Prints */
+  .prints { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+  figure { margin: 0; background: var(--placa); border: 1px solid var(--borda); border-radius: 5px; overflow: hidden; }
+  figure img { display: block; width: 100%; height: auto; }
+  figcaption { padding: 8px 12px; color: var(--apagado); font-size: 15px; }
+
+  .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .botao {
+    display: inline-block;
+    padding: 9px 16px;
+    background: #3a2d22;
+    border: 1px solid var(--borda);
+    border-radius: 4px;
+    color: var(--texto);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .botao:hover { border-color: var(--ouro); color: var(--ouro); }
+  footer { margin-top: 48px; color: var(--apagado); font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Hordew</h1>
+  <p class="sub">Progresso da próxima versão · atualizado em <span id="data"></span></p>
+
+  <section class="total" aria-label="Progresso total">
+    <div class="linha">
+      <span class="num" id="total"></span>
+      <span class="rot">da próxima versão pronta (média das etapas, pesada pela importância)</span>
+    </div>
+    <div class="barra"><span id="barra-total"></span></div>
+    <p class="agora"><b>Agora:</b> <span id="agora"></span></p>
+    <div class="links">
+      <a class="botao" href="../">Jogar a versão oficial</a>
+      <a class="botao" href="../preview/">Ver as prévias em teste</a>
+    </div>
+  </section>
+
+  <h2>Etapas</h2>
+  <div class="etapas" id="etapas"></div>
+
+  <h2>Próximos passos</h2>
+  <div class="bilhete"><ol id="proximos"></ol></div>
+
+  <h2>Como está ficando</h2>
+  <div class="prints">
+    <figure><a href="img/elenco.jpg"><img src="img/elenco.jpg" alt="Personagens e zumbis desenhados no mapa do subúrbio" loading="lazy" width="1280" height="720"></a><figcaption>Personagens e zumbis desenhados, no subúrbio</figcaption></figure>
+    <figure><a href="img/centro.jpg"><img src="img/centro.jpg" alt="Lojinha de tijolo fortificada no mapa do centro" loading="lazy" width="1280" height="720"></a><figcaption>Centro: a lojinha de tijolo fortificada</figcaption></figure>
+    <figure><a href="img/cemiterio.jpg"><img src="img/cemiterio.jpg" alt="Capela fortificada no mapa do cemitério" loading="lazy" width="1280" height="720"></a><figcaption>Cemitério: a capela</figcaption></figure>
+    <figure><a href="img/ruinas.jpg"><img src="img/ruinas.jpg" alt="Casa do subúrbio quase em ruínas durante uma horda" loading="lazy" width="1280" height="720"></a><figcaption>A casa vai se estragando conforme perde vida</figcaption></figure>
+    <figure><a href="img/loja.jpg"><img src="img/loja.jpg" alt="Loja de armas com placas de madeira e tiras de papel" loading="lazy" width="1280" height="720"></a><figcaption>Loja nova, com as armas desenhadas</figcaption></figure>
+    <figure><a href="img/noite.jpg"><img src="img/noite.jpg" alt="Horda à noite com o cone da lanterna" loading="lazy" width="1280" height="720"></a><figcaption>Horda à noite</figcaption></figure>
+  </div>
+
+  <footer>Página do repositório (progresso/index.html), publicada junto com o jogo a cada atualização da versão oficial.</footer>
+</main>
+
+<script>
+  // Dados do progresso: atualize aqui a cada etapa (peso = importância na versão; somam 100)
+  const PROGRESSO = {
+    data: '23/10/2026',
+    agora: 'Etapas 2, 3 e 5 praticamente prontas e já na versão oficial. Próximo alvo: o Tank e as construções que ainda usam a arte antiga.',
+    etapas: [
+      { nome: '1. Animação', peso: 20, pct: 70, cor: '#c97b3a',
+        feito: 'Todos andam e atacam. O Brutamonte tem o soco desenhado quadro a quadro.',
+        falta: 'Soco desenhado para os outros zumbis (hoje o ataque é o próprio desenho deformado).' },
+      { nome: '2. Interface', peso: 20, pct: 95, cor: '#8fae4f',
+        feito: 'Tudo em madeira, ferro e papel velho, no estilo Don\'t Starve com clima de The Walking Dead. Aprovada pelo robô de teste.',
+        falta: 'Só ajustes finos.' },
+      { nome: '3. Casa', peso: 15, pct: 90, cor: '#8fae4f',
+        feito: 'Uma casa por mapa (casa fortificada, lojinha de tijolo, capela), cada uma estragando em 3 estados.',
+        falta: 'O desenho da lojinha avariada (o estado do meio).' },
+      { nome: '4. Armas', peso: 15, pct: 85, cor: '#e0a84a',
+        feito: '7 de 9 desenhadas e nítidas na mão: pistola, .50, escopeta, AK-47, besta, lança-chamas e AA-12. Cada uma com som e rastro próprios.',
+        falta: 'MP7 e M79.' },
+      { nome: '5. Música', peso: 10, pct: 100, cor: '#8fae4f',
+        feito: '8 faixas (dia, noite, Tank e Witch), duas por clima, com transição suave entre elas.',
+        falta: '' },
+      { nome: '6. Pendências', peso: 20, pct: 15, cor: '#b3321f',
+        feito: 'Pistas de como resolver já testadas (desenhar a partir de artes aprovadas e cortar o chão por código).',
+        falta: 'Tank e a pedra dele, Tesla, barricada, espinhos, coelho, farol, bile do Boomer, baba do Venenoso e língua do Smoker.' },
+    ],
+    proximos: [
+      'Desenhar o Tank e a pedra que ele joga (o pior visual que sobrou, segundo o robô de teste).',
+      'Barricada, espinhos e Tesla desenhados, sem o pedaço de chão embaixo.',
+      'M79, MP7 e a lojinha avariada.',
+      'Trocar os efeitos verde-neon e rosa liso (bile, baba, língua) por texturas desenhadas.',
+    ],
+  };
+
+  const pesoTotal = PROGRESSO.etapas.reduce((s, e) => s + e.peso, 0);
+  const total = Math.round(PROGRESSO.etapas.reduce((s, e) => s + e.peso * e.pct, 0) / pesoTotal);
+  document.getElementById('data').textContent = PROGRESSO.data;
+  document.getElementById('total').textContent = `${total}%`;
+  document.getElementById('barra-total').style.width = `${total}%`;
+  document.getElementById('agora').textContent = PROGRESSO.agora;
+
+  const lista = document.getElementById('etapas');
+  for (const e of PROGRESSO.etapas) {
+    const el = document.createElement('article');
+    el.className = 'etapa';
+    el.style.setProperty('--cor', e.cor);
+    el.innerHTML = `
+      <div class="topo"><h3></h3><span class="pct">${e.pct}%</span></div>
+      <div class="barra"><span style="width:${e.pct}%"></span></div>
+      <p class="feito"></p>${e.falta ? '<p class="falta"></p>' : ''}`;
+    el.querySelector('h3').textContent = e.nome;
+    el.querySelector('.feito').textContent = e.feito;
+    if (e.falta) el.querySelector('.falta').textContent = e.falta;
+    lista.appendChild(el);
+  }
+
+  const prox = document.getElementById('proximos');
+  for (const p of PROGRESSO.proximos) {
+    const li = document.createElement('li');
+    li.textContent = p;
+    prox.appendChild(li);
+  }
+</script>
+</body>
+</html>
