@@ -160,12 +160,19 @@ function makeTextures(scene) {
   blob(g, 14, 14, 12, 11, 0x7d7487, 0.15, 3);
   hatch(g, 6, 14, 16, 8, P.outline, 0.4, 4);
   done('rock', 28, 28);
-  g.fillStyle(P.acid, 0.5).fillPoints(wobblePoints(50, 50, 48, 46, 0.12), true);
-  g.fillStyle(0xe6ff8a, 0.5).fillCircle(38, 40, 10).fillCircle(64, 60, 7).fillCircle(56, 30, 4);
+  // Poça de bile: borda escura, miolo sujo, respingos em volta e brilho pequeno
+  g.fillStyle(0x3e4418, 0.55).fillPoints(wobblePoints(50, 50, 46, 42, 0.16), true);
+  g.fillStyle(P.acid, 0.5).fillPoints(wobblePoints(50, 51, 40, 36, 0.14), true);
+  g.fillStyle(0x5a6224, 0.45).fillPoints(wobblePoints(44, 56, 18, 12, 0.2), true);
+  [[90, 30, 4], [12, 66, 3], [80, 84, 3], [22, 18, 2.5], [94, 58, 2]].forEach(([x, y, r]) => g.fillStyle(0x6f7a2a, 0.6).fillCircle(x, y, r));
+  g.fillStyle(0xd8dc9a, 0.35).fillCircle(40, 40, 5).fillCircle(60, 58, 3);
   done('puddle', 100, 100);
-  g.fillStyle(0x7fbf3f, 0.3).fillPoints(wobblePoints(50, 50, 48, 48, 0.15), true);
-  g.lineStyle(2, 0x5b7a2a, 0.5);
-  spiral(g, 50, 50, 30, 2);
+  // Veneno no chão: mancha escura e oleosa com bolhas, sem verde-neon
+  g.fillStyle(0x2e3618, 0.35).fillPoints(wobblePoints(50, 50, 48, 46, 0.18), true);
+  g.fillStyle(0x56602a, 0.35).fillPoints(wobblePoints(50, 50, 36, 34, 0.16), true);
+  g.lineStyle(1.5, 0x3a4220, 0.45);
+  spiral(g, 50, 50, 24, 2);
+  [[30, 36, 4], [66, 44, 3], [54, 68, 3.5], [40, 60, 2]].forEach(([x, y, r]) => g.lineStyle(1.2, 0x9aa060, 0.5).strokeCircle(x, y, r));
   done('poison', 100, 100);
 
   // Zumbis: braços esticados para frente, cabeça verde, olhos e pontos de costura.
