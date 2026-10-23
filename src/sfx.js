@@ -25,7 +25,8 @@ const Sfx = (() => {
     o.stop(t + dur);
   }
 
-  function noise(dur = 0.1, vol = 0.1, delay = 0) {
+  // lp: corta os agudos acima dessa frequência (estampido grave de arma grande); 0 deixa o chiado inteiro
+  function noise(dur = 0.1, vol = 0.1, delay = 0, lp = 0) {
     const a = audio();
     if (!a) return;
     const buf = a.createBuffer(1, Math.floor(a.sampleRate * dur), a.sampleRate);
@@ -35,12 +36,32 @@ const Sfx = (() => {
     const g = a.createGain();
     g.gain.value = vol;
     src.buffer = buf;
-    src.connect(g).connect(a.destination);
+    if (lp) {
+      const f = a.createBiquadFilter();
+      f.type = 'lowpass';
+      f.frequency.value = lp;
+      src.connect(f).connect(g).connect(a.destination);
+    } else src.connect(g).connect(a.destination);
     src.start(a.currentTime + delay);
   }
 
   return {
     shot: () => noise(0.06, 0.06),
+    // Um disparo com cara de cada arma: chiado (duração, volume, corte) e um soco grave por baixo
+    gun: (id) => {
+      const g = {
+        pistola: () => { noise(0.07, 0.07, 0, 3200); tone({ freq: 180, to: 60, dur: 0.05, type: 'sine', vol: 0.06 }); },
+        mp7: () => noise(0.04, 0.045, 0, 4500),
+        escopeta: () => { noise(0.24, 0.14, 0, 1400); tone({ freq: 95, to: 40, dur: 0.22, type: 'sine', vol: 0.12 }); },
+        handcannon: () => { noise(0.18, 0.12, 0, 1800); tone({ freq: 120, to: 45, dur: 0.18, type: 'sine', vol: 0.12 }); },
+        ak47: () => { noise(0.08, 0.08, 0, 2600); tone({ freq: 140, to: 60, dur: 0.06, type: 'sine', vol: 0.07 }); },
+        besta: () => { tone({ freq: 320, to: 110, dur: 0.12, type: 'triangle', vol: 0.08 }); noise(0.05, 0.03); },
+        m79: () => { tone({ freq: 210, to: 70, dur: 0.14, type: 'sine', vol: 0.14 }); noise(0.06, 0.05, 0, 800); },
+        aa12: () => { noise(0.14, 0.1, 0, 1600); tone({ freq: 100, to: 45, dur: 0.12, type: 'sine', vol: 0.09 }); },
+        chamas: () => noise(0.14, 0.035, 0, 900),
+      }[id];
+      (g || (() => noise(0.06, 0.06)))();
+    },
     splat: () => tone({ freq: 220, to: 60, dur: 0.18, type: 'sawtooth', vol: 0.06 }),
     build: () => tone({ freq: 300, to: 600, dur: 0.12, type: 'triangle', vol: 0.1 }),
     pick: () => { tone({ freq: 500, dur: 0.08, type: 'triangle' }); tone({ freq: 800, dur: 0.12, type: 'triangle', delay: 0.08 }); },

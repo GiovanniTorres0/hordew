@@ -10,6 +10,7 @@ COMFY_INPUT = r"C:\ComfyUI_windows_portable\ComfyUI\input"
 FIXO = ("Keep exactly the same character: same face, body, proportions, clothes, colors, scratchy hand-drawn "
         "Don't Starve style and line thickness, same side view facing the same direction, same size and position "
         "in the frame, same plain flat solid magenta background, whole body visible.")
+# Construções trocam este texto pelo "fixo" delas em sprites.json (uma casa não tem corpo nem rosto)
 # Poses padrão; "poses" em sprites.json troca por pose específica do personagem (ex.: o golpe do Charger)
 POSES = {
     # Contato e passagem: silhuetas de pernas bem diferentes entre si e do original (pedir só "passada" copia a do original)
@@ -62,7 +63,7 @@ def main():
     for pose in nomes:
         for semente in sementes:
             saida = os.path.join(AQUI, "bruto", "anim", f"{chave}_{pose}_{semente}.png")
-            esperar_e_baixar(enviar(fluxo(ref, f"{poses[pose]} {FIXO}", semente, lora)), "13", saida)
+            esperar_e_baixar(enviar(fluxo(ref, f"{poses[pose]} {s.get('fixo', FIXO)}", semente, lora)), "13", saida)
             print(f"{chave} {pose} semente {semente}", flush=True)
 
 

@@ -426,7 +426,16 @@
       "espelhar": false,
       "animar": false,
       "rodadas": 4,
-      "escolha": 13
+      "escolha": 13,
+      "fixo": "Keep exactly the same building: same shape, size, position and 3/4 camera angle in the frame, same colors, same scratchy hand-drawn Don't Starve style and line thickness, same plain flat solid magenta background, the whole building visible, no ground, no text.",
+      "estados": [
+        "dano1",
+        "dano2"
+      ],
+      "poses": {
+        "dano1": "The fortified house is now damaged by a zombie siege: several planks are cracked or torn off, deep claw scratches and dark dried blood smears on the walls and boards, some sandbags burst and sagging, the barbed wire bent, a few broken roof shingles.",
+        "dano2": "The fortified house is now almost destroyed by a zombie siege: a big hole smashed in the front wall, most planks torn off and hanging, the roof partly caved in with broken beams, the chimney half collapsed, sandbags torn apart and spilled, heavy blood smears and soot burn marks everywhere, but the house is still standing."
+      }
     },
     "base1": {
       "tamanho": 240,
@@ -435,7 +444,16 @@
       "medida": "largura",
       "espelhar": false,
       "animar": false,
-      "rodadas": 4
+      "rodadas": 4,
+      "fixo": "Keep exactly the same building: same shape, size, position and 3/4 camera angle in the frame, same colors, same scratchy hand-drawn Don't Starve style and line thickness, same plain flat solid magenta background, the whole building visible, no ground, no text.",
+      "estados": [
+        "dano1",
+        "dano2"
+      ],
+      "poses": {
+        "dano1": "The fortified house is now damaged by a zombie siege: several planks are cracked or torn off, deep claw scratches and dark dried blood smears on the walls and boards, some sandbags burst and sagging, the barbed wire bent, a few broken roof shingles.",
+        "dano2": "The fortified house is now almost destroyed by a zombie siege: a big hole smashed in the front wall, most planks torn off and hanging, the roof partly caved in with broken beams, the chimney half collapsed, sandbags torn apart and spilled, heavy blood smears and soot burn marks everywhere, but the house is still standing."
+      }
     },
     "base2": {
       "tamanho": 240,
@@ -444,7 +462,16 @@
       "medida": "largura",
       "espelhar": false,
       "animar": false,
-      "rodadas": 4
+      "rodadas": 4,
+      "fixo": "Keep exactly the same building: same shape, size, position and 3/4 camera angle in the frame, same colors, same scratchy hand-drawn Don't Starve style and line thickness, same plain flat solid magenta background, the whole building visible, no ground, no text.",
+      "estados": [
+        "dano1",
+        "dano2"
+      ],
+      "poses": {
+        "dano1": "The fortified house is now damaged by a zombie siege: several planks are cracked or torn off, deep claw scratches and dark dried blood smears on the walls and boards, some sandbags burst and sagging, the barbed wire bent, a few broken roof shingles.",
+        "dano2": "The fortified house is now almost destroyed by a zombie siege: a big hole smashed in the front wall, most planks torn off and hanging, the roof partly caved in with broken beams, the chimney half collapsed, sandbags torn apart and spilled, heavy blood smears and soot burn marks everywhere, but the house is still standing."
+      }
     }
   },
   "modelo_zumbi": "Juaner_dsstyle, game asset, full body side view of an undead ZOMBIE monster moving toward the RIGHT edge of the image in the pose described: {desc}. It is dead and rotting, menacing and grotesque, not a living human, in torn bloodstained rags, muted desaturated colors. Whole body visible with empty margin around it, floating isolated on a plain flat solid magenta background, no text.",
