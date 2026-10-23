@@ -99,4 +99,5 @@ jobs:
 
       - name: Mostrar link
         if: github.event_name != 'delete'
-        run: echo "### Link para testar: https://giovannitorres0.github.io/hordew/preview/${{ steps.info.outputs.slug }}/" >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          echo "### Link para testar: https://giovannitorres0.github.io/hordew/preview/${{ steps.info.outputs.slug }}/" >> "$GITHUB_STEP_SUMMARY"
