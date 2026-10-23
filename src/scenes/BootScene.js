@@ -15,9 +15,10 @@ class BootScene extends Phaser.Scene {
 
   create() {
     makeTextures(this);
+    makeUiTextures(this);
     Object.keys(ANIM_FRAMES).forEach((k) => makeAnims(this, k));
-    // Espera a fonte do título carregar (no máximo 2s) para o texto não aparecer com a fonte reserva
-    const font = document.fonts ? document.fonts.load('48px "Creepster"') : Promise.resolve();
+    // Espera as fontes carregar (no máximo 2s) para o texto não aparecer com a fonte reserva
+    const font = document.fonts ? Promise.all(['48px "Rubik Dirt"', '18px "Oswald"', '16px "Special Elite"'].map((f) => document.fonts.load(f))) : Promise.resolve();
     const timeout = new Promise((r) => setTimeout(r, 2000));
     Promise.race([font, timeout]).catch(() => {}).then(() => this.scene.start('Menu'));
   }

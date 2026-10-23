@@ -119,13 +119,34 @@ class GameScene extends Phaser.Scene {
     if (this.cameras.main.postFX) this.cameras.main.postFX.addVignette(0.5, 0.5, 0.95, 0.35);
   }
 
+  // 3 estados de dano: inteira, avariada (abaixo de 2/3) e em ruínas (abaixo de 1/3).
+  // Com os desenhos base<n>_dano1/_dano2 troca a imagem; sem eles, escurece e avermelha a casa.
+  updateBaseLook() {
+    const b = this.base;
+    const stage = b.hp > b.maxHp * 0.66 ? 0 : b.hp > b.maxHp * 0.33 ? 1 : 2;
+    if (stage === b.stage) return;
+    b.stage = stage;
+    const tex = `${b.baseTex}_dano${stage}`;
+    if (stage && this.textures.exists(tex)) {
+      b.sprite.setTexture(tex).setTint(stage === 2 ? 0xb8a49a : 0xffffff); // ruínas com fuligem
+    } else if (stage === 2 && this.textures.exists(`${b.baseTex}_dano1`)) {
+      // Só a avariada desenhada: ela mesma, escurecida, faz as ruínas
+      b.sprite.setTexture(`${b.baseTex}_dano1`).setTint(0xa08878);
+    } else {
+      b.sprite.setTexture(b.baseTex).setTint([0xffffff, 0xcdb8a4, 0x9a7a68][stage]);
+    }
+  }
+
   createBase() {
-    const sprite = this.blockers.create(BASE_X, BASE_Y, 'base');
+    // Cada mapa tem o seu abrigo (base0..2); sem o desenho, a casa padrão
+    const tex = this.textures.exists(`base${this.levelIndex}`) ? `base${this.levelIndex}` : 'base';
+    const sprite = this.blockers.create(BASE_X, BASE_Y, tex);
     this.standOn(sprite, BASE_W, BASE_H);
     this.base = {
       type: 'base', def: { name: 'Base', block: true, light: 260 }, sprite, x: BASE_X, y: BASE_Y,
       hw: BASE_W / 2, hh: BASE_H / 2, hp: this.diff.baseHp, maxHp: this.diff.baseHp,
     };
+    this.base.baseTex = tex;
     sprite.structure = this.base;
   }
 
@@ -280,6 +301,7 @@ class GameScene extends Phaser.Scene {
       if (this.intermissionLeft <= 0) this.startWave(false);
     }
     this.hud.update();
+    this.updateBaseLook();
   }
 
   updatePlayer(time, dt) {
@@ -320,17 +342,23 @@ class GameScene extends Phaser.Scene {
     const side = p.flipX ? -1 : 1;
     const gx = p.x + side * p.height * 0.09;
     const gy = p.y + p.height * 0.08;
+    // Cada arma tem o seu desenho (w_<id>); sem ele, a pistola feita por código
+    const wid = Object.keys(WEAPONS).find((k) => WEAPONS[k] === this.weapon);
+    const wtex = this.textures.exists(`w_${wid}`) ? `w_${wid}` : 'arma';
+    // Desenhos exportados em resolução dobrada e com contorno; a 0.7 ficam um pouco maiores que o real
+    if (this.gun.texture.key !== wtex) this.gun.setTexture(wtex).setOrigin(wtex === 'arma' ? 0.25 : 0.3, wtex === 'arma' ? 0.4 : 0.55).setScale(wtex === 'arma' ? 1 : 0.7);
     this.gun.setPosition(gx, gy).setRotation(this.aim).setFlipY(Math.cos(this.aim) < 0).setDepth(p.depth + 0.001);
 
     if (canShoot && this.input.activePointer.leftButtonDown() && time - this.lastShot > this.weapon.fireDelay) {
       const w = this.weapon;
       for (let i = 0; i < w.pellets; i++) {
         const angle = this.aim + Phaser.Math.FloatBetween(-w.spread, w.spread) / 2;
-        this.fireBullet(gx, gy, angle, 13, w);
+        this.fireBullet(gx, gy, angle, this.gun.displayWidth * 0.7, w);
       }
       this.lastShot = time;
-      if (w !== WEAPONS.chamas) this.muzzleFlash(gx + Math.cos(this.aim) * 13, gy + Math.sin(this.aim) * 13, this.aim);
-      if (w !== WEAPONS.chamas || Math.random() < 0.2) Sfx.shot();
+      const muzzle = this.gun.displayWidth * 0.7;
+      if (w !== WEAPONS.chamas) this.muzzleFlash(gx + Math.cos(this.aim) * muzzle, gy + Math.sin(this.aim) * muzzle, this.aim);
+      if (w !== WEAPONS.chamas || Math.random() < 0.2) Sfx.gun(wid);
     }
   }
 
@@ -421,6 +449,9 @@ class GameScene extends Phaser.Scene {
     if (!bullet) return;
     // Rastro com a ponta na posição da bala: a cauda fica para trás e nunca nasce atrás do cano
     bullet.setTexture(shot.tex || 'bullet').setOrigin(shot.tex ? 0.5 : 0.85, 0.5).setActive(true).setVisible(true).setDepth(3.5).setRotation(angle).setAlpha(1).setScale(1);
+    // Rastro de cada arma: comprimento (trail) e cor (tint) da bala; torres e armas sem isso usam a bala padrão
+    bullet.setScale(shot.trail || 1, shot.trail ? Math.min(1.3, 0.6 + shot.trail * 0.4) : 1);
+    if (shot.tint) bullet.setTint(shot.tint); else bullet.clearTint();
     bullet.body.enable = true;
     bullet.body.setSize(Math.min(bullet.width, 10), Math.min(bullet.height, 10));
     bullet.damage = shot.damage * damageMul;
@@ -598,7 +629,7 @@ class GameScene extends Phaser.Scene {
     this.money += bonus;
     this.respawnPlayer();
     if (this.wave >= this.wavesToWin) return this.victory();
-    this.hud.banner(`Horda ${this.wave} vencida! +$${bonus}`);
+    this.hud.banner(`Horda ${this.wave} vencida! +$${bonus}`, UI.green);
     this.startIntermission(INTERMISSION);
   }
 
@@ -674,7 +705,7 @@ class GameScene extends Phaser.Scene {
     if (id === 'colete') { this.maxHp += 50; this.hp += 50; }
     if (id === 'kit') this.hp = this.maxHp;
     if (id === 'reparo') this.base.hp = Math.min(this.base.maxHp, this.base.hp + 200);
-    this.hud.banner(`Pegou: ${crate.item.name}`);
+    this.hud.banner(`Pegou: ${crate.item.name}`, UI.gold);
     crate.destroy();
     Sfx.pick();
   }

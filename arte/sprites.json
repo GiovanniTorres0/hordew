@@ -33,7 +33,10 @@
       "lora": 0.6,
       "rodadas": 1,
       "escolha": 16,
-      "espelhar": true
+      "espelhar": true,
+      "poses": {
+        "ataque": "Move only the giant gorilla-like forearm: it comes out of the near shoulder and punches straight forward, fully in side view, the closed fist at chest height in front of the body and well below the face, not touching the head. The head stays low between the shoulders, the hunched body, legs, size and everything else stay exactly the same."
+      }
     },
     "z_venenoso": {
       "tamanho": 80,
@@ -181,7 +184,11 @@
       "modelo": "modelo_objeto",
       "desc": "a tall rickety tesla coil tower on three crooked wooden tripod legs, a big thick copper wire coil wrapped around the upper half, a dark iron ball on the very top, three thick jagged pale cyan lightning arcs leaping from the iron ball, the arcs drawn as solid bold zigzag lines, no glow cloud",
       "rodadas": 2,
-      "pendente": "2 rodadas sem aprovação: Nenhuma chega a 8 de média. A 60 é a melhor (7,7): os raios saem da esfera e aparecem no tamanho real, mas tem duas esferas e a bobina parece corda, não cobre. A 64 tem raios grossos, mas eles saem da bobina e uma fumaça no topo faz a esfera parecer bomba. A 61 e a 62 têm raios soltos com brilho, em 3 pedaços. Na 63 os raios parecem fumaça ou chama branca, e a 65 tem raios soltos e fumaça. Fica com a arte antiga desenhada por código."
+      "pendente": "2 rodadas sem aprovação: Nenhuma chega a 8 de média. A 60 é a melhor (7,7): os raios saem da esfera e aparecem no tamanho real, mas tem duas esferas e a bobina parece corda, não cobre. A 64 tem raios grossos, mas eles saem da bobina e uma fumaça no topo faz a esfera parecer bomba. A 61 e a 62 têm raios soltos com brilho, em 3 pedaços. Na 63 os raios parecem fumaça ou chama branca, e a 65 tem raios soltos e fumaça. Fica com a arte antiga desenhada por código.",
+      "fixo": "Keep exactly the same scratchy hand-drawn Don't Starve style, line thickness, muted dirty colors, 3/4 camera angle seen from slightly above, same size and position in the frame, same plain flat solid magenta background, the whole object visible, no ground, no shadow, no text. The object stands directly on the magenta background: no dirt patch, no grass, no ground, no shadow under it.",
+      "poses": {
+        "desenho": "Keep the wooden crate from the image exactly as it is, same position, same size, at the bottom. On top of the crate, a short thick wooden pole wrapped in a fat rusty copper wire coil, with a dark iron ball at the top. Three thick jagged pale cyan lightning bolts jump out from the iron ball, drawn as solid bold zigzag lines with a dark outline, no glow, no haze. The crate is the very bottom of the object, on the plain magenta background: no ground, no grass, no dirt, no roots, no shadow, nothing loose beside it."
+      }
     },
     "flame_base": {
       "tamanho": 44,
@@ -207,7 +214,11 @@
       "desc": "a crude barricade seen in three-quarter view from slightly above: two thick crooked wooden posts with three crooked planks nailed across at different angles, a big dented rusty corrugated sheet metal panel nailed over the middle, protruding rusty nails, NO ground patch under it",
       "medida": "largura",
       "rodadas": 2,
-      "pendente": "2 rodadas sem aprovação: As seis sementes estão de frente e chapadas, sem 3/4. O painel do meio é de tábuas, sem a chapa de metal ondulada. A 60, a 62, a 63 e a 64 trazem um pedaço de chão solto embaixo, e a 61 e a 65 vêm com chão colado. Parecem placas ou cercas, não barricadas. Fica com a arte antiga desenhada por código."
+      "pendente": "2 rodadas sem aprovação: As seis sementes estão de frente e chapadas, sem 3/4. O painel do meio é de tábuas, sem a chapa de metal ondulada. A 60, a 62, a 63 e a 64 trazem um pedaço de chão solto embaixo, e a 61 e a 65 vêm com chão colado. Parecem placas ou cercas, não barricadas. Fica com a arte antiga desenhada por código.",
+      "fixo": "Keep exactly the same scratchy hand-drawn Don't Starve style, line thickness, muted dirty colors, 3/4 camera angle seen from slightly above, same size and position in the frame, same plain flat solid magenta background, the whole object visible, no ground, no shadow, no text. The object stands directly on the magenta background: no dirt patch, no grass, no ground, no shadow under it.",
+      "poses": {
+        "desenho": "Replace this crate with a crude barricade in the same 3/4 view, scratchy dark-outlined style and muted dirty colors: two thick crooked wooden posts, a big dented corrugated sheet metal panel covered in rust stains nailed between them, and three crooked planks nailed diagonally across the metal in an X and a slant, with bent rusty nails sticking out, plus a strand of barbed wire on top. The posts are cut flat at the bottom and float on the plain magenta background: no dirt, no grass tufts, no ground patch, no shadow under it."
+      }
     },
     "mine": {
       "tamanho": 30,
@@ -232,7 +243,11 @@
       "desc": "five or six THICK sharpened wooden stakes and two or three heavy rusty iron spikes, short and chunky, angled outward in different directions like a hedgehog, sticking out of a small low mound of dark dirt, wide silhouette",
       "medida": "largura",
       "rodadas": 2,
-      "pendente": "2 rodadas sem aprovação: As estacas continuam finas como varetas, sem os espetos de ferro grossos. A 46 px de noite o monte escuro e as estacas somem no fundo. A 60 e a 64 têm o leque mais largo, mas também viram fios no tamanho real. Fica com a arte antiga desenhada por código."
+      "pendente": "2 rodadas sem aprovação: As estacas continuam finas como varetas, sem os espetos de ferro grossos. A 46 px de noite o monte escuro e as estacas somem no fundo. A 60 e a 64 têm o leque mais largo, mas também viram fios no tamanho real. Fica com a arte antiga desenhada por código.",
+      "fixo": "Keep exactly the same scratchy hand-drawn Don't Starve style, line thickness, muted dirty colors, 3/4 camera angle seen from slightly above, same size and position in the frame, same plain flat solid magenta background, the whole object visible, no ground, no shadow, no text. The object stands directly on the magenta background: no dirt patch, no grass, no ground, no shadow under it.",
+      "poses": {
+        "desenho": "Replace this crate with a low wide spike trap made of WOOD and IRON only: a small low cross of two thick nailed planks lying flat, with six short thick sharpened wooden stakes and three heavy rusty iron spikes nailed into the planks and pointing outward and upward at different angles, like a hedgehog, much wider than tall. The planks are the very bottom of the object and float on the plain magenta background: no dirt mound, no soil, no grass, no blood puddle, no shadow. Same scratchy dark-outlined style and muted dirty colors as the crate."
+      }
     },
     "crate": {
       "tamanho": 34,
@@ -327,9 +342,177 @@
       "textura": true,
       "desc": "Cemitério road: a muddy brown dirt path with wheel ruts, puddle stains and small stones",
       "escolha": 50
+    },
+    "w_pistola": {
+      "tamanho": 44,
+      "modelo": "modelo_arma",
+      "desc": "a compact black 9mm Glock pistol lying flat in a strict side view, the top edge of the slide a perfectly level horizontal line parallel to the bottom of the image, muzzle at the right end, the short grip at the left end angled only slightly down and back, small trigger guard just in front of the grip, the barrel end cut flush with the front of the slide, blank slide surface with only scratches, scratched black paint, rust spots and grime, chipped grip texture, battered from heavy use",
+      "medida": "largura",
+      "espelhar": false,
+      "animar": false,
+      "rodadas": 3,
+      "escolha": 9,
+      "contorno": true
+    },
+    "w_mp7": {
+      "tamanho": 60,
+      "modelo": "modelo_arma",
+      "desc": "an Uzi submachine gun in strict side view, perfectly level and horizontal, muzzle at the right end, a short chunky boxy black steel receiver shaped like a brick, a very short stubby barrel poking only a little out of the right end of the box, one single hand grip straight down from the exact middle of the box with a long straight magazine inserted up through the grip so the grip and magazine form one long vertical bar reaching far below the box, a trigger guard in front of that bar, a thin folded metal wire stock lying flat along the rear of the box, the whole gun a compact upside-down capital T, scratched worn black metal with chipped paint, dirt and orange rust spots",
+      "medida": "largura",
+      "espelhar": false,
+      "animar": false,
+      "rodadas": 5,
+      "fixo": "Keep exactly the same scratchy hand-drawn Don't Starve style, line thickness, worn dirty colors, perfectly horizontal side view with the muzzle pointing to the right, same position in the frame, same plain flat solid magenta background, the whole weapon visible, no hands, no text. The object stands directly on the magenta background: no dirt patch, no grass, no ground, no shadow under it.",
+      "poses": {
+        "desenho": "Replace this pistol with an Uzi submachine gun in the same flat side view, muzzle to the right. The gun body is one long flat rectangular black steel box, twice as long as the old slide and as tall as it is thick, with a ribbed cocking knob on top. The pistol grip sits straight down from the MIDDLE of the box, not at the back, and one single long straight magazine sticks far out of the bottom of the grip. Only a tiny stub of barrel shows past the front of the box: no long barrel, no threads, no suppressor. A folding wire metal stock lies flat along the back of the box and sticks out past it to the left. Worn dark grey metal with scratches, chipped paint and rust spots. No pistol slide, no second magazine, no front grip, nothing on top of the gun."
+      },
+      "contorno": true
+    },
+    "w_escopeta": {
+      "tamanho": 88,
+      "modelo": "modelo_arma",
+      "desc": "a pump-action shotgun with a long dark barrel, wooden pump and wooden stock",
+      "medida": "largura",
+      "espelhar": false,
+      "animar": false,
+      "rodadas": 1,
+      "escolha": 3,
+      "contorno": true
+    },
+    "w_handcannon": {
+      "tamanho": 54,
+      "modelo": "modelo_arma",
+      "desc": "a massive oversized Desert Eagle .50 handgun in strict side view, its long thick flat-topped slide a perfectly level horizontal bar parallel to the bottom of the image, muzzle at the right end, the slide tall and heavy like a brick, a short black rubber grip at the left end angled only slightly down and back, a big trigger guard just in front of the grip, a square blunt muzzle flush with the slide, dull scratched dark grey steel with black grime in the grooves",
+      "medida": "largura",
+      "espelhar": false,
+      "animar": false,
+      "rodadas": 3,
+      "escolha": 9,
+      "contorno": true
+    },
+    "w_ak47": {
+      "tamanho": 88,
+      "modelo": "modelo_arma",
+      "desc": "an AK-47 assault rifle with a wooden stock, wooden handguard and a curved banana magazine",
+      "medida": "largura",
+      "espelhar": false,
+      "animar": false,
+      "rodadas": 1,
+      "escolha": 3,
+      "contorno": true
+    },
+    "w_besta": {
+      "tamanho": 76,
+      "modelo": "modelo_arma",
+      "desc": "a hunting crossbow seen from directly above, lying flat and pointing right, a straight wooden stock running horizontally from left to right, and at its right end a wide curved dark bow crossing it vertically, the whole shape like a capital T lying on its side, a taut string running from both bow tips back to the middle of the stock in a V shape, a steel-tipped bolt lying along the top of the stock aiming right, worn scratched wood and frayed string",
+      "medida": "largura",
+      "espelhar": false,
+      "animar": false,
+      "rodadas": 3,
+      "escolha": 7,
+      "contorno": true
+    },
+    "w_chamas": {
+      "tamanho": 88,
+      "modelo": "modelo_arma",
+      "desc": "a homemade flamethrower in strict side profile, perfectly horizontal, nozzle pointing right, a fat rusty red fuel canister strapped under the middle of the gun with wire and duct tape, a rubber hose looping from the canister to the body, a long thin pipe nozzle with a small orange pilot flame at the right tip, a pistol grip and a crude metal stock at the left, scrap metal welded together, dented and dirty",
+      "medida": "largura",
+      "espelhar": false,
+      "animar": false,
+      "rodadas": 2,
+      "escolha": 5,
+      "contorno": true
+    },
+    "w_m79": {
+      "tamanho": 72,
+      "modelo": "modelo_arma",
+      "desc": "a stubby single-shot M79 grenade launcher in strict side view, lying perfectly level and horizontal, muzzle at the right end, the whole weapon short and squat, only about three times longer than it is tall, the right half of the weapon one single fat dark olive-green steel tube as tall as the wooden stock is thick, the same thickness from end to end and ending in a flat open end like a cut drainpipe, the left half a short chunky brown wooden stock with a rubber butt pad, a small square flip-up metal sight on top of the tube, a small trigger guard under the joint between stock and tube, bare green steel underneath the tube, scratched dirty wood and dull rusty dented steel",
+      "medida": "largura",
+      "espelhar": false,
+      "animar": false,
+      "rodadas": 5,
+      "fixo": "Keep exactly the same scratchy hand-drawn Don't Starve style, line thickness, worn dirty colors, perfectly horizontal side view with the muzzle pointing to the right, same position in the frame, same plain flat solid magenta background, the whole weapon visible, no hands, no text. The object stands directly on the magenta background: no dirt patch, no grass, no ground, no shadow under it.",
+      "poses": {
+        "desenho": "Turn this shotgun into an M79 grenade launcher in the same side view, perfectly horizontal, muzzle to the right. Make the whole weapon much SHORTER: total length only about three times its height. One single very fat short olive-green steel tube, as tall as the stock is thick and the same width from end to end, ending in a wide flat open muzzle. A short chunky wooden stock at the left, attached directly behind the tube, with a small trigger guard under the joint and a small square flip-up sight on top. Heavily worn: chipped olive paint showing bare metal, rust spots, scratched and grimy wood. No magazine, no pistol grip, no thin barrel, no pump."
+      },
+      "contorno": true
+    },
+    "w_aa12": {
+      "tamanho": 84,
+      "modelo": "modelo_arma",
+      "desc": "an AA-12 automatic combat shotgun in strict side view, perfectly level and horizontal, muzzle at the right end, a long straight boxy black receiver running the whole length of the gun like a rectangular beam, a big round flat drum magazine mounted underneath the receiver just in front of the trigger guard, drawn as a full pale worn grey metal disc seen face-on, the disc hanging completely below the bottom edge of the receiver like a wheel under a cart, the receiver passing straight over the top of the disc, one short thick barrel continuing straight forward from the receiver and wrapped in a black heat shield sleeve full of round holes, one pistol grip with one trigger guard behind the disc, a solid squared black stock at the left end in line with the receiver, chipped black paint, scratches and grime",
+      "medida": "largura",
+      "espelhar": false,
+      "animar": false,
+      "rodadas": 5,
+      "fixo": "Keep exactly the same scratchy hand-drawn Don't Starve style, line thickness, worn dirty colors, perfectly horizontal side view with the muzzle pointing to the right, same position in the frame, same plain flat solid magenta background, the whole weapon visible, no hands, no text. The object stands directly on the magenta background: no dirt patch, no grass, no ground, no shadow under it.",
+      "poses": {
+        "desenho": "Keep this gun's side view, muzzle to the right, but turn it into an AA-12 automatic shotgun. The receiver is one long straight rectangular black box from stock to barrel, with a solid squared stock in line at the left. The front third of the barrel is a thick black sleeve full of round holes. Directly under the receiver, right in front of the trigger guard, a LARGE round drum magazine, as tall as the stock, seen face-on as a dark gunmetal grey metal disc with a raised rim and a center hub, firmly attached to the bottom of the receiver. Only this drum: no box magazine, no curved magazine. Heavily worn: chipped black paint, scratches, grime and rust on the drum."
+      },
+      "contorno": true
+    },
+    "base0": {
+      "tamanho": 240,
+      "modelo": "modelo_objeto",
+      "desc": "a small two-story wooden suburban house seen in 3/4 view from slightly above, showing the front and one side wall, turned into a survivor fortress, every window covered by dark nailed wooden planks in crossed X patterns, only a faint thin line of dim yellow light in the cracks between the boards, the front door covered by a big rusty corrugated metal sheet nailed over it, a waist-high wall of stacked burlap sandbags along the front porch, coils of barbed wire on short wooden posts in front of the sandbags, rusty sheet metal patches nailed on the walls, a crooked brick chimney, peeling grey paint, the house drawn as an isolated cut-out game sprite whose drawing ends exactly at the bottom of the walls and sandbags, small in the frame with wide empty margin all around",
+      "medida": "largura",
+      "espelhar": false,
+      "animar": false,
+      "rodadas": 4,
+      "escolha": 13,
+      "fixo": "Keep exactly the same building: same shape, size, position and 3/4 camera angle in the frame, same colors, same scratchy hand-drawn Don't Starve style and line thickness, same plain flat solid magenta background, the whole building visible, no ground, no text. The object stands directly on the magenta background: no dirt patch, no grass, no ground, no shadow under it.",
+      "estados": [
+        "dano1",
+        "dano2"
+      ],
+      "poses": {
+        "dano1": "Keep exactly the same house, same shape, position and framing. Add moderate siege damage only on the building itself: two or three planks cracked and hanging loose, dark claw scratches on the walls, one or two small dried dark brown stains, a few missing roof shingles, one sandbag sagging. Keep the windows dim yellow, not red. The drawing must end exactly at the bottom of the sandbags and walls: nothing below them, no dirt, no soil, no puddle, no rocks, no loose sandbags, no debris, only flat magenta background under and around the house.",
+        "dano2": "Keep exactly the same house, same shape, position and framing. Make it badly wrecked: one broken hole in the front wall with splintered plank edges, most window planks torn off and hanging, part of the roof caved in with broken beams sticking up, the chimney top broken, the sandbags torn and slumped in place, black soot burn marks, at most one or two small dried dark blood stains. Nothing falls to the ground: no rubble, no loose sandbags, no rocks, no dirt patch, no puddle. The drawing ends exactly at the bottom of the sandbags, with only flat magenta background below."
+      }
+    },
+    "base1": {
+      "tamanho": 240,
+      "modelo": "modelo_objeto",
+      "desc": "a small square flat-roofed concrete shop building seen in 3/4 view from slightly above, showing the front wall and the right side wall running back in perspective, turned into a survivor fortress, the whole front wall sealed shut by big dark rusty corrugated metal sheets with deep ridges nailed over the shop windows and thick wooden planks nailed across them in big X shapes, the door covered by a nailed sheet of dark plywood with one plank across it, a torn faded grey striped awning sagging over the door, a thick heap of lumpy brown burlap sandbags piled waist-high against the front and the side wall and two tipped-over rusty shopping carts lying on the sandbags, the walls standing directly in the sandbag heap so the drawing ends at the bottom of the sandbags, a thin dim yellow light only through the narrow gaps between the metal sheets, a flat roof with a rusty air vent and a bent antenna, grimy grey concrete walls with cracks and dark water stains, small in the frame with wide empty margin all around",
+      "medida": "largura",
+      "espelhar": false,
+      "animar": false,
+      "rodadas": 5,
+      "fixo": "Keep exactly the same scratchy hand-drawn Don't Starve style, line thickness, muted dirty colors, same 3/4 camera angle from slightly above showing the front and one side wall, same size and position in the frame, same sandbag wall and barbed wire in front, same plain flat solid magenta background, no ground, no text. The object stands directly on the magenta background: no dirt patch, no grass, no ground, no shadow under it.",
+      "estados": [
+        "dano1",
+        "dano2"
+      ],
+      "poses": {
+        "desenho": "Turn this house into a small ONE-story brick corner shop with a FLAT roof (no pitched roof, no gables, no attic windows), seen in the same 3/4 view. On the roof edge, an empty broken sign frame with NO letters, just bare rusty metal and wood. The big shop windows are fully covered by rusty corrugated metal sheets with planks nailed over them in X shapes, the door covered by a metal sheet. Keep the sandbag wall in front. Absolutely no writing, no letters, no signs with words anywhere.",
+        "dano1": "Keep exactly the same house, same shape, position and framing. Add moderate siege damage only on the building itself: two or three planks cracked and hanging loose, dark claw scratches on the walls, one or two small dried dark brown stains, a few missing roof shingles, one sandbag sagging. Keep the windows dim yellow, not red. The drawing must end exactly at the bottom of the sandbags and walls: nothing below them, no dirt, no soil, no puddle, no rocks, no loose sandbags, no debris, only flat magenta background under and around the house.",
+        "dano2": "Keep exactly the same house, same shape, position and framing. Make it badly wrecked: one broken hole in the front wall with splintered plank edges, most window planks torn off and hanging, part of the roof caved in with broken beams sticking up, the chimney top broken, the sandbags torn and slumped in place, black soot burn marks, at most one or two small dried dark blood stains. Nothing falls to the ground: no rubble, no loose sandbags, no rocks, no dirt patch, no puddle. The drawing ends exactly at the bottom of the sandbags, with only flat magenta background below."
+      },
+      "escolha": 108
+    },
+    "base2": {
+      "tamanho": 240,
+      "modelo": "modelo_objeto",
+      "desc": "a small old grey stone chapel seen in 3/4 view from slightly above, the building turned so its front corner points at the viewer like the house in a Don't Starve base, showing the pointed gable front wall on the left and the long side wall with its sloping slate roof running back to the right, turned into a survivor fortress, a crooked square stone bell tower on top of the front gable with a cracked bell inside, the heavy wooden front door barricaded with thick planks nailed across in a big X, one single pointed window on the side wall completely covered by a solid dark wooden board with two more planks nailed over it in an X, a thin dim yellow light only through a narrow crack beside the board, lumpy brown burlap sandbags stacked tightly against the bottom of the front and side walls and touching them, the walls standing directly in the sandbags so the drawing ends at the bottom of the sandbags, moss and cracks on the grey stones, small in the frame with wide empty margin all around",
+      "medida": "largura",
+      "espelhar": false,
+      "animar": false,
+      "rodadas": 5,
+      "fixo": "Keep exactly the same scratchy hand-drawn Don't Starve style, line thickness, muted dirty colors, same 3/4 camera angle from slightly above showing the front and one side wall, same size and position in the frame, same sandbag wall and barbed wire in front, same plain flat solid magenta background, no ground, no text. The object stands directly on the magenta background: no dirt patch, no grass, no ground, no shadow under it.",
+      "estados": [
+        "dano1",
+        "dano2"
+      ],
+      "poses": {
+        "desenho": "Turn this house into a small old wooden country chapel turned into a survivor fortress: a steep roof with a small bell tower and a crooked wooden cross on top, the tall arched windows completely covered by nailed planks in X, the double door covered by a rusty metal sheet.",
+        "dano1": "The fortified chapel is now clearly damaged by a zombie siege: the planks over the arched windows are cracked and some torn loose and hanging diagonally, one window board missing showing a dark broken window, several roof shingles torn off showing bare dark beams, deep claw scratches on the walls and door, the bell tower cross slightly tilted, a few dark brown dried blood stains on the door. Keep the original wall colors; add nothing on the ground around or below the building.",
+        "dano2": "Make this same chapel almost in ruins, keeping its exact outline, camera and style: every window dark, empty and shattered with broken boards hanging, no light inside at all. A big ragged dark hole smashed through the front wall, filled with black shadow inside (the wall behind it is dark, never see-through). Part of the roof caved in, with broken rafters sticking up and missing shingles. The bell tower leaning, the cross tilted to one side. Several sandbags slumped and torn. A few dark old blood stains on the door only. No fire, no smoke, nothing outside the building, no ground, no debris on the ground."
+      },
+      "escolha": 103
     }
   },
   "modelo_zumbi": "Juaner_dsstyle, game asset, full body side view of an undead ZOMBIE monster moving toward the RIGHT edge of the image in the pose described: {desc}. It is dead and rotting, menacing and grotesque, not a living human, in torn bloodstained rags, muted desaturated colors. Whole body visible with empty margin around it, floating isolated on a plain flat solid magenta background, no text.",
   "modelo_objeto": "Juaner_dsstyle, game asset, {desc}, three-quarter view from slightly above, like an object in Don't Starve. Dark gothic, weathered and worn, muted desaturated colors. Whole object visible with empty margin around it, floating isolated on a plain flat solid magenta background, no text, no letters, no logo.",
-  "modelo_chao": "Juaner_dsstyle, seamless tileable ground texture seen from directly above, flat top-down orthographic, {desc}. Hand-drawn scratchy texture like the ground in Don't Starve, dark gothic, muted desaturated colors, evenly lit, the pattern fills the whole image edge to edge, no objects, no characters, no text."
+  "modelo_chao": "Juaner_dsstyle, seamless tileable ground texture seen from directly above, flat top-down orthographic, {desc}. Hand-drawn scratchy texture like the ground in Don't Starve, dark gothic, muted desaturated colors, evenly lit, the pattern fills the whole image edge to edge, no objects, no characters, no text.",
+  "modelo_arma": "Juaner_dsstyle, game asset, flat side view of {desc}, the whole weapon lying perfectly horizontal, muzzle pointing to the RIGHT edge of the image, like an item icon in Don't Starve. Real firearm shape but worn, dirty, scratched, chipped paint, rust spots, taped repairs, dark gothic, muted desaturated colors. Only the weapon, no hands, no person. Whole weapon visible with empty margin around it, floating isolated on a plain flat solid magenta background, no text, no letters, no logo."
 }
