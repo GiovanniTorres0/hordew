@@ -129,6 +129,9 @@ class GameScene extends Phaser.Scene {
     const tex = `${b.baseTex}_dano${stage}`;
     if (stage && this.textures.exists(tex)) {
       b.sprite.setTexture(tex).clearTint();
+    } else if (stage === 2 && this.textures.exists(`${b.baseTex}_dano1`)) {
+      // Só a avariada desenhada: ela mesma, escurecida, faz as ruínas
+      b.sprite.setTexture(`${b.baseTex}_dano1`).setTint(0xa08878);
     } else {
       b.sprite.setTexture(b.baseTex).setTint([0xffffff, 0xcdb8a4, 0x9a7a68][stage]);
     }
