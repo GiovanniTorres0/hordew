@@ -12,9 +12,12 @@ FIXO = ("Keep exactly the same character: same face, body, proportions, clothes,
         "in the frame, same plain flat solid magenta background, whole body visible.")
 # Poses padrão; "poses" em sprites.json troca por pose específica do personagem (ex.: o golpe do Charger)
 POSES = {
-    "passo_a": "Change only the legs: the character takes a long walking stride, the leg nearest to us stepping far forward and the other leg stretched far back.",
-    "passo_b": "Change only the legs: the character takes a long walking stride, the leg farthest from us stepping far forward and the leg nearest to us stretched far back.",
-    "ataque": "The character attacks: it lunges forward toward the direction it faces, upper body leaning in, arms or claws thrust forward to strike, mouth wide open.",
+    # Contato e passagem: silhuetas de pernas bem diferentes entre si e do original (pedir só "passada" copia a do original)
+    "passo_a": "Redraw the legs in the contact pose of a walk: the far leg reaches far forward with its heel planted on the ground, "
+               "the near leg stretches far behind on its toes. The upper body and arms stay as they are.",
+    "passo_b": "Redraw the legs in the passing pose of a walk: both feet are under the body, the near leg is lifted with the knee raised "
+               "high in front, the far leg standing straight. The upper body and arms stay as they are.",
+    "ataque": "The character attacks: it lunges forward toward the direction it faces, upper body leaning in, arms thrust forward to strike, mouth wide open.",
 }
 
 

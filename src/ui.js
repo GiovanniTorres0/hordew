@@ -451,7 +451,7 @@ class Hud {
     scene.input.keyboard.on('keydown-H', () => { this.tipsForced = !this.tips.visible; });
 
     this.makeToolbar();
-    this.bannerText = fixed(scene.add.text(GAME_W / 2, GAME_H / 2 - 140, '', {
+    this.bannerText = fixed(scene.add.text(GAME_W / 2, GAME_H / 2 + 130, '', {
       ...TEXT, fontFamily: TITLE_FONT, fontSize: '58px', color: UI.blood, stroke: '#120e0b', strokeThickness: 9, align: 'center',
     }).setOrigin(0.5).setAlpha(0), 25);
     this.floatLine = fixed(scene.add.text(GAME_W / 2, GAME_H - 172, '', { ...TEXT, fontSize: '20px', color: UI.gold }).setOrigin(0.5).setAlpha(0), 24);
@@ -679,7 +679,7 @@ class Shop {
       objs.push(s.add.text(tx, y, `${e.name} — ${e.desc}`, { fontFamily: NOTE_FONT, fontSize: '16px', color: UI.ink }).setOrigin(0, 0.5));
       const ownedLabel = e.kind === 'pet' ? 'SEU PET' : 'VOCÊ TEM';
       objs.push(s.add.text(rw / 2 - 16, y, e.owned ? ownedLabel : `$ ${e.cost}`, {
-        fontFamily: e.owned ? TITLE_FONT : NOTE_FONT, fontSize: e.owned ? '18px' : '19px', color: e.owned ? '#4f6b2a' : can ? '#8a1d12' : '#3d3024',
+        fontFamily: e.owned ? TITLE_FONT : NOTE_FONT, fontSize: e.owned ? '18px' : '19px', color: e.owned ? '#4f6b2a' : can ? UI.ink : '#8a1d12',
       }).setOrigin(1, 0.5).setAngle(e.owned ? -4 : 0));
       bg.on('pointerover', () => can && bg.setTint(0xfff4dc));
       bg.on('pointerout', () => bg.clearTint());
