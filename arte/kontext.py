@@ -1,5 +1,5 @@
 # Quadros de animação desenhados pelo Flux Kontext a partir do desenho aprovado de cada personagem.
-# Uso: python arte/kontext.py <chave> [--poses passo_a,passo_b,ataque] [--sementes 1,2,3] [--lora 0.5]
+# Uso: python arte/kontext.py <chave> [--poses passo_a,passo_b,ataque] [--sementes 1,2,3] [--lora 0.5] [--ref bruto/anim/x.png]
 # Entrada: arte/bruto/<chave>_<escolha>.png (o original aprovado, com fundo magenta).
 # Saída: arte/bruto/anim/<chave>_<pose>_<semente>.png, no mesmo enquadramento do original.
 # Precisa do ComfyUI aberto e de models/diffusion_models/flux1-dev-kontext_fp8_scaled.safetensors.
@@ -54,8 +54,10 @@ def main():
     s = json.load(open(os.path.join(AQUI, "sprites.json"), encoding="utf-8"))["sprites"][chave]
     poses = {**POSES, **s.get("poses", {})}
     nomes = opc("--poses", ",".join(poses)).split(",")
-    ref = f"{chave}_{s['escolha']}.png"
-    shutil.copy(os.path.join(AQUI, "bruto", ref), os.path.join(COMFY_INPUT, ref))
+    # --ref troca a imagem de partida (ex.: um passo já aprovado, para tirar dele o passo contrário)
+    origem = opc("--ref", os.path.join("bruto", f"{chave}_{s['escolha']}.png"))
+    ref = os.path.basename(origem)
+    shutil.copy(os.path.join(AQUI, origem), os.path.join(COMFY_INPUT, ref))
     os.makedirs(os.path.join(AQUI, "bruto", "anim"), exist_ok=True)
     for pose in nomes:
         for semente in sementes:

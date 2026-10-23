@@ -35,7 +35,7 @@
       "escolha": 16,
       "espelhar": true,
       "poses": {
-        "ataque": "The same huge zombie throws a heavy punch: its giant gorilla-like forearm swings forward at chest height with the fist closed, the shoulder leading, the body leaning into the blow, keeping exactly the same massive body size and bulk."
+        "ataque": "Move only the giant gorilla-like forearm: it comes out of the near shoulder and punches straight forward, fully in side view, the closed fist at chest height in front of the body and well below the face, not touching the head. The head stays low between the shoulders, the hunched body, legs, size and everything else stay exactly the same."
       }
     },
     "z_venenoso": {
