@@ -433,7 +433,7 @@
       "rodadas": 5,
       "fixo": "Keep exactly the same scratchy hand-drawn Don't Starve style, line thickness, worn dirty colors, perfectly horizontal side view with the muzzle pointing to the right, same position in the frame, same plain flat solid magenta background, the whole weapon visible, no hands, no text. The object stands directly on the magenta background: no dirt patch, no grass, no ground, no shadow under it.",
       "poses": {
-        "desenho": "Turn this shotgun into an M79 grenade launcher in the same side view, perfectly horizontal, muzzle to the right. Make the whole weapon much SHORTER: total length only about three times its height. One single very fat short olive-green steel tube, as tall as the stock is thick and the same width from end to end, ending in a wide flat open muzzle. A short chunky wooden stock at the left, attached directly behind the tube, with a small trigger guard under the joint and a small square flip-up sight on top. Heavily worn: chipped olive paint showing bare metal, rust spots, scratched and grimy wood. No magazine, no pistol grip, no thin barrel, no pump."
+        "desenho": "Keep this exact fat olive-green tube, its wide open muzzle and its position, perfectly horizontal with the muzzle to the right. Replace the thin rod and the separate wooden block at the left with one solid chunky wooden stock that flows directly out of the back of the receiver, thick and joined with no gap, like a classic break-action shotgun stock. Remove the red-dot sight and put a small square flip-up leaf sight on top of the tube instead. Make the receiver shorter so the whole weapon is only about three times as long as it is tall. Heavily worn: chipped olive paint showing bare grey metal, rust spots and scratches on the tube, dirty scratched wood. No magazine, no ejection port, no rail, nothing under the tube."
       },
       "contorno": true
     },
@@ -449,7 +449,8 @@
       "poses": {
         "desenho": "Keep this gun's side view, muzzle to the right, but turn it into an AA-12 automatic shotgun. The receiver is one long straight rectangular black box from stock to barrel, with a solid squared stock in line at the left. The front third of the barrel is a thick black sleeve full of round holes. Directly under the receiver, right in front of the trigger guard, a LARGE round drum magazine, as tall as the stock, seen face-on as a dark gunmetal grey metal disc with a raised rim and a center hub, firmly attached to the bottom of the receiver. Only this drum: no box magazine, no curved magazine. Heavily worn: chipped black paint, scratches, grime and rust on the drum."
       },
-      "contorno": true
+      "contorno": true,
+      "escolha": 109
     },
     "base0": {
       "tamanho": 240,
@@ -485,7 +486,7 @@
       ],
       "poses": {
         "desenho": "Turn this house into a small ONE-story brick corner shop with a FLAT roof (no pitched roof, no gables, no attic windows), seen in the same 3/4 view. On the roof edge, an empty broken sign frame with NO letters, just bare rusty metal and wood. The big shop windows are fully covered by rusty corrugated metal sheets with planks nailed over them in X shapes, the door covered by a metal sheet. Keep the sandbag wall in front. Absolutely no writing, no letters, no signs with words anywhere.",
-        "dano1": "Keep exactly the same house, same shape, position and framing. Add moderate siege damage only on the building itself: two or three planks cracked and hanging loose, dark claw scratches on the walls, one or two small dried dark brown stains, a few missing roof shingles, one sandbag sagging. Keep the windows dim yellow, not red. The drawing must end exactly at the bottom of the sandbags and walls: nothing below them, no dirt, no soil, no puddle, no rocks, no loose sandbags, no debris, only flat magenta background under and around the house.",
+        "dano1": "Make this same small brick shop lightly damaged, keeping its exact outline, camera and style: the boards over both windows cracked and splintered, with one board torn off the left window leaving a dark gap behind it. Several bricks chipped and knocked out around the windows and at the corners, with deep dark claw scratches across the front wall. The empty sign frame on the roof bent and leaning to one side. A few roof planks broken at the edge. One dark old blood smear on the door only. The windows stay mostly boarded, no big holes, no fire, nothing outside the building, no ground, no debris on the ground.",
         "dano2": "Keep exactly the same house, same shape, position and framing. Make it badly wrecked: one broken hole in the front wall with splintered plank edges, most window planks torn off and hanging, part of the roof caved in with broken beams sticking up, the chimney top broken, the sandbags torn and slumped in place, black soot burn marks, at most one or two small dried dark blood stains. Nothing falls to the ground: no rubble, no loose sandbags, no rocks, no dirt patch, no puddle. The drawing ends exactly at the bottom of the sandbags, with only flat magenta background below."
       },
       "escolha": 108
