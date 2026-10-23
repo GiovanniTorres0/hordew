@@ -1,0 +1,24 @@
+# Publica a versão oficial (branch main) na raiz do GitHub Pages.
+# As prévias dos Pull Requests ficam em pr-preview/ e não são apagadas aqui.
+name: Publicar jogo
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency: pages-deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: .
+          branch: gh-pages
+          clean-exclude: pr-preview/
+          force: false

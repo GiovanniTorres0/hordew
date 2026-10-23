@@ -1,0 +1,25 @@
+# Cada Pull Request ganha um link de prévia para testar antes de aprovar:
+# https://giovannitorres0.github.io/hordew/pr-preview/pr-<número>/
+# O link é comentado no PR e a prévia é apagada quando o PR fecha.
+name: Prévia do Pull Request
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency: pages-deploy
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: rossjrw/pr-preview-action@v1
+        with:
+          source-dir: .
+          preview-branch: gh-pages
+          umbrella-dir: pr-preview
