@@ -662,13 +662,38 @@ class GameScene extends Phaser.Scene {
       g.lineStyle(1, 0xffffff, 1);
       g.strokePoints(b.points);
     });
-    if (this.smokedBy) {
-      g.lineStyle(4, 0xd96a8a).lineBetween(this.smokedBy.x, this.smokedBy.y, this.player.x, this.player.y);
-    }
+    if (this.smokedBy) this.drawTongue(g, this.smokedBy, this.player, now);
     this.zombies.getChildren().forEach((z) => {
-      if (z.def.aura) g.fillStyle(PALETTE.acid, 0.15).fillCircle(z.x, z.y, z.def.aura);
+      if (z.def.aura) {
+        // Nuvem de gás em volta do Venenoso: bolhas que giram devagar, em vez de um disco chapado
+        for (let i = 0; i < 5; i++) {
+          const a = now / 1800 + i * 1.257 + z.x * 0.01;
+          const r = z.def.aura * (0.45 + 0.12 * Math.sin(now / 700 + i));
+          g.fillStyle(0x6f7a3a, 0.07).fillCircle(z.x + Math.cos(a) * z.def.aura * 0.4, z.y + Math.sin(a) * z.def.aura * 0.3, r);
+        }
+      }
       if (z.mode === 'crouch' || z.mode === 'windup') g.lineStyle(2, 0xe8453c, 0.8).strokeCircle(z.x, z.y, z.def.radius + 8);
     });
+  }
+
+  // Língua do Smoker: corda de carne ondulada, com contorno escuro e nós (a linha rosa lisa destoava)
+  drawTongue(g, from, to, now) {
+    const n = 18;
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const len = Math.hypot(dx, dy) || 1;
+    const nx = -dy / len;
+    const ny = dx / len;
+    const pts = [];
+    for (let i = 0; i <= n; i++) {
+      const t = i / n;
+      const onda = Math.sin(t * Math.PI * 3 + now / 90) * 5 * Math.sin(t * Math.PI);
+      pts.push(new Phaser.Math.Vector2(from.x + dx * t + nx * onda, from.y + dy * t + ny * onda));
+    }
+    g.lineStyle(6, 0x2a1418, 0.9).strokePoints(pts);
+    g.lineStyle(3.5, 0x8a3a44).strokePoints(pts);
+    g.lineStyle(1.2, 0xc06a6e, 0.8).strokePoints(pts.map((p) => new Phaser.Math.Vector2(p.x, p.y - 1)));
+    for (let i = 3; i < n; i += 4) g.fillStyle(0x5a2228).fillCircle(pts[i].x, pts[i].y, 2.6);
   }
 
   // ---------- Loja e helicóptero ----------

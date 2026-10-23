@@ -24,7 +24,7 @@ const PALETTE = {
   blood: 0x6bd13a,
   metal: 0x9aa3ad,
   wood: 0xb07a45,
-  acid: 0xb6f03c,
+  acid: 0x9aa83a, // bile suja (o verde-neon destoava do traço desenhado)
 };
 
 const PLAYER = {
