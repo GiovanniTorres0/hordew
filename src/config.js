@@ -24,7 +24,7 @@ const PALETTE = {
   blood: 0x6bd13a,
   metal: 0x9aa3ad,
   wood: 0xb07a45,
-  acid: 0xb6f03c,
+  acid: 0x9aa83a, // bile suja (o verde-neon destoava do traço desenhado)
 };
 
 const PLAYER = {
@@ -61,7 +61,7 @@ const PETS = {
     desc: 'Bicadas; sobrevoa o mapa e revela zumbis no escuro', scout: { every: 14, light: 230 },
   },
   coelho: {
-    name: 'Coelho fofinho rosa', tex: 'pet_coelho', cost: 120, speed: 280, rate: 0.71, damage: 0.7,
+    name: 'Coelho branco', tex: 'pet_coelho', cost: 120, speed: 280, rate: 0.71, damage: 0.7,
     desc: 'Patadinhas; +20% de velocidade para você', speedBuff: 1.2,
   },
 };
