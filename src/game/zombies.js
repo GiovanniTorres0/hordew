@@ -366,8 +366,8 @@ const ZombieLogic = {
     if (z.mode === 'pull') z.pullDamage += amount;
     if (z.mode === 'sit') this.startleWitch(z);
     if (!silent) {
-      // Acerto: pisca avermelhado (silhueta branca chapada destoava do traço desenhado)
-      z.setTint(0xff7a6a);
+      // Acerto: pisca levemente avermelhado (vermelho forte, sob rajada, deixava o zumbi chapado e parecia outro)
+      z.setTint(0xffb4a4);
       this.time.delayedCall(70, () => z.active && z.clearTint());
     }
     if (z.hp > 0) return;
