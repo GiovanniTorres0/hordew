@@ -187,10 +187,58 @@ function servidor() {
   await page.waitForTimeout(200);
   await foto('07_pets', 'Os 5 pets lado a lado embaixo do jogador (o gavião também voa)');
 
-  // Noite: lanterna e legibilidade no escuro
-  await page.evaluate(() => { const s = game.scene.getScene('Game'); s.tweens.killTweensOf(s); s.darkness = 0.8; });
+  // Tank ao lado do Brutamonte, arremessando a pedra no jogador
+  await page.evaluate(() => {
+    const s = game.scene.getScene('Game');
+    s.releasePins(); s.zombies.getChildren().slice().forEach((z) => { if (z.shadow) z.shadow.destroy(); z.destroy(); });
+    const t = s.createZombie('tank', s.player.x + 320, s.player.y - 20);
+    s.createZombie('brutamonte', s.player.x + 200, s.player.y + 90);
+    t.cooldown = 0;
+  });
   await page.waitForTimeout(500);
-  await foto('08_noite', 'À noite, com a lanterna do jogador');
+  await foto('07b_tank', 'O Tank (chefe) ao lado do Brutamonte, arremessando a pedra de concreto');
+  const tank = await page.evaluate(() => {
+    const s = game.scene.getScene('Game');
+    const t = s.zombies.getChildren().find((z) => z.def === ZOMBIES.tank);
+    const b = s.zombies.getChildren().find((z) => z.def === ZOMBIES.brutamonte);
+    return { desenhado: !!ANIM_FRAMES.z_tank, alt: t && Math.round(t.displayHeight), brut: b && Math.round(b.displayHeight) };
+  });
+  checar('Tank desenhado e maior que o Brutamonte', tank.desenhado && tank.alt > tank.brut, JSON.stringify(tank));
+  await page.evaluate(() => {
+    const s = game.scene.getScene('Game');
+    s.releasePins(); s.zombies.getChildren().slice().forEach((z) => { if (z.shadow) z.shadow.destroy(); z.destroy(); });
+  });
+
+  // Efeitos no chão: poça de bile do Spitter e gás do Venenoso perto do jogador
+  await page.evaluate(() => {
+    const s = game.scene.getScene('Game');
+    s.hurtPlayer = () => {};
+    s.addPuddle(s.player.x - 110, s.player.y + 40, 'puddle', 50, 60000);
+    s.addPuddle(s.player.x + 120, s.player.y + 50, 'poison', 55, 60000);
+    s.createZombie('venenoso', s.player.x + 120, s.player.y + 20).hp = 99999;
+    s.createZombie('spitter', s.player.x - 110, s.player.y - 10).hp = 99999;
+  });
+  await page.waitForTimeout(600);
+  await foto('07c_efeitos', 'Poça de bile do Spitter (esquerda) e veneno e gás do Venenoso (direita)');
+
+  // Noite: lanterna e legibilidade no escuro, com zumbis dentro e fora do cone da lanterna
+  await page.evaluate(() => {
+    const s = game.scene.getScene('Game');
+    s.tweens.killTweensOf(s);
+    s.darkness = 0.8;
+    s.releasePins(); s.zombies.getChildren().slice().forEach((z) => { if (z.shadow) z.shadow.destroy(); z.destroy(); });
+    [['comum', 160, -30], ['corredor', 240, 60], ['boomer', -200, 40], ['witch', 60, 170]].forEach(([t, dx, dy]) => {
+      const z = s.createZombie(t, s.player.x + dx, s.player.y + dy);
+      z.hp = 99999;
+      z.speed = 0;
+    });
+  });
+  await page.waitForTimeout(500);
+  await foto('08_noite', 'À noite, com a lanterna do jogador e zumbis dentro e fora do cone');
+  await page.evaluate(() => {
+    const s = game.scene.getScene('Game');
+    s.releasePins(); s.zombies.getChildren().slice().forEach((z) => { if (z.shadow) z.shadow.destroy(); z.destroy(); });
+  });
   await page.evaluate(() => { game.scene.getScene('Game').darkness = 0; });
 
   // Construções em volta do jogador
@@ -200,7 +248,7 @@ function servidor() {
     const tipos = Object.keys(BUILDINGS);
     tipos.forEach((t, i) => {
       s.setBuild(t);
-      const wp = { x: s.player.x - 200 + (i % 4) * 90, y: s.player.y + 150 + Math.floor(i / 4) * 90 };
+      const wp = { x: s.player.x - 200 + (i % 4) * 90, y: s.player.y + 90 + Math.floor(i / 4) * 85 };
       s.tryBuild(wp);
     });
     s.setBuild(null);
@@ -282,6 +330,16 @@ function servidor() {
     });
     await page.waitForTimeout(500);
     await foto(`10_fase${level + 1}`, `Fase ${level + 1}: chão, rua e decoração, com José (roupa verde) e alguns zumbis`);
+    // Casa desta fase no estado avariado (lojinha de tijolo e capela também têm o desenho do meio)
+    const tex = await page.evaluate(() => {
+      const s = game.scene.getScene('Game');
+      s.base.hp = s.base.maxHp * 0.5;
+      s.updateBaseLook();
+      s.player.setPosition(s.base.sprite.x, s.base.sprite.y + 150);
+      return s.base.sprite.texture.key;
+    });
+    await page.waitForTimeout(400);
+    await foto(`10_fase${level + 1}_avariada`, `Fase ${level + 1}: casa com 50% de vida (${tex})`);
   }
 
   // Tela de fim de jogo e menu de preparação

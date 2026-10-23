@@ -304,7 +304,7 @@ const ZombieLogic = {
     this.bileUntil = this.time.now + 6000;
     this.hud.floatText('Vomitado! A horda inteira está vindo atrás de você');
     Sfx.vomit();
-    this.player.setTint(0xb6f03c);
+    this.player.setTint(0xc8c2a0); // sujo de vômito, sem verde-limão
     this.time.delayedCall(6000, () => this.player.clearTint());
   },
 

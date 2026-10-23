@@ -155,17 +155,32 @@ function makeTextures(scene) {
   g.fillStyle(0xffa53c).fillCircle(7, 7, 7);
   g.fillStyle(0xfff27a).fillCircle(7, 7, 3);
   done('flame', 14, 14);
-  blob(g, 8, 8, 7, 6, P.acid, 0.15, 2);
+  // Cuspe do Spitter: bolota oliva suja com contorno, no tom da poça
+  blob(g, 8, 8, 7, 6, 0x5c6030, 0.15, 2);
+  g.fillStyle(0x34361c, 0.8).fillCircle(9, 10, 3);
+  g.fillStyle(0xb8b888, 0.4).fillCircle(6, 6, 1.5);
   done('acid', 16, 16);
   blob(g, 14, 14, 12, 11, 0x7d7487, 0.15, 3);
   hatch(g, 6, 14, 16, 8, P.outline, 0.4, 4);
   done('rock', 28, 28);
-  g.fillStyle(P.acid, 0.5).fillPoints(wobblePoints(50, 50, 48, 46, 0.12), true);
-  g.fillStyle(0xe6ff8a, 0.5).fillCircle(38, 40, 10).fillCircle(64, 60, 7).fillCircle(56, 30, 4);
+  // Poça de bile: contorno de tinta, miolo oliva sujo e pouco saturado, manchas e respingos escuros
+  const borda = wobblePoints(50, 50, 44, 40, 0.16);
+  g.fillStyle(0x24240f, 0.5).fillPoints(borda, true);
+  g.fillStyle(0x4a4c26, 0.4).fillPoints(wobblePoints(50, 51, 37, 33, 0.14), true);
+  [[38, 58, 12, 7], [62, 42, 9, 6], [52, 64, 6, 4]].forEach(([x, y, rx, ry]) => g.fillStyle(0x2c2c16, 0.4).fillPoints(wobblePoints(x, y, rx, ry, 0.25, 10), true));
+  g.lineStyle(3, 0x14100a, 0.8).strokePoints(borda, true);
+  [[92, 30, 4], [10, 66, 3], [82, 86, 3], [20, 16, 2.5], [96, 58, 2]].forEach(([x, y, r]) => {
+    g.fillStyle(0x4a4c22, 0.65).fillCircle(x, y, r);
+    g.lineStyle(1, 0x1a140c, 0.6).strokeCircle(x, y, r);
+  });
+  g.fillStyle(0xb8b888, 0.25).fillCircle(42, 42, 4).fillCircle(60, 56, 2.5);
   done('puddle', 100, 100);
-  g.fillStyle(0x7fbf3f, 0.3).fillPoints(wobblePoints(50, 50, 48, 48, 0.15), true);
-  g.lineStyle(2, 0x5b7a2a, 0.5);
-  spiral(g, 50, 50, 30, 2);
+  // Veneno no chão: mancha escura e oleosa com bolhas, sem verde-neon
+  g.fillStyle(0x2e3618, 0.35).fillPoints(wobblePoints(50, 50, 48, 46, 0.18), true);
+  g.fillStyle(0x56602a, 0.35).fillPoints(wobblePoints(50, 50, 36, 34, 0.16), true);
+  g.lineStyle(1.5, 0x3a4220, 0.45);
+  spiral(g, 50, 50, 24, 2);
+  [[30, 36, 4], [66, 44, 3], [54, 68, 3.5], [40, 60, 2]].forEach(([x, y, r]) => g.lineStyle(1.2, 0x9aa060, 0.5).strokeCircle(x, y, r));
   done('poison', 100, 100);
 
   // Zumbis: braços esticados para frente, cabeça verde, olhos e pontos de costura.
