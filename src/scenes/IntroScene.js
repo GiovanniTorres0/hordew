@@ -1,8 +1,8 @@
 // Introdução da história em quadros; clique ou Espaço avança, Esc pula
 const STORY = [
   'Era uma terça-feira comum. Aí os mortos levantaram.\nTerças-feiras nunca prestaram.',
-  'Zé perdeu a família para a horda.\nSobrou o Biscoito, um cachorro que nunca respeitou ninguém, vivo ou morto.',
-  'Na fuga, os dois acharam uma família escondida numa casa roxa.\nZé prometeu: desta vez, ninguém fica para trás.',
+  'José Perdigueiro perdeu a família para a horda.\nSobrou o Biscoito, um cachorro que nunca respeitou ninguém, vivo ou morto.',
+  'Na fuga, os dois acharam uma família escondida numa casa roxa.\nJosé prometeu: desta vez, ninguém fica para trás.',
   'O rádio avisa que o resgate vem de helicóptero.\nÉ só aguentar mais um pouco. Umas trinta hordas. Coisa pouca.',
 ];
 
@@ -24,8 +24,8 @@ class IntroScene extends Phaser.Scene {
     spiral(moon, 1040, 150, 55, 3);
     [[150, 700], [330, 690], [900, 705], [1150, 700]].forEach(([x, y], i) =>
       this.add.image(x, y, i % 2 ? 'tomb' : 'tree').setOrigin(0.5, 1).setScale(1.6).setAngle(i % 2 ? 10 : -6));
-    this.add.image(560, 640, 'dog').setScale(2.2).setRotation(-Math.PI / 2);
-    this.add.image(640, 640, 'player').setScale(2.2).setRotation(-Math.PI / 2);
+    this.add.image(560, 640, 'pet_cachorro').setScale(2.2).setRotation(-Math.PI / 2);
+    this.add.image(640, 640, 'char_jose').setScale(2.2).setRotation(-Math.PI / 2);
 
     this.text = this.add.text(GAME_W / 2, 300, '', {
       fontFamily: FONT, fontSize: '30px', color: '#f4ecff', align: 'center', lineSpacing: 14,
@@ -54,6 +54,6 @@ class IntroScene extends Phaser.Scene {
 
   finish() {
     if (this.next === null) this.scene.start('Menu');
-    else this.scene.start('Game', { level: this.next });
+    else this.scene.start('Game', this.next);
   }
 }

@@ -6,5 +6,5 @@ const game = new Phaser.Game({
   backgroundColor: '#1b1424',
   physics: { default: 'arcade', arcade: { debug: false } },
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-  scene: [BootScene, MenuScene, IntroScene, GameScene],
+  scene: [BootScene, MenuScene, SetupScene, IntroScene, GameScene],
 });

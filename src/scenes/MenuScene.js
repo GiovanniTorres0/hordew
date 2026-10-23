@@ -35,12 +35,14 @@ class MenuScene extends Phaser.Scene {
       this.add.text(x, 350, `${i + 1}. ${lv.name}`, {
         fontFamily: TITLE_FONT, fontSize: '32px', color: open ? '#ffd86b' : '#6d607a',
       }).setOrigin(0.5);
-      this.add.text(x, 380, open ? `${lv.wavesToWin} hordas` : 'bloqueado', { fontFamily: FONT, fontSize: '14px', color: '#c9b8d9' }).setOrigin(0.5);
+      const won = medals(i);
+      const stars = DIFFICULTIES.map((d) => (won.includes(d.id) ? '★' : '☆')).join(' ');
+      this.add.text(x, 380, open ? `${lv.wavesToWin} hordas · ${stars}` : 'bloqueado', { fontFamily: FONT, fontSize: '14px', color: '#c9b8d9' }).setOrigin(0.5);
       if (open) {
         bg.setInteractive({ useHandCursor: true });
         bg.on('pointerover', () => bg.setFillStyle(0x5a3d70));
         bg.on('pointerout', () => bg.setFillStyle(0x3f2a4f));
-        bg.on('pointerdown', () => this.play(i));
+        bg.on('pointerdown', () => this.scene.start('Setup', { level: i }));
       }
     });
 
@@ -50,10 +52,10 @@ class MenuScene extends Phaser.Scene {
     story.on('pointerdown', () => this.scene.start('Intro', { next: null }));
 
     this.add.text(GAME_W / 2, 560,
-      'WASD andar · Mouse mirar · Clique atirar\n[1] Torreta · [2] Espinhos · [L] Loja entre hordas · [Espaço] chamar a horda',
+      'WASD andar · Mouse mirar · Clique atirar · [Q] trocar arma\n[1] a [7] construir · botão direito numa torre: upgrades · [L] loja entre hordas · [Espaço] chamar a horda',
       { fontFamily: FONT, fontSize: '18px', color: '#f4ecff', align: 'center', lineSpacing: 8, stroke: '#1b1424', strokeThickness: 4 },
     ).setOrigin(0.5);
-    this.add.text(GAME_W / 2, 640, recordText(storageGet('hordew_recorde', 0)), {
+    this.add.text(GAME_W / 2, 640, 'Estrelas: dificuldades vencidas (Fácil, Médio, Difícil, Impossível)', {
       fontFamily: FONT, fontSize: '18px', color: '#ffd86b', stroke: '#1b1424', strokeThickness: 4,
     }).setOrigin(0.5);
 
@@ -62,14 +64,7 @@ class MenuScene extends Phaser.Scene {
         fontFamily: FONT, fontSize: '18px', color: '#e8453c', stroke: '#1b1424', strokeThickness: 4,
       }).setOrigin(0.5);
     }
-    this.input.keyboard.on('keydown-ENTER', () => this.play(0));
-  }
-
-  play(level) {
-    if (!storageGet('hordew_viu_intro', 0)) {
-      storageSet('hordew_viu_intro', 1);
-      this.scene.start('Intro', { next: level });
-    } else this.scene.start('Game', { level });
+    this.input.keyboard.on('keydown-ENTER', () => this.scene.start('Setup', { level: 0 }));
   }
 
   update(time, delta) {
