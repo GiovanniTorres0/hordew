@@ -334,20 +334,20 @@
     "w_pistola": {
       "tamanho": 22,
       "modelo": "modelo_arma",
-      "desc": "a compact 9mm Glock-style semi-automatic pistol in strict side profile, perfectly horizontal, muzzle pointing right, square black polymer slide with scratched paint and rust spots, short angled grip with chipped worn texture, small trigger guard, the whole gun short and boxy, dirty and battered from heavy use",
+      "desc": "a compact black 9mm Glock pistol lying flat in a strict side view, the top edge of the slide a perfectly level horizontal line parallel to the bottom of the image, muzzle at the right end, the short grip at the left end angled only slightly down and back, small trigger guard just in front of the grip, the barrel end cut flush with the front of the slide, blank slide surface with only scratches, scratched black paint, rust spots and grime, chipped grip texture, battered from heavy use",
       "medida": "largura",
       "espelhar": false,
       "animar": false,
-      "rodadas": 1
+      "rodadas": 2
     },
     "w_mp7": {
       "tamanho": 30,
       "modelo": "modelo_arma",
-      "desc": "a tiny compact MP7 personal defense weapon in strict side profile, perfectly horizontal, muzzle pointing right, very short stubby black boxy body barely longer than a pistol, a long straight magazine inserted inside the pistol grip, a thin collapsed stock tucked flush under the rear, a small vertical foregrip under the stubby barrel, scratched worn black polymer with dirt and grime",
+      "desc": "a tiny boxy black submachine gun shaped like a compact Uzi, strict side view, the top edge a perfectly level horizontal line parallel to the bottom of the image, muzzle at the right end, a short stubby barrel barely sticking out of the front of the box, the long straight magazine sliding up into the pistol grip under the middle of the body, a thin folded wire stock lying flat along the rear, overall length only slightly longer than a pistol, scratched worn black metal with dirt and grime",
       "medida": "largura",
       "espelhar": false,
       "animar": false,
-      "rodadas": 1
+      "rodadas": 2
     },
     "w_escopeta": {
       "tamanho": 44,
@@ -362,11 +362,11 @@
     "w_handcannon": {
       "tamanho": 27,
       "modelo": "modelo_arma",
-      "desc": "a huge handgun, a Desert Eagle .50 pistol in strict side profile, perfectly horizontal, muzzle pointing right, a long thick triangular-faced slide of dull scratched silver steel with grime in the grooves, short pistol grip with worn black rubber, a big trigger guard, chunky square muzzle, the overall shape of a pistol with only a grip at the back",
+      "desc": "a massive oversized Desert Eagle .50 handgun in strict side view, its long thick flat-topped slide a perfectly level horizontal bar parallel to the bottom of the image, muzzle at the right end, the slide tall and heavy like a brick, a short black rubber grip at the left end angled only slightly down and back, a big trigger guard just in front of the grip, a square blunt muzzle flush with the slide, dull scratched dark grey steel with black grime in the grooves",
       "medida": "largura",
       "espelhar": false,
       "animar": false,
-      "rodadas": 1
+      "rodadas": 2
     },
     "w_ak47": {
       "tamanho": 44,
@@ -381,11 +381,11 @@
     "w_besta": {
       "tamanho": 38,
       "modelo": "modelo_arma",
-      "desc": "a hunting crossbow seen from the side, perfectly horizontal, pointing right, a wooden rifle-like stock with a short grip, and at the front end a wide dark recurved bow limb standing vertically, its two tips sticking far up and down, a taut string pulled back to the middle, a loaded bolt with a steel tip lying on top aiming right, worn scratched wood and frayed string",
+      "desc": "a hunting crossbow seen from directly above, lying flat and pointing right, a straight wooden stock running horizontally from left to right, and at its right end a wide curved dark bow crossing it vertically, the whole shape like a capital T lying on its side, a taut string running from both bow tips back to the middle of the stock in a V shape, a steel-tipped bolt lying along the top of the stock aiming right, worn scratched wood and frayed string",
       "medida": "largura",
       "espelhar": false,
       "animar": false,
-      "rodadas": 1
+      "rodadas": 2
     },
     "w_chamas": {
       "tamanho": 44,
@@ -394,52 +394,53 @@
       "medida": "largura",
       "espelhar": false,
       "animar": false,
-      "rodadas": 1
+      "rodadas": 2,
+      "escolha": 5
     },
     "w_m79": {
       "tamanho": 36,
       "modelo": "modelo_arma",
-      "desc": "an M79 grenade launcher in strict side profile, perfectly horizontal, muzzle pointing right, a very short and very fat round steel barrel as thick as a soda can, open wide dark muzzle, a chunky wooden stock as long as the barrel, a flip-up leaf sight on top of the barrel, the whole weapon short and stubby, scratched wood and dull rusty metal",
+      "desc": "a stubby M79 grenade launcher drawn flat in a strict side view like a technical diagram, the barrel a short fat dark olive-green steel tube drawn as a straight horizontal rectangle with parallel top and bottom edges, the muzzle at the right end cut flat and seen edge-on, the barrel as thick as the stock is tall, a chunky brown wooden stock at the left about as long as the barrel, a small square folding metal sight on top of the barrel, a trigger guard under the joint, scratched wood and dull rusty steel",
       "medida": "largura",
       "espelhar": false,
       "animar": false,
-      "rodadas": 1
+      "rodadas": 2
     },
     "w_aa12": {
       "tamanho": 42,
       "modelo": "modelo_arma",
-      "desc": "an AA-12 automatic combat shotgun in strict side profile, perfectly horizontal, muzzle pointing right, a thick black boxy receiver with a flat top carry rail, a huge round drum magazine hanging under the middle of the gun, much wider than the gun is tall, a pistol grip behind the drum, a short thick barrel with a perforated shroud, a solid fixed stock, chipped black paint, scratches and grime",
+      "desc": "an AA-12 automatic combat shotgun in strict side view, the top edge a perfectly level horizontal line parallel to the bottom of the image, muzzle at the right end, a thick black boxy receiver with a flat top rail, a huge round drum magazine of worn grey metal hanging under the middle, the drum as tall as the whole gun body and clearly lighter than the black gun, a single pistol grip with one trigger guard right behind the drum, a short thick barrel ending just past the drum inside a perforated heat shield, a solid fixed stock at the left, chipped black paint, scratches and grime",
       "medida": "largura",
       "espelhar": false,
       "animar": false,
-      "rodadas": 1
+      "rodadas": 2
     },
     "base0": {
       "tamanho": 240,
       "modelo": "modelo_objeto",
-      "desc": "a small two-story suburban wooden house turned into a survivor fortress, every window nailed shut with crossed planks and only thin slits of dim yellow light between the boards, the front door barricaded with planks and a rusty corrugated metal sheet, a waist-high wall of stacked sandbags all along the porch, coils of barbed wire on wooden posts in front, sheet metal patches nailed on the walls, a crooked chimney, peeling paint",
+      "desc": "a small two-story wooden suburban house seen in 3/4 view from slightly above, showing the front and one side wall, turned into a survivor fortress, every window completely covered by dark nailed wooden planks in crossed X patterns so the windows look dark and shut, only a faint thin line of dim yellow light in the cracks between the boards, the front door covered by a rusty corrugated metal sheet nailed over it, a waist-high wall of stacked burlap sandbags along the whole front porch, coils of barbed wire on wooden posts in front, rusty sheet metal patches nailed on the walls, a crooked chimney, peeling grey paint, the walls standing directly on patchy dirt with weeds at their base",
       "medida": "largura",
       "espelhar": false,
       "animar": false,
-      "rodadas": 1
+      "rodadas": 2
     },
     "base1": {
       "tamanho": 240,
       "modelo": "modelo_objeto",
-      "desc": "a small corner convenience store turned into a survivor fortress, the big shop windows completely covered with nailed plywood boards and rusty corrugated metal sheets, a torn faded striped awning sagging over the entrance, a barricade of overturned shopping carts and stacked sandbags piled in front of the door, a dim yellow light leaking through gaps in the boards, a flat roof with an empty broken sign frame, grimy concrete walls",
+      "desc": "a small corner convenience store seen in 3/4 view from slightly above, showing the front and one side wall, turned into a survivor fortress, the big shop windows and the door entirely covered with nailed plywood boards and wide rusty corrugated metal sheets with visible ridges, a torn faded striped awning sagging over the entrance, a barricade of shopping carts tipped over on their sides and stacked burlap sandbags piled high in front of the door, a thin dim yellow light leaking through gaps between the boards, a flat roof with an empty rusted sign frame of bare metal bars, blank grimy concrete walls with only cracks and dark stains, the walls rising straight from patchy dirt with weeds at their base",
       "medida": "largura",
       "espelhar": false,
       "animar": false,
-      "rodadas": 1
+      "rodadas": 2
     },
     "base2": {
       "tamanho": 240,
       "modelo": "modelo_objeto",
-      "desc": "a small old stone chapel turned into a survivor fortress, a crooked bell tower with a cracked bell, the heavy wooden door barricaded with thick planks nailed across in an X, the broken pointed stained glass windows boarded up with planks, a low wall of stacked sandbags across the entrance, melted candles on the sandbags, a dim yellow light through the gaps, moss and cracks on the grey stones",
+      "desc": "a small old stone chapel seen in 3/4 view from slightly above, showing the front and the left side wall, turned into a survivor fortress, a crooked square bell tower rising from the left side with a cracked bell hanging inside it, the heavy wooden door closed and barricaded with thick planks nailed across in a big X, the pointed windows covered with dark nailed planks, a low wall of lumpy brown burlap sandbags piled across the entrance, melted candles on top of the sandbags, a thin dim yellow light through the gaps, moss and cracks on the grey stones, the walls rising from patchy dirt with weeds at their base",
       "medida": "largura",
       "espelhar": false,
       "animar": false,
-      "rodadas": 1
+      "rodadas": 2
     }
   },
   "modelo_zumbi": "Juaner_dsstyle, game asset, full body side view of an undead ZOMBIE monster moving toward the RIGHT edge of the image in the pose described: {desc}. It is dead and rotting, menacing and grotesque, not a living human, in torn bloodstained rags, muted desaturated colors. Whole body visible with empty margin around it, floating isolated on a plain flat solid magenta background, no text.",
