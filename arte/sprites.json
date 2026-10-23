@@ -93,7 +93,16 @@
       "desc": "a colossal zombie boss seen from the side walking right, shaped like a boulder, much wider than tall, a hunched mountain of gray cracked rotten muscle, bare chest, only shreds of a dark purple shirt on the shoulders, two gigantic rock-like shoulders rising above ONE tiny head sunk deep between them, white dead eyes, two massive arms thicker than its body with enormous knuckles resting on the ground like a gorilla, short stumpy legs",
       "rodadas": 7,
       "lora": 0.5,
-      "pendente": "7 rodadas sem aprovação: nenhuma semente saiu colossal e larga (segunda cabeça, pedra nas costas ou magro e alto). Fica com a arte antiga desenhada por código."
+      "espelhar": true,
+      "fixo": "Keep the same scratchy hand-drawn Don't Starve style and line thickness, same muted dirty colors, same side view facing the same direction, same plain flat solid magenta background, whole body visible, no ground, no shadow, no text.",
+      "poses": {
+        "desenho": "Turn this zombie into a colossal Tank zombie boss, twice as massive: enormous swollen muscular shoulders and gorilla arms much bigger than the body, huge fists hanging down to the ground, a tiny head sunk low between the shoulders, short thick bowed legs, grey-purple rotting skin with dark veins and bony growths on the back, only shreds of torn trousers. Same pose direction.",
+        "desenho2": "Transform this zombie into a completely different, much bigger monster: remove the purple shirt entirely so the torso is bare grey-purple rotting skin; make the shoulders and arms three times thicker like a gorilla with huge knuckles resting on the ground; shrink the head so it is tiny and sunk below the hunched shoulders; add bony spikes and tumor growths along the back; only ragged dark trousers remain. Same side view facing the same direction."
+      },
+      "escolha": 105,
+      "quadril": 0.66,
+      "passo": 0.13,
+      "balanco": 0.05
     },
     "z_witch": {
       "tamanho": 64,
@@ -159,7 +168,12 @@
       "pet": true,
       "desc": "a scruffy wild gray hare in side view facing right, crouched low with its belly near the ground, FOUR legs visible: two short front paws on the ground and two big folded hind legs with long hind feet, compact rounded body, matted dirty gray fur with a white belly and a small white tail tuft, two long upright ragged ears, one ear with a torn notch, a small dark beady eye",
       "rodadas": 7,
-      "pendente": "7 rodadas sem aprovação: a lebre nunca saiu agachada e a cara puxa para mascote. Fica com a arte antiga desenhada por código."
+      "espelhar": true,
+      "fixo": "Keep the same scratchy hand-drawn Don't Starve style and line thickness, same muted dirty colors, same side view facing the same direction, same plain flat solid magenta background, whole body visible, no ground, no shadow, no text.",
+      "poses": {
+        "desenho": "Turn this cat into a rabbit while keeping exactly the same drawing style, line work, camera angle and grim mood of the cat: same scratchy irregular thick dark ink outline, same ragged spiky fur strokes, same gaunt bony body and same desaturated colors. The rabbit crouches low in side view, facing the same direction as the cat, with two very long thin upright ears, ragged and slightly torn at the tips, a scrawny body, long hind feet and a small scruffy tail. Its fur is dirty off-white, greyish and matted, with dark grime on the paws and belly; it is not clean and not fluffy. The eye is one big round bulging white eye with a tiny black pupil, exactly like the cat's, with a slightly unsettling stare. The inner ears and the nose are dull grey-beige, never pink; no shiny black eyes, no smile. Keep the plain background: no ground, no shadow under the feet."
+      },
+      "escolha": 108
     },
     "turret_base": {
       "tamanho": 44,
@@ -187,7 +201,8 @@
       "pendente": "2 rodadas sem aprovação: Nenhuma chega a 8 de média. A 60 é a melhor (7,7): os raios saem da esfera e aparecem no tamanho real, mas tem duas esferas e a bobina parece corda, não cobre. A 64 tem raios grossos, mas eles saem da bobina e uma fumaça no topo faz a esfera parecer bomba. A 61 e a 62 têm raios soltos com brilho, em 3 pedaços. Na 63 os raios parecem fumaça ou chama branca, e a 65 tem raios soltos e fumaça. Fica com a arte antiga desenhada por código.",
       "fixo": "Keep exactly the same scratchy hand-drawn Don't Starve style, line thickness, muted dirty colors, 3/4 camera angle seen from slightly above, same size and position in the frame, same plain flat solid magenta background, the whole object visible, no ground, no shadow, no text. The object stands directly on the magenta background: no dirt patch, no grass, no ground, no shadow under it.",
       "poses": {
-        "desenho": "Keep the wooden crate from the image exactly as it is, same position, same size, at the bottom. On top of the crate, a short thick wooden pole wrapped in a fat rusty copper wire coil, with a dark iron ball at the top. Three thick jagged pale cyan lightning bolts jump out from the iron ball, drawn as solid bold zigzag lines with a dark outline, no glow, no haze. The crate is the very bottom of the object, on the plain magenta background: no ground, no grass, no dirt, no roots, no shadow, nothing loose beside it."
+        "desenho": "Keep the wooden crate from the image exactly as it is, same position, same size, at the bottom. On top of the crate, a short thick wooden pole wrapped in a fat rusty copper wire coil, with a dark iron ball at the top. Three thick jagged pale cyan lightning bolts jump out from the iron ball, drawn as solid bold zigzag lines with a dark outline, no glow, no haze. The crate is the very bottom of the object, on the plain magenta background: no ground, no grass, no dirt, no roots, no shadow, nothing loose beside it.",
+        "limpo": "Remove the dirt patch, soil, grass and shadow under the object completely, so the object stands on the plain flat solid magenta background. Keep the object itself exactly the same: same shape, colors, size and position."
       }
     },
     "flame_base": {
@@ -214,11 +229,14 @@
       "desc": "a crude barricade seen in three-quarter view from slightly above: two thick crooked wooden posts with three crooked planks nailed across at different angles, a big dented rusty corrugated sheet metal panel nailed over the middle, protruding rusty nails, NO ground patch under it",
       "medida": "largura",
       "rodadas": 2,
-      "pendente": "2 rodadas sem aprovação: As seis sementes estão de frente e chapadas, sem 3/4. O painel do meio é de tábuas, sem a chapa de metal ondulada. A 60, a 62, a 63 e a 64 trazem um pedaço de chão solto embaixo, e a 61 e a 65 vêm com chão colado. Parecem placas ou cercas, não barricadas. Fica com a arte antiga desenhada por código.",
       "fixo": "Keep exactly the same scratchy hand-drawn Don't Starve style, line thickness, muted dirty colors, 3/4 camera angle seen from slightly above, same size and position in the frame, same plain flat solid magenta background, the whole object visible, no ground, no shadow, no text. The object stands directly on the magenta background: no dirt patch, no grass, no ground, no shadow under it.",
       "poses": {
-        "desenho": "Replace this crate with a crude barricade in the same 3/4 view, scratchy dark-outlined style and muted dirty colors: two thick crooked wooden posts, a big dented corrugated sheet metal panel covered in rust stains nailed between them, and three crooked planks nailed diagonally across the metal in an X and a slant, with bent rusty nails sticking out, plus a strand of barbed wire on top. The posts are cut flat at the bottom and float on the plain magenta background: no dirt, no grass tufts, no ground patch, no shadow under it."
-      }
+        "desenho": "Replace this crate with a crude barricade in the same 3/4 view, scratchy dark-outlined style and muted dirty colors: two thick crooked wooden posts, a big dented corrugated sheet metal panel covered in rust stains nailed between them, and three crooked planks nailed diagonally across the metal in an X and a slant, with bent rusty nails sticking out, plus a strand of barbed wire on top. The posts are cut flat at the bottom and float on the plain magenta background: no dirt, no grass tufts, no ground patch, no shadow under it.",
+        "limpo": "Remove the dirt patch, soil, grass and shadow under the object completely, so the object stands on the plain flat solid magenta background. Keep the object itself exactly the same: same shape, colors, size and position."
+      },
+      "escolha": 162,
+      "saturacao": 0.5,
+      "claridade": 0.95
     },
     "mine": {
       "tamanho": 30,
@@ -238,16 +256,20 @@
       "espelhar": false
     },
     "spikes": {
-      "tamanho": 46,
+      "tamanho": 54,
       "modelo": "modelo_objeto",
       "desc": "five or six THICK sharpened wooden stakes and two or three heavy rusty iron spikes, short and chunky, angled outward in different directions like a hedgehog, sticking out of a small low mound of dark dirt, wide silhouette",
       "medida": "largura",
       "rodadas": 2,
-      "pendente": "2 rodadas sem aprovação: As estacas continuam finas como varetas, sem os espetos de ferro grossos. A 46 px de noite o monte escuro e as estacas somem no fundo. A 60 e a 64 têm o leque mais largo, mas também viram fios no tamanho real. Fica com a arte antiga desenhada por código.",
       "fixo": "Keep exactly the same scratchy hand-drawn Don't Starve style, line thickness, muted dirty colors, 3/4 camera angle seen from slightly above, same size and position in the frame, same plain flat solid magenta background, the whole object visible, no ground, no shadow, no text. The object stands directly on the magenta background: no dirt patch, no grass, no ground, no shadow under it.",
       "poses": {
-        "desenho": "Replace this crate with a low wide spike trap made of WOOD and IRON only: a small low cross of two thick nailed planks lying flat, with six short thick sharpened wooden stakes and three heavy rusty iron spikes nailed into the planks and pointing outward and upward at different angles, like a hedgehog, much wider than tall. The planks are the very bottom of the object and float on the plain magenta background: no dirt mound, no soil, no grass, no blood puddle, no shadow. Same scratchy dark-outlined style and muted dirty colors as the crate."
-      }
+        "desenho": "Replace this crate with a low wide spike trap made of WOOD and IRON only: a small low cross of two thick nailed planks lying flat, with six short thick sharpened wooden stakes and three heavy rusty iron spikes nailed into the planks and pointing outward and upward at different angles, like a hedgehog, much wider than tall. The planks are the very bottom of the object and float on the plain magenta background: no dirt mound, no soil, no grass, no blood puddle, no shadow. Same scratchy dark-outlined style and muted dirty colors as the crate.",
+        "limpo": "Remove the dirt patch, soil, grass and shadow under the object completely, so the object stands on the plain flat solid magenta background. Keep the object itself exactly the same: same shape, colors, size and position."
+      },
+      "escolha": 161,
+      "saturacao": 0.7,
+      "claridade": 1.25,
+      "contorno": true
     },
     "crate": {
       "tamanho": 34,
@@ -364,7 +386,9 @@
       "rodadas": 5,
       "fixo": "Keep exactly the same scratchy hand-drawn Don't Starve style, line thickness, worn dirty colors, perfectly horizontal side view with the muzzle pointing to the right, same position in the frame, same plain flat solid magenta background, the whole weapon visible, no hands, no text. The object stands directly on the magenta background: no dirt patch, no grass, no ground, no shadow under it.",
       "poses": {
-        "desenho": "Replace this pistol with an Uzi submachine gun in the same flat side view, muzzle to the right. The gun body is one long flat rectangular black steel box, twice as long as the old slide and as tall as it is thick, with a ribbed cocking knob on top. The pistol grip sits straight down from the MIDDLE of the box, not at the back, and one single long straight magazine sticks far out of the bottom of the grip. Only a tiny stub of barrel shows past the front of the box: no long barrel, no threads, no suppressor. A folding wire metal stock lies flat along the back of the box and sticks out past it to the left. Worn dark grey metal with scratches, chipped paint and rust spots. No pistol slide, no second magazine, no front grip, nothing on top of the gun."
+        "desenho": "Replace this pistol with an Uzi submachine gun in the same flat side view, muzzle to the right. The gun body is one long flat rectangular black steel box, twice as long as the old slide and as tall as it is thick, with a ribbed cocking knob on top. The pistol grip sits straight down from the MIDDLE of the box, not at the back, and one single long straight magazine sticks far out of the bottom of the grip. Only a tiny stub of barrel shows past the front of the box: no long barrel, no threads, no suppressor. A folding wire metal stock lies flat along the back of the box and sticks out past it to the left. Worn dark grey metal with scratches, chipped paint and rust spots. No pistol slide, no second magazine, no front grip, nothing on top of the gun.",
+        "compacta": "Turn this rifle into a short compact submachine gun in the same flat side view, muzzle to the right. Make the whole weapon HALF as long: a short boxy black polymer and steel body, a very short barrel stub barely past the front, one straight thin magazine going down from the pistol grip, and a short retracted metal wire stock at the back. Remove all the wood, remove the curved banana magazine, remove the long barrel and gas tube. Worn dark grey metal with scratches, chipped paint and dust.",
+        "curta": "Shrink this rifle into a tiny compact submachine gun, keeping the same flat side view, style and colors, muzzle to the right. Cut away everything in front of the magazine except a very short barrel stub. Replace the curved magazine with one short straight thin magazine inside the pistol grip. Replace the long stock with a short thin collapsed metal stock. The whole gun is only about twice as long as it is tall, boxy black polymer, worn and scratched."
       },
       "contorno": true
     },
@@ -435,7 +459,8 @@
       "poses": {
         "desenho": "Keep this exact fat olive-green tube, its wide open muzzle and its position, perfectly horizontal with the muzzle to the right. Replace the thin rod and the separate wooden block at the left with one solid chunky wooden stock that flows directly out of the back of the receiver, thick and joined with no gap, like a classic break-action shotgun stock. Remove the red-dot sight and put a small square flip-up leaf sight on top of the tube instead. Make the receiver shorter so the whole weapon is only about three times as long as it is tall. Heavily worn: chipped olive paint showing bare grey metal, rust spots and scratches on the tube, dirty scratched wood. No magazine, no ejection port, no rail, nothing under the tube."
       },
-      "contorno": true
+      "contorno": true,
+      "escolha": 116
     },
     "w_aa12": {
       "tamanho": 84,
@@ -510,6 +535,23 @@
         "dano2": "Make this same chapel almost in ruins, keeping its exact outline, camera and style: every window dark, empty and shattered with broken boards hanging, no light inside at all. A big ragged dark hole smashed through the front wall, filled with black shadow inside (the wall behind it is dark, never see-through). Part of the roof caved in, with broken rafters sticking up and missing shingles. The bell tower leaning, the cross tilted to one side. Several sandbags slumped and torn. A few dark old blood stains on the door only. No fire, no smoke, nothing outside the building, no ground, no debris on the ground."
       },
       "escolha": 103
+    },
+    "rock": {
+      "tamanho": 42,
+      "modelo": "modelo_objeto",
+      "medida": "largura",
+      "espelhar": false,
+      "animar": false,
+      "rodadas": 0,
+      "desc": "a big jagged chunk of broken grey concrete with rusty rebar sticking out",
+      "fixo": "Keep exactly the same scratchy hand-drawn Don't Starve style, line thickness, muted dirty colors, 3/4 camera angle seen from slightly above, same size and position in the frame, same plain flat solid magenta background, the whole object visible, no ground, no shadow, no text. The object stands directly on the magenta background: no dirt patch, no grass, no ground, no shadow under it.",
+      "poses": {
+        "desenho": "Replace the crate with a big jagged chunk of broken grey concrete rubble of the same size, two bent rusty iron rebars sticking out, cracks and dirt. Nothing else."
+      },
+      "escolha": 104,
+      "saturacao": 0.15,
+      "claridade": 1.1,
+      "contorno": true
     }
   },
   "modelo_zumbi": "Juaner_dsstyle, game asset, full body side view of an undead ZOMBIE monster moving toward the RIGHT edge of the image in the pose described: {desc}. It is dead and rotting, menacing and grotesque, not a living human, in torn bloodstained rags, muted desaturated colors. Whole body visible with empty margin around it, floating isolated on a plain flat solid magenta background, no text.",

@@ -160,12 +160,17 @@ function makeTextures(scene) {
   blob(g, 14, 14, 12, 11, 0x7d7487, 0.15, 3);
   hatch(g, 6, 14, 16, 8, P.outline, 0.4, 4);
   done('rock', 28, 28);
-  // Poça de bile: borda escura, miolo sujo, respingos em volta e brilho pequeno
-  g.fillStyle(0x3e4418, 0.55).fillPoints(wobblePoints(50, 50, 46, 42, 0.16), true);
-  g.fillStyle(P.acid, 0.5).fillPoints(wobblePoints(50, 51, 40, 36, 0.14), true);
-  g.fillStyle(0x5a6224, 0.45).fillPoints(wobblePoints(44, 56, 18, 12, 0.2), true);
-  [[90, 30, 4], [12, 66, 3], [80, 84, 3], [22, 18, 2.5], [94, 58, 2]].forEach(([x, y, r]) => g.fillStyle(0x6f7a2a, 0.6).fillCircle(x, y, r));
-  g.fillStyle(0xd8dc9a, 0.35).fillCircle(40, 40, 5).fillCircle(60, 58, 3);
+  // Poça de bile: contorno de tinta, miolo oliva sujo e pouco saturado, manchas e respingos escuros
+  const borda = wobblePoints(50, 50, 44, 40, 0.16);
+  g.fillStyle(0x34361c, 0.5).fillPoints(borda, true);
+  g.fillStyle(0x5c6030, 0.45).fillPoints(wobblePoints(50, 51, 37, 33, 0.14), true);
+  [[38, 58, 12, 7], [62, 42, 9, 6], [52, 64, 6, 4]].forEach(([x, y, rx, ry]) => g.fillStyle(0x2c2c16, 0.4).fillPoints(wobblePoints(x, y, rx, ry, 0.25, 10), true));
+  g.lineStyle(2, 0x1a140c, 0.7).strokePoints(borda, true);
+  [[92, 30, 4], [10, 66, 3], [82, 86, 3], [20, 16, 2.5], [96, 58, 2]].forEach(([x, y, r]) => {
+    g.fillStyle(0x4a4c22, 0.65).fillCircle(x, y, r);
+    g.lineStyle(1, 0x1a140c, 0.6).strokeCircle(x, y, r);
+  });
+  g.fillStyle(0xb8b888, 0.25).fillCircle(42, 42, 4).fillCircle(60, 56, 2.5);
   done('puddle', 100, 100);
   // Veneno no chão: mancha escura e oleosa com bolhas, sem verde-neon
   g.fillStyle(0x2e3618, 0.35).fillPoints(wobblePoints(50, 50, 48, 46, 0.18), true);

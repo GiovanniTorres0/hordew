@@ -187,6 +187,28 @@ function servidor() {
   await page.waitForTimeout(200);
   await foto('07_pets', 'Os 5 pets lado a lado embaixo do jogador (o gavião também voa)');
 
+  // Tank ao lado do Brutamonte, arremessando a pedra no jogador
+  await page.evaluate(() => {
+    const s = game.scene.getScene('Game');
+    s.zombies.getChildren().slice().forEach((z) => { if (z.shadow) z.shadow.destroy(); z.destroy(); });
+    const t = s.createZombie('tank', s.player.x + 320, s.player.y - 20);
+    s.createZombie('brutamonte', s.player.x + 200, s.player.y + 90);
+    t.cooldown = 0;
+  });
+  await page.waitForTimeout(500);
+  await foto('07b_tank', 'O Tank (chefe) ao lado do Brutamonte, arremessando a pedra de concreto');
+  const tank = await page.evaluate(() => {
+    const s = game.scene.getScene('Game');
+    const t = s.zombies.getChildren().find((z) => z.def === ZOMBIES.tank);
+    const b = s.zombies.getChildren().find((z) => z.def === ZOMBIES.brutamonte);
+    return { desenhado: !!ANIM_FRAMES.z_tank, alt: t && Math.round(t.displayHeight), brut: b && Math.round(b.displayHeight) };
+  });
+  checar('Tank desenhado e maior que o Brutamonte', tank.desenhado && tank.alt > tank.brut, JSON.stringify(tank));
+  await page.evaluate(() => {
+    const s = game.scene.getScene('Game');
+    s.zombies.getChildren().slice().forEach((z) => { if (z.shadow) z.shadow.destroy(); z.destroy(); });
+  });
+
   // Noite: lanterna e legibilidade no escuro
   await page.evaluate(() => { const s = game.scene.getScene('Game'); s.tweens.killTweensOf(s); s.darkness = 0.8; });
   await page.waitForTimeout(500);
@@ -200,7 +222,7 @@ function servidor() {
     const tipos = Object.keys(BUILDINGS);
     tipos.forEach((t, i) => {
       s.setBuild(t);
-      const wp = { x: s.player.x - 200 + (i % 4) * 90, y: s.player.y + 150 + Math.floor(i / 4) * 90 };
+      const wp = { x: s.player.x - 200 + (i % 4) * 90, y: s.player.y + 90 + Math.floor(i / 4) * 85 };
       s.tryBuild(wp);
     });
     s.setBuild(null);
@@ -282,6 +304,16 @@ function servidor() {
     });
     await page.waitForTimeout(500);
     await foto(`10_fase${level + 1}`, `Fase ${level + 1}: chão, rua e decoração, com José (roupa verde) e alguns zumbis`);
+    // Casa desta fase no estado avariado (lojinha de tijolo e capela também têm o desenho do meio)
+    const tex = await page.evaluate(() => {
+      const s = game.scene.getScene('Game');
+      s.base.hp = s.base.maxHp * 0.5;
+      s.updateBaseLook();
+      s.player.setPosition(s.base.sprite.x, s.base.sprite.y + 150);
+      return s.base.sprite.texture.key;
+    });
+    await page.waitForTimeout(400);
+    await foto(`10_fase${level + 1}_avariada`, `Fase ${level + 1}: casa com 50% de vida (${tex})`);
   }
 
   // Tela de fim de jogo e menu de preparação
