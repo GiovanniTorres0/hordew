@@ -43,6 +43,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ steps.info.outputs.branch }}
+          fetch-depth: 30 # para achar a última mudança que não é merge
           path: src
 
       - name: Baixar o site (gh-pages)
