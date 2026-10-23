@@ -33,7 +33,10 @@
       "lora": 0.6,
       "rodadas": 1,
       "escolha": 16,
-      "espelhar": true
+      "espelhar": true,
+      "poses": {
+        "ataque": "The same huge zombie throws a heavy punch: its giant gorilla-like forearm swings forward at chest height with the fist closed, the shoulder leading, the body leaning into the blow, keeping exactly the same massive body size and bulk."
+      }
     },
     "z_venenoso": {
       "tamanho": 80,

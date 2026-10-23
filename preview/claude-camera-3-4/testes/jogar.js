@@ -228,6 +228,7 @@ function servidor() {
     return { inicio, antes, depois: s.hud.tips.visible };
   });
   checar('bilhete de dicas some depois da 1ª horda e volta com [H]', dicas.inicio && !dicas.antes && dicas.depois, JSON.stringify(dicas));
+  await page.evaluate(() => { const h = game.scene.getScene('Game').hud; h.scene.tweens.killTweensOf(h.bannerText); h.bannerText.setAlpha(0); });
   await page.waitForTimeout(300);
   await foto('09e_dicas_h', 'Bilhete de dicas reaberto com [H] durante o jogo');
   await page.evaluate(() => { const s = game.scene.getScene('Game'); s.input.keyboard.emit('keydown-H'); });
