@@ -1,5 +1,6 @@
 // Música de fundo. Com as faixas gravadas (assets/music, geradas no Stable Audio Open), toca cada clima
-// alternando duas variações com cruzamento suave; sem elas, cai na valsa feita por código (Web Audio).
+// alternando duas variações, com silêncio entre uma e outra (música o tempo todo cansava e dava dor de cabeça);
+// sem elas, cai na valsa feita por código (Web Audio).
 // Climas: dia (valsa), noite (horda: percussão e cordas tensas), tank e witch. [U] liga/desliga.
 const Music = (() => {
   let ctx = null;
@@ -39,10 +40,10 @@ const Music = (() => {
       out.gain.value = muted ? 0 : 1;
       out.connect(ctx.destination);
       master = ctx.createGain();
-      master.gain.value = 0.04;
+      master.gain.value = 0.02;
       master.connect(out);
       trackBus = ctx.createGain();
-      trackBus.gain.value = 0.5;
+      trackBus.gain.value = 0.22; // música é fundo: bem abaixo dos tiros e efeitos
       trackBus.connect(out);
       loadTracks();
     } catch (e) {
@@ -101,7 +102,12 @@ const Music = (() => {
   const TRACKS = {
     day: ['dia_a', 'dia_b'], night: ['noite_a', 'noite_b'], tank: ['tank_a', 'tank_b'], witch: ['witch_a', 'witch_b'],
   };
-  const XF = 4; // segundos de cruzamento entre uma faixa e a próxima
+  const XF = 4; // segundos de saída suave no fim de cada faixa
+  // Silêncio entre uma faixa e a próxima, em segundos [mín, máx]: de dia quase só o ambiente; na horda
+  // pausas curtas; chefe vivo toca sem parar (dura pouco)
+  const PAUSA = { day: [25, 60], night: [6, 15], tank: [0, 0], witch: [4, 10] };
+  let pauseUntil = 0;
+  let lastMood = null; // clima da última faixa (na pausa, troca de clima entra na hora)
   const buffers = {}; // clima -> lista de AudioBuffer já decodificados
   const turn = {}; // qual variação toca em seguida
   let deck = null; // faixa tocando agora: { mood, src, gain, endAt }
@@ -133,6 +139,7 @@ const Music = (() => {
     src.connect(gain).connect(trackBus);
     src.start(when);
     const d = { mood: m, src, gain, endAt: when + src.buffer.duration };
+    lastMood = m;
     fade(d, 1, when, fadeIn);
     return d;
   }
@@ -144,18 +151,19 @@ const Music = (() => {
     deck = null;
   }
 
-  // Troca de clima com cruzamento de 2,5 s; no fim de cada faixa, a próxima variação entra por cima
+  // Troca de clima com cruzamento de 2,5 s; no fim de cada faixa ela sai suave e vem um silêncio antes da próxima
   function tracksLoop() {
     const now = ctx.currentTime;
-    if (!deck || deck.mood !== mood) {
-      const had = !!deck;
+    if (deck && deck.mood !== mood) {
       stopDeck(now, 2.5);
-      deck = startTrack(mood, now + 0.05, had ? 2.5 : 1.5);
+      deck = startTrack(mood, now + 0.05, 2.5);
+    } else if (!deck) {
+      if (now < pauseUntil && mood === lastMood) return;
+      deck = startTrack(mood, now + 0.05, 1.5);
     } else if (now > deck.endAt - XF - 0.3) {
-      const at = deck.endAt - XF;
-      const old = deck;
-      deck = startTrack(mood, at, XF);
-      fade(old, 0.0001, at, XF);
+      const [a, b] = PAUSA[mood];
+      pauseUntil = deck.endAt + a + Math.random() * (b - a);
+      stopDeck(deck.endAt - XF, XF);
     }
   }
 

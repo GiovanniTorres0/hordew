@@ -7,15 +7,17 @@ import json, os, sys
 from gerar import AQUI, esperar_e_baixar, enviar
 
 NEGATIVO = "vocals, singing, speech, voice, low quality, noise, distortion, clipping, silence, fade out, ending"
+# 2ª versão: estilo esparso e calmo (violão solto, drones graves, tambores espaçados). A 1ª (valsa de caixinha,
+# taiko e metais) ficava cheia demais, cansava em loop e o Stable Audio erra mais em música "ocupada".
 CLIMAS = {
-    "dia": "Dark whimsical waltz in 3/4 time, music box, celesta, pizzicato strings, harpsichord, soft choir pad, "
-           "Danny Elfman Tim Burton style, minor key, gothic, eerie but calm, steady, instrumental, 92 BPM",
-    "noite": "Tense horror survival soundtrack, driving taiko and war drums, low staccato cello ostinato, tense "
-             "tremolo violins, dark cinematic, The Walking Dead style, minor key, relentless, instrumental, 128 BPM",
-    "tank": "Heavy aggressive horror boss battle music, pounding war drums, distorted low brass stabs, frantic "
-            "string ostinato, huge cinematic hits, minor key, intense, instrumental, 140 BPM",
-    "witch": "Creepy horror suspense music, dissonant high string clusters, slow eerie music box, deep drone, "
-             "distant ghostly wind, sparse, unsettling, instrumental, 70 BPM",
+    "dia": "Lonely melancholic fingerpicked acoustic guitar, slow sparse notes with long pauses, soft room reverb, "
+           "quiet and intimate, post-apocalyptic, The Walking Dead style, minor key, calm, instrumental, 70 BPM",
+    "noite": "Dark ambient horror tension, low sustained cello drone, slow distant deep drum hits, faint pulsing "
+             "heartbeat, sparse, quiet, uneasy, survival horror, minor key, instrumental, 80 BPM",
+    "tank": "Ominous heavy horror tension, deep slow pounding drums, low brass swells, dark cinematic drone, "
+            "menacing but restrained, sparse, minor key, instrumental, 90 BPM",
+    "witch": "Creepy quiet horror suspense, faint detuned music box, soft high string harmonics, deep low drone, "
+             "distant wind, very sparse, unsettling, instrumental, 60 BPM",
 }
 
 
