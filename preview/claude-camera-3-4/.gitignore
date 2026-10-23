@@ -9,3 +9,4 @@ arte/bruto/
 arte/teste/
 __pycache__/
 testes/saida/
+testes/saida_ui*/
