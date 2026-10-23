@@ -1,8 +1,11 @@
-// Música de fundo gerada por código (Web Audio): valsa em tom menor no estilo Burton/Elfman.
-// Dia: calma. Noite (durante a horda): mais rápida e tensa. [U] liga/desliga o som da música.
+// Música de fundo. Com as faixas gravadas (assets/music, geradas no Stable Audio Open), toca cada clima
+// alternando duas variações com cruzamento suave; sem elas, cai na valsa feita por código (Web Audio).
+// Climas: dia (valsa), noite (horda: percussão e cordas tensas), tank e witch. [U] liga/desliga.
 const Music = (() => {
   let ctx = null;
-  let master = null;
+  let master = null; // valsa por código
+  let out = null; // saída geral (mudo = 0)
+  let trackBus = null; // faixas gravadas
   let mood = null;
   let timer = null;
   let step = 0;
@@ -22,6 +25,8 @@ const Music = (() => {
   const MOODS = {
     day: { bpm: 96, lead: 0.5, perc: 0.3, bassType: 'triangle' },
     night: { bpm: 132, lead: 0.7, perc: 0.8, bassType: 'sawtooth' },
+    tank: { bpm: 150, lead: 0.7, perc: 1, bassType: 'sawtooth' },
+    witch: { bpm: 70, lead: 0.4, perc: 0.15, bassType: 'triangle' },
   };
 
   const freq = (n) => 440 * Math.pow(2, (n - 69) / 12);
@@ -30,9 +35,16 @@ const Music = (() => {
     if (ctx) return ctx;
     try {
       ctx = new (window.AudioContext || window.webkitAudioContext)();
+      out = ctx.createGain();
+      out.gain.value = muted ? 0 : 1;
+      out.connect(ctx.destination);
       master = ctx.createGain();
-      master.gain.value = muted ? 0 : 0.04;
-      master.connect(ctx.destination);
+      master.gain.value = 0.04;
+      master.connect(out);
+      trackBus = ctx.createGain();
+      trackBus.gain.value = 0.5;
+      trackBus.connect(out);
+      loadTracks();
     } catch (e) {
       ctx = null;
     }
@@ -75,17 +87,83 @@ const Music = (() => {
     if (eighth === 0) note(chord[0] - 12, t, beat * 0.9, m.bassType, 0.9);
     if (eighth === 2 || eighth === 4) chord.forEach((n) => note(n, t, beat * 0.4, 'triangle', 0.25));
     const mel = MELODY[bar][eighth];
-    if (mel && (mood === 'night' || step % 24 < 12 || eighth % 2 === 0)) {
+    if (mel && (mood === 'night' || mood === 'tank' || step % 24 < 12 || eighth % 2 === 0)) {
       note(mel, t, beat * 0.8, 'sine', m.lead);
       note(mel + 12, t, beat * 0.3, 'sine', m.lead * 0.25); // brilho de celesta
     }
     if (eighth % 2 === 0) tick(t, eighth === 0 ? m.perc : m.perc * 0.4);
-    if (mood === 'night' && eighth % 2 === 1) tick(t, m.perc * 0.2);
+    if (mood !== 'day' && mood !== 'witch' && eighth % 2 === 1) tick(t, m.perc * 0.2);
     step += 1;
+  }
+
+  // ---------- Faixas gravadas ----------
+  // Só entra aqui o que já existe em assets/music (arquivo faltando vira erro 404 no console)
+  const TRACKS = {};
+  const XF = 4; // segundos de cruzamento entre uma faixa e a próxima
+  const buffers = {}; // clima -> lista de AudioBuffer já decodificados
+  const turn = {}; // qual variação toca em seguida
+  let deck = null; // faixa tocando agora: { mood, src, gain, endAt }
+
+  function loadTracks() {
+    Object.entries(TRACKS).forEach(([m, names]) => names.forEach((n) => {
+      fetch(`assets/music/${n}.opus`)
+        .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject()))
+        .then((data) => new Promise((ok, bad) => ctx.decodeAudioData(data, ok, bad)))
+        .then((buf) => { (buffers[m] = buffers[m] || []).push(buf); })
+        .catch(() => { /* sem a faixa, o clima usa a valsa por código */ });
+    }));
+  }
+
+  function fade(d, to, when, dur) {
+    const g = d.gain.gain;
+    g.cancelScheduledValues(when);
+    g.setValueAtTime(Math.max(0.0001, g.value), when);
+    g.exponentialRampToValueAtTime(to, when + dur);
+  }
+
+  function startTrack(m, when, fadeIn) {
+    const list = buffers[m];
+    turn[m] = ((turn[m] === undefined ? -1 : turn[m]) + 1) % list.length;
+    const src = ctx.createBufferSource();
+    src.buffer = list[turn[m]];
+    const gain = ctx.createGain();
+    gain.gain.value = 0.0001;
+    src.connect(gain).connect(trackBus);
+    src.start(when);
+    const d = { mood: m, src, gain, endAt: when + src.buffer.duration };
+    fade(d, 1, when, fadeIn);
+    return d;
+  }
+
+  function stopDeck(when, dur) {
+    if (!deck) return;
+    fade(deck, 0.0001, when, dur);
+    try { deck.src.stop(when + dur + 0.1); } catch (e) { /* já parou */ }
+    deck = null;
+  }
+
+  // Troca de clima com cruzamento de 2,5 s; no fim de cada faixa, a próxima variação entra por cima
+  function tracksLoop() {
+    const now = ctx.currentTime;
+    if (!deck || deck.mood !== mood) {
+      const had = !!deck;
+      stopDeck(now, 2.5);
+      deck = startTrack(mood, now + 0.05, had ? 2.5 : 1.5);
+    } else if (now > deck.endAt - XF - 0.3) {
+      const at = deck.endAt - XF;
+      const old = deck;
+      deck = startTrack(mood, at, XF);
+      fade(old, 0.0001, at, XF);
+    }
   }
 
   function loop() {
     if (!ctx || !mood) return;
+    if (buffers[mood] && buffers[mood].length) {
+      tracksLoop();
+      return;
+    }
+    stopDeck(ctx.currentTime, 1.5);
     const eighthDur = 60 / MOODS[mood].bpm / 2;
     if (nextTime < ctx.currentTime) nextTime = ctx.currentTime + 0.05;
     while (nextTime < ctx.currentTime + 0.3) {
@@ -104,13 +182,14 @@ const Music = (() => {
 
   function stop() {
     mood = null;
+    if (ctx) stopDeck(ctx.currentTime, 2);
     if (timer) { clearInterval(timer); timer = null; }
   }
 
   function toggleMute() {
     muted = !muted;
     storageSet('hordew_mudo', muted ? 1 : 0);
-    if (master) master.gain.setTargetAtTime(muted ? 0 : 0.04, ctx.currentTime, 0.1);
+    if (out) out.gain.setTargetAtTime(muted ? 0 : 1, ctx.currentTime, 0.1);
     return muted;
   }
 
@@ -137,7 +216,13 @@ const Music = (() => {
       const g = game.scene.getScene('Game');
       if (g && game.scene.isActive('Game')) {
         if (g.state === 'over') stop();
-        else play(g.state === 'wave' ? 'night' : 'day');
+        else {
+          // Chefe vivo muda a música: Tank (ou Witch furiosa) toca a de chefe; Witch sentada, a de suspense
+          const zs = g.zombies.getChildren();
+          const boss = zs.some((z) => z.active && (z.def.boss || (z.def === ZOMBIES.witch && z.mode !== 'sit')));
+          const witch = zs.some((z) => z.active && z.def === ZOMBIES.witch);
+          play(boss ? 'tank' : witch ? 'witch' : g.state === 'wave' ? 'night' : 'day');
+        }
       } else if (['Menu', 'Setup', 'Intro'].some((k) => game.scene.isActive(k))) play('day');
     } catch (e) { /* ignora */ }
   }, 500);

@@ -185,14 +185,6 @@ const UI_PAINT = {
     for (let i = 0; i < Math.max(2, (w * h) / 15000); i++) {
       blotch(ctx, rnd.between(0, w), rnd.between(0, h), rnd.between(10, 34), '120,82,36', rnd.realInRange(0.1, 0.25));
     }
-    if (w > 200) {
-      // Marca de caneca de café
-      ctx.strokeStyle = 'rgba(110,70,30,0.22)';
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(w - rnd.between(40, 70), h - rnd.between(30, 50), 22, 0.3, Math.PI * 1.8);
-      ctx.stroke();
-    }
     grain(ctx, rnd, w, h, (w * h) / 6, 0.1);
     ctx.restore();
     path(0, 0);
@@ -205,6 +197,7 @@ const UI_PAINT = {
   slot(ctx, w, h, rnd) {
     ctx.fillStyle = '#24221d';
     ctx.fillRect(0, 0, w, h);
+    blotch(ctx, w / 2, h / 2 - 4, w * 0.5, '150,140,120', 0.35);
     for (let i = 0; i < 2; i++) blotch(ctx, rnd.between(0, w), rnd.between(0, h), rnd.between(6, 14), '110,50,20', 0.35);
     grain(ctx, rnd, w, h, w * h / 4, 0.15);
     bevel(ctx, w, h, 'rgba(0,0,0,0.6)', 'rgba(255,255,255,0.12)');
@@ -308,7 +301,7 @@ function makeUiTextures(scene) {
     ink(ctx, () => {
       ctx.beginPath();
       ctx.rect(3, 5, 24, 14);
-    }, '#6f8a4a');
+    }, '#6b6a48');
     ctx.strokeStyle = 'rgba(18,14,11,0.7)';
     ctx.lineWidth = 1;
     ctx.strokeRect(6, 8, 18, 8);
@@ -412,7 +405,7 @@ class Hud {
     fixed(tape(scene, 300, 4, -6, 56), 21);
     fixed(tape(scene, 990, 44, 4, 50), 21);
     this.waveText = fixed(scene.add.text(16, 2, '', { ...TEXT, fontFamily: TITLE_FONT, fontSize: '22px', color: UI.text }), 21);
-    this.levelText = fixed(scene.add.text(17, 28, '', { ...TEXT, fontSize: '13px', color: UI.dim, strokeThickness: 3 }), 21);
+    this.levelText = fixed(scene.add.text(17, 27, '', { ...TEXT, fontSize: '14px', color: '#d8ccb0', strokeThickness: 3 }), 21);
     fixed(scene.add.image(352, 24, 'ic_zumbi'), 21);
     this.zombieText = fixed(scene.add.text(370, 10, '', { ...TEXT, fontSize: '20px' }), 21);
     fixed(scene.add.image(478, 24, 'ic_vida'), 21);
@@ -422,10 +415,10 @@ class Hud {
     this.hpText = fixed(scene.add.text(596, 24, '', { ...TEXT, fontSize: '14px', strokeThickness: 3 }).setOrigin(0.5), 22);
     this.baseText = fixed(scene.add.text(846, 24, '', { ...TEXT, fontSize: '14px', strokeThickness: 3 }).setOrigin(0.5), 22);
     this.moneyText = fixed(scene.add.text(GAME_W - 18, 8, '', { ...TEXT, fontSize: '24px', color: UI.gold }).setOrigin(1, 0), 21);
-    this.statusText = fixed(scene.add.text(16, top + 8, '', { ...TEXT, fontSize: '18px', color: UI.gold }), 21);
+    this.statusText = fixed(scene.add.text(GAME_W / 2, top + 8, '', { ...TEXT, fontSize: '18px', color: UI.gold }).setOrigin(0.5, 0), 21);
 
     // Placa de madeira do intervalo: tempo até a próxima horda e atalhos
-    this.daySign = fixed(scene.add.container(GAME_W / 2, top + 40), 21);
+    this.daySign = fixed(scene.add.container(GAME_W / 2, GAME_H - 68 - 40), 21);
     this.daySign.add([
       plate(scene, 0, 0, 470, 58, 'madeira'),
       tape(scene, -220, -24, -20, 46),
@@ -461,14 +454,14 @@ class Hud {
     this.bannerText = fixed(scene.add.text(GAME_W / 2, GAME_H / 2 - 140, '', {
       ...TEXT, fontFamily: TITLE_FONT, fontSize: '58px', color: UI.blood, stroke: '#120e0b', strokeThickness: 9, align: 'center',
     }).setOrigin(0.5).setAlpha(0), 25);
-    this.floatLine = fixed(scene.add.text(GAME_W / 2, GAME_H - 100, '', { ...TEXT, fontSize: '20px', color: UI.gold }).setOrigin(0.5).setAlpha(0), 24);
+    this.floatLine = fixed(scene.add.text(GAME_W / 2, GAME_H - 172, '', { ...TEXT, fontSize: '20px', color: UI.gold }).setOrigin(0.5).setAlpha(0), 24);
 
     // Minimapa numa moldura de metal: no escuro só aparecem os zumbis iluminados
     this.mini = { x: GAME_W - 232, y: top + 14, w: 216, h: (216 * WORLD_H) / WORLD_W };
     const { x, y, w, h } = this.mini;
     fixed(plate(scene, x + w / 2, y + h / 2, w + 16, h + 16, 'metal'), 20);
     this.miniG = fixed(scene.add.graphics(), 21);
-    fixed(tape(scene, x + 6, y + h + 4, 30, 44), 22);
+    fixed(tape(scene, x + 8, y - 4, -30, 44), 22);
     this.miniAt = 0;
   }
 
@@ -481,21 +474,22 @@ class Hud {
     this.toolTip = fixed(s.add.text(0, GAME_H - bh - 14, '', { ...TEXT, fontSize: '16px', color: UI.text }).setOrigin(0.5, 1), 24);
     this.slots = BUILD_ORDER.map((type, i) => {
       const def = BUILDINGS[type];
-      const x = 44 + i * 64;
-      const edge = fixed(s.add.rectangle(x, y, 60, 58).setStrokeStyle(3, UI.edge).setVisible(false), 21);
-      const bg = fixed(plate(s, x, y, 56, 54, 'slot').setInteractive({ useHandCursor: true }), 21);
-      const img = fixed(s.add.image(x, y - 2, def.tex), 22);
-      img.setScale(Math.min(34 / img.width, 34 / img.height));
+      const x = 42 + i * 68;
+      const edge = fixed(s.add.rectangle(x, y, 68, 62).setStrokeStyle(3, UI.edge).setVisible(false), 21);
+      const bg = fixed(plate(s, x, y, 64, 58, 'slot').setInteractive({ useHandCursor: true }), 21);
+      const img = fixed(s.add.image(x, y - 3, def.tex), 22);
+      img.setScale(Math.min(30 / img.width, 30 / img.height));
       const gun = def.gunTex && s.textures.exists(def.gunTex) ? fixed(s.add.image(x, y - 10, def.gunTex), 22) : null;
       if (gun) gun.setScale(img.scale * 0.9);
-      const key = fixed(s.add.text(x - 25, y - 26, `${i + 1}`, { ...TEXT, fontSize: '13px', strokeThickness: 3 }), 23);
-      const cost = fixed(s.add.text(x, y + 26, '', { ...TEXT, fontSize: '13px', color: UI.gold, strokeThickness: 3 }).setOrigin(0.5, 1), 23);
+      const key = fixed(s.add.text(x - 29, y - 29, `${i + 1}`, { ...TEXT, fontSize: '13px', strokeThickness: 3 }), 23);
+      const cost = fixed(s.add.text(x + 29, y - 29, '', { ...TEXT, fontSize: '12px', color: UI.gold, strokeThickness: 3 }).setOrigin(1, 0), 23);
+      fixed(s.add.text(x, y + 28, def.name, { ...TEXT, fontSize: '12px', strokeThickness: 3 }).setOrigin(0.5, 1), 23);
       bg.on('pointerdown', (p, lx, ly, ev) => { ev.stopPropagation(); s.setBuild(s.buildType === type ? null : type); });
       bg.on('pointerover', () => this.toolTip.setText(def.name).setX(x + 0).setVisible(true));
       bg.on('pointerout', () => this.toolTip.setVisible(false));
       return { type, edge, img, gun, cost };
     });
-    const x0 = 44 + BUILD_ORDER.length * 64;
+    const x0 = 24 + BUILD_ORDER.length * 68;
     this.toolText = fixed(s.add.text(x0, GAME_H - 58, '', { ...TEXT, fontSize: '17px' }), 21);
     this.infoText = fixed(s.add.text(x0, GAME_H - 30, '', { ...TEXT, fontSize: '14px', color: UI.dim, strokeThickness: 3 }), 21);
   }
@@ -506,7 +500,7 @@ class Hud {
     this.waveText.setText(`Horda ${s.wave}/${goal}`);
     this.levelText.setText(`${s.level.name} · ${s.diff.name}`);
     const left = s.spawnQueue.length + s.zombies.getChildren().filter((z) => !z.optional).length;
-    this.zombieText.setText(s.state === 'wave' ? `${left}` : '—');
+    this.zombieText.setText(`${left}`);
     this.moneyText.setText(`$ ${s.money}`);
 
     const g = this.bars;
@@ -545,7 +539,7 @@ class Hud {
       this.dayKeys.setText(`[Espaço] chamar já (+$${early})  ·  [L] loja  ·  [P] pausa`);
     }
     const tipsOn = this.tipsForced !== null ? this.tipsForced : day && s.wave === 0;
-    this.tips.setVisible(tipsOn && s.state !== 'over' && !s.shop.isOpen);
+    this.tips.setVisible(tipsOn && s.state !== 'over' && !s.shop.isOpen && this.bannerText.alpha < 0.05);
 
     if (s.time.now > this.miniAt) {
       this.miniAt = s.time.now + 100;
@@ -673,7 +667,7 @@ class Shop {
       const y = -this.h / 2 + 140 + i * 42;
       const can = !e.owned && s.money >= e.cost;
       const bg = plate(s, 0, y, rw, 38, 'papel').setInteractive({ useHandCursor: !e.owned });
-      bg.setAngle(((i * 7) % 5 - 2) * 0.25).setAlpha(can || e.owned ? 1 : 0.6);
+      bg.setAngle(((i * 7) % 5 - 2) * 0.25).setAlpha(can || e.owned ? 1 : 0.75);
       const objs = [bg];
       let tx = -rw / 2 + 18;
       if (e.icon && s.textures.exists(e.icon)) {
@@ -685,7 +679,7 @@ class Shop {
       objs.push(s.add.text(tx, y, `${e.name} — ${e.desc}`, { fontFamily: NOTE_FONT, fontSize: '16px', color: UI.ink }).setOrigin(0, 0.5));
       const ownedLabel = e.kind === 'pet' ? 'SEU PET' : 'VOCÊ TEM';
       objs.push(s.add.text(rw / 2 - 16, y, e.owned ? ownedLabel : `$ ${e.cost}`, {
-        fontFamily: e.owned ? TITLE_FONT : NOTE_FONT, fontSize: e.owned ? '18px' : '19px', color: e.owned ? '#4f6b2a' : can ? '#8a1d12' : '#6b5a48',
+        fontFamily: e.owned ? TITLE_FONT : NOTE_FONT, fontSize: e.owned ? '18px' : '19px', color: e.owned ? '#4f6b2a' : can ? '#8a1d12' : '#3d3024',
       }).setOrigin(1, 0.5).setAngle(e.owned ? -4 : 0));
       bg.on('pointerover', () => can && bg.setTint(0xfff4dc));
       bg.on('pointerout', () => bg.clearTint());
@@ -797,7 +791,7 @@ class TowerPanel {
       b.set(`${path.name} ${lvl}/3 → ${path.desc[lvl]}  $${cost}`, s.money >= cost);
     });
     const rc = s.repairCost(t);
-    this.repairBtn.set(rc ? `Consertar $${rc}` : 'Inteira', rc > 0 && s.money >= rc);
+    this.repairBtn.set(rc ? `Consertar $${rc}` : 'Sem dano para consertar', rc > 0 && s.money >= rc);
     const isBase = t === s.base;
     this.sellBtn.setVisible(!isBase);
     if (!isBase) this.sellBtn.set(`Vender $${s.sellValue(t)}`);
