@@ -190,7 +190,7 @@ function servidor() {
   // Tank ao lado do Brutamonte, arremessando a pedra no jogador
   await page.evaluate(() => {
     const s = game.scene.getScene('Game');
-    s.zombies.getChildren().slice().forEach((z) => { if (z.shadow) z.shadow.destroy(); z.destroy(); });
+    s.releasePins(); s.zombies.getChildren().slice().forEach((z) => { if (z.shadow) z.shadow.destroy(); z.destroy(); });
     const t = s.createZombie('tank', s.player.x + 320, s.player.y - 20);
     s.createZombie('brutamonte', s.player.x + 200, s.player.y + 90);
     t.cooldown = 0;
@@ -206,7 +206,7 @@ function servidor() {
   checar('Tank desenhado e maior que o Brutamonte', tank.desenhado && tank.alt > tank.brut, JSON.stringify(tank));
   await page.evaluate(() => {
     const s = game.scene.getScene('Game');
-    s.zombies.getChildren().slice().forEach((z) => { if (z.shadow) z.shadow.destroy(); z.destroy(); });
+    s.releasePins(); s.zombies.getChildren().slice().forEach((z) => { if (z.shadow) z.shadow.destroy(); z.destroy(); });
   });
 
   // Efeitos no chão: poça de bile do Spitter e gás do Venenoso perto do jogador
@@ -226,7 +226,7 @@ function servidor() {
     const s = game.scene.getScene('Game');
     s.tweens.killTweensOf(s);
     s.darkness = 0.8;
-    s.zombies.getChildren().slice().forEach((z) => { if (z.shadow) z.shadow.destroy(); z.destroy(); });
+    s.releasePins(); s.zombies.getChildren().slice().forEach((z) => { if (z.shadow) z.shadow.destroy(); z.destroy(); });
     [['comum', 160, -30], ['corredor', 240, 60], ['boomer', -200, 40], ['witch', 60, 170]].forEach(([t, dx, dy]) => {
       const z = s.createZombie(t, s.player.x + dx, s.player.y + dy);
       z.hp = 99999;
@@ -237,7 +237,7 @@ function servidor() {
   await foto('08_noite', 'À noite, com a lanterna do jogador e zumbis dentro e fora do cone');
   await page.evaluate(() => {
     const s = game.scene.getScene('Game');
-    s.zombies.getChildren().slice().forEach((z) => { if (z.shadow) z.shadow.destroy(); z.destroy(); });
+    s.releasePins(); s.zombies.getChildren().slice().forEach((z) => { if (z.shadow) z.shadow.destroy(); z.destroy(); });
   });
   await page.evaluate(() => { game.scene.getScene('Game').darkness = 0; });
 

@@ -32,7 +32,7 @@ const PetLogic = {
     if (!pet) return;
     const now = this.time.now;
     const def = pet.def;
-    const home = this.down ? { x: BASE_X, y: BASE_Y + BASE_H / 2 + 40 } : { x: this.player.x - 35, y: this.player.y + 30 };
+    const home = this.down ? { x: BASE_X, y: BASE_Y + BASE_H / 2 + 40 } : { x: this.player.x - 44, y: this.player.y + 22 } // ao lado dos pés, sem cobrir o corpo do dono;
 
     // Gavião: de tempos em tempos sobrevoa um ponto distante e ilumina a área
     if (def.scout) {

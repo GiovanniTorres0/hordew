@@ -320,6 +320,8 @@ class GameScene extends Phaser.Scene {
     let canShoot = !this.buildType && !this.shop.isOpen && !this.clickOnUI;
 
     // Presos por especiais: Hunter imobiliza, Jockey conduz, Smoker puxa
+    // (se o zumbi sumiu sem passar pela morte, o jogador fica livre em vez de travado para sempre)
+    if ((this.pinnedBy && !this.pinnedBy.active) || (this.smokedBy && !this.smokedBy.active)) this.releasePins();
     if (this.pinnedBy) {
       canShoot = false;
       const z = this.pinnedBy;
@@ -657,7 +659,18 @@ class GameScene extends Phaser.Scene {
     g.clear();
     this.fxChao.clear();
     // Anel claro nos pés do jogador: não some no meio da horda
-    if (!this.down) this.fxChao.lineStyle(2, 0xe9dcc6, 0.45).strokeEllipse(this.player.x, this.player.y + this.player.displayHeight / 2 - 2, 34, 12);
+    if (!this.down) {
+      const p = this.player;
+      const pes = p.y + p.displayHeight / 2 - 2;
+      this.fxChao.lineStyle(2, 0xe9dcc6, 0.45).strokeEllipse(p.x, pes, 34, 12);
+      // Encoberto por um zumbi na frente: o anel e um contorno do corpo vão por cima de tudo
+      const coberto = this.zombies.getChildren().some((z) => z.depth > p.depth && Math.abs(z.x - p.x) < z.displayWidth / 2 + 10
+        && z.y - z.displayHeight / 2 < pes && z.y + z.displayHeight / 2 > p.y);
+      if (coberto) {
+        g.lineStyle(2, 0xe9dcc6, 0.8).strokeEllipse(p.x, pes, 34, 12);
+        g.lineStyle(1.5, 0xe9dcc6, 0.55).strokeRoundedRect(p.x - p.displayWidth / 2 + 4, p.y - p.displayHeight / 2, p.displayWidth - 8, p.displayHeight - 4, 10);
+      }
+    }
     const now = this.time.now;
     this.bolts = this.bolts.filter((b) => b.until > now);
     this.bolts.forEach((b) => {
@@ -677,7 +690,7 @@ class GameScene extends Phaser.Scene {
           const cx = z.x + Math.cos(a) * z.def.aura * 0.55;
           const cy = z.y + Math.sin(a) * z.def.aura * 0.4;
           this.fxChao.fillStyle(0x4e5232, 0.1).fillCircle(cx, cy, r);
-          this.fxChao.lineStyle(1.5, 0x2a2a18, 0.15).strokeCircle(cx, cy, r);
+          this.fxChao.lineStyle(2, 0x1e1e10, 0.3).strokeCircle(cx, cy, r);
         }
       }
       if (z.mode === 'crouch' || z.mode === 'windup') g.lineStyle(2, 0xe8453c, 0.8).strokeCircle(z.x, z.y, z.def.radius + 8);
@@ -754,7 +767,7 @@ class GameScene extends Phaser.Scene {
     this.shop.close();
     this.panel.close();
     this.setBuild(null);
-    let stats = `Você chegou à horda ${this.wave} (${this.diff.name}).`;
+    let stats = this.wave > 0 ? `Você chegou à horda ${this.wave} (${this.diff.name}).` : `A casa caiu antes da primeira horda (${this.diff.name}).`;
     if (this.infinite) stats += ` Recorde no modo infinito: horda ${saveInfiniteRecord(this.levelIndex, this.wave)}.`;
     this.hud.endScreen('FIM DE JOGO', reason, stats, '[R] recomeçar   [M] menu');
     Sfx.lose();
