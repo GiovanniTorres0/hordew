@@ -43,6 +43,19 @@ def mascara_fundo(rgb):
     return fundo
 
 
+def contornar(sprite, cor=(18, 12, 8)):
+    """Contorno escuro de 1 px em volta do desenho (armas marrons somem no chão marrom)."""
+    a = np.array(sprite)
+    dentro = a[..., 3] > 40
+    borda = ndimage.binary_dilation(dentro, structure=np.ones((3, 3))) & ~dentro
+    base = Image.new("RGBA", sprite.size, (0, 0, 0, 0))
+    b = np.array(base)
+    b[borda] = (*cor, 230)
+    base = Image.fromarray(b, "RGBA")
+    base.alpha_composite(sprite)
+    return base
+
+
 def recortar(caminho, s, bruta=False, molde=None):
     """Recorta o personagem; com bruta=True devolve só o recorte (já virado), sem reduzir de tamanho.
     molde: desenho original no mesmo enquadramento (estados de dano). Tudo fora da silhueta dele, um pouco
@@ -53,8 +66,18 @@ def recortar(caminho, s, bruta=False, molde=None):
     if molde:
         m = Image.open(molde).convert("RGB").resize(img.size)
         fora = mascara_fundo(np.array(m))
-        fundo |= ~ndimage.binary_dilation(~fora, iterations=max(2, img.size[0] // 150))
+        fundo |= ~ndimage.binary_dilation(~fora, iterations=2)
         fundo[np.nonzero(~fora)[0].max() + 1:] = True  # nada abaixo da base da casa original
+        # Mesma paleta do original: a claridade vem do desenho com dano (rombos, rachaduras, fuligem) e a cor
+        # do original suavizada (o Kontext tinge o telhado de vermelho e a casa parece outra)
+        o = np.array(m).astype(np.float32)
+        lum = lambda c: c[..., 0] * 0.3 + c[..., 1] * 0.59 + c[..., 2] * 0.11 + 1
+        dentro = (~fora).astype(np.float32)  # desfoca só a casa, sem puxar o magenta do fundo
+        peso = ndimage.gaussian_filter(dentro, 3) + 1e-4
+        cor = np.dstack([ndimage.gaussian_filter(o[..., i] * dentro, 3) / peso for i in range(3)])
+        cor = cor / lum(cor)[..., None]
+        novo = cor * lum(rgb.astype(np.float32))[..., None]
+        rgb = np.where(fundo[..., None], rgb, np.clip(novo * 0.8 + rgb * 0.2, 0, 255)).astype(np.uint8)
     if s.get("fundo_largo"):
         # Sombra rosa escura e pouco saturada colada ao objeto (ex.: base da árvore): cresce o fundo por ela
         f = rgb.astype(np.float32) / 255
@@ -97,7 +120,10 @@ def recortar(caminho, s, bruta=False, molde=None):
     k = s["tamanho"] / (w if s.get("medida") == "largura" else h)
     tam = (max(1, round(w * k)), max(1, round(h * k)))
     if not anima(s):
-        return sprite.resize(tam, Image.LANCZOS), roupa and roupa.resize(tam, Image.LANCZOS), None
+        sprite = sprite.resize(tam, Image.LANCZOS)
+        if s.get("contorno"):
+            sprite = contornar(sprite)
+        return sprite, roupa and roupa.resize(tam, Image.LANCZOS), None
     quadril = s.get("quadril", 0.62 if s.get("pet") else 0.58)
     # Quadro de ataque desenhado (Flux Kontext, aprovado pelo robô) entra no lugar do ataque por deformação
     chave = os.path.basename(caminho).rsplit("_", 1)[0]

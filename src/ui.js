@@ -671,10 +671,11 @@ class Shop {
       const objs = [bg];
       let tx = -rw / 2 + 18;
       if (e.icon && s.textures.exists(e.icon)) {
-        const ic = s.add.image(tx + 14, y, e.icon);
-        ic.setScale(Math.min(30 / ic.width, 30 / ic.height));
+        // Armas na mesma largura (são compridas e finas); pets na mesma altura
+        const ic = s.add.image(tx + 20, y, e.icon);
+        ic.setScale(e.kind === 'weapon' ? Math.min(42 / ic.width, 28 / ic.height) : Math.min(30 / ic.width, 30 / ic.height));
         objs.push(ic);
-        tx += 36;
+        tx += 46;
       }
       objs.push(s.add.text(tx, y, `${e.name} — ${e.desc}`, { fontFamily: NOTE_FONT, fontSize: '16px', color: UI.ink }).setOrigin(0, 0.5));
       const ownedLabel = e.kind === 'pet' ? 'SEU PET' : 'VOCÊ TEM';

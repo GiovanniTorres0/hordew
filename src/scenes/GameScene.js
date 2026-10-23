@@ -128,7 +128,7 @@ class GameScene extends Phaser.Scene {
     b.stage = stage;
     const tex = `${b.baseTex}_dano${stage}`;
     if (stage && this.textures.exists(tex)) {
-      b.sprite.setTexture(tex).clearTint();
+      b.sprite.setTexture(tex).setTint(stage === 2 ? 0xb8a49a : 0xffffff); // ruínas com fuligem
     } else if (stage === 2 && this.textures.exists(`${b.baseTex}_dano1`)) {
       // Só a avariada desenhada: ela mesma, escurecida, faz as ruínas
       b.sprite.setTexture(`${b.baseTex}_dano1`).setTint(0xa08878);
@@ -345,7 +345,8 @@ class GameScene extends Phaser.Scene {
     // Cada arma tem o seu desenho (w_<id>); sem ele, a pistola feita por código
     const wid = Object.keys(WEAPONS).find((k) => WEAPONS[k] === this.weapon);
     const wtex = this.textures.exists(`w_${wid}`) ? `w_${wid}` : 'arma';
-    if (this.gun.texture.key !== wtex) this.gun.setTexture(wtex).setOrigin(wtex === 'arma' ? 0.25 : 0.3, wtex === 'arma' ? 0.4 : 0.55);
+    // Desenhos exportados em resolução dobrada e com contorno; a 0.7 ficam um pouco maiores que o real
+    if (this.gun.texture.key !== wtex) this.gun.setTexture(wtex).setOrigin(wtex === 'arma' ? 0.25 : 0.3, wtex === 'arma' ? 0.4 : 0.55).setScale(wtex === 'arma' ? 1 : 0.7);
     this.gun.setPosition(gx, gy).setRotation(this.aim).setFlipY(Math.cos(this.aim) < 0).setDepth(p.depth + 0.001);
 
     if (canShoot && this.input.activePointer.leftButtonDown() && time - this.lastShot > this.weapon.fireDelay) {

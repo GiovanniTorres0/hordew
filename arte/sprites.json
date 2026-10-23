@@ -344,17 +344,18 @@
       "escolha": 50
     },
     "w_pistola": {
-      "tamanho": 22,
+      "tamanho": 44,
       "modelo": "modelo_arma",
       "desc": "a compact black 9mm Glock pistol lying flat in a strict side view, the top edge of the slide a perfectly level horizontal line parallel to the bottom of the image, muzzle at the right end, the short grip at the left end angled only slightly down and back, small trigger guard just in front of the grip, the barrel end cut flush with the front of the slide, blank slide surface with only scratches, scratched black paint, rust spots and grime, chipped grip texture, battered from heavy use",
       "medida": "largura",
       "espelhar": false,
       "animar": false,
       "rodadas": 3,
-      "escolha": 9
+      "escolha": 9,
+      "contorno": true
     },
     "w_mp7": {
-      "tamanho": 30,
+      "tamanho": 60,
       "modelo": "modelo_arma",
       "desc": "an Uzi submachine gun in strict side view, perfectly level and horizontal, muzzle at the right end, a short chunky boxy black steel receiver shaped like a brick, a very short stubby barrel poking only a little out of the right end of the box, one single hand grip straight down from the exact middle of the box with a long straight magazine inserted up through the grip so the grip and magazine form one long vertical bar reaching far below the box, a trigger guard in front of that bar, a thin folded metal wire stock lying flat along the rear of the box, the whole gun a compact upside-down capital T, scratched worn black metal with chipped paint, dirt and orange rust spots",
       "medida": "largura",
@@ -364,60 +365,66 @@
       "fixo": "Keep exactly the same scratchy hand-drawn Don't Starve style, line thickness, worn dirty colors, perfectly horizontal side view with the muzzle pointing to the right, same position in the frame, same plain flat solid magenta background, the whole weapon visible, no hands, no text. The object stands directly on the magenta background: no dirt patch, no grass, no ground, no shadow under it.",
       "poses": {
         "desenho": "Replace this pistol with an Uzi submachine gun in the same flat side view, muzzle to the right. The gun body is one long flat rectangular black steel box, twice as long as the old slide and as tall as it is thick, with a ribbed cocking knob on top. The pistol grip sits straight down from the MIDDLE of the box, not at the back, and one single long straight magazine sticks far out of the bottom of the grip. Only a tiny stub of barrel shows past the front of the box: no long barrel, no threads, no suppressor. A folding wire metal stock lies flat along the back of the box and sticks out past it to the left. Worn dark grey metal with scratches, chipped paint and rust spots. No pistol slide, no second magazine, no front grip, nothing on top of the gun."
-      }
+      },
+      "contorno": true
     },
     "w_escopeta": {
-      "tamanho": 44,
+      "tamanho": 88,
       "modelo": "modelo_arma",
       "desc": "a pump-action shotgun with a long dark barrel, wooden pump and wooden stock",
       "medida": "largura",
       "espelhar": false,
       "animar": false,
       "rodadas": 1,
-      "escolha": 3
+      "escolha": 3,
+      "contorno": true
     },
     "w_handcannon": {
-      "tamanho": 27,
+      "tamanho": 54,
       "modelo": "modelo_arma",
       "desc": "a massive oversized Desert Eagle .50 handgun in strict side view, its long thick flat-topped slide a perfectly level horizontal bar parallel to the bottom of the image, muzzle at the right end, the slide tall and heavy like a brick, a short black rubber grip at the left end angled only slightly down and back, a big trigger guard just in front of the grip, a square blunt muzzle flush with the slide, dull scratched dark grey steel with black grime in the grooves",
       "medida": "largura",
       "espelhar": false,
       "animar": false,
       "rodadas": 3,
-      "escolha": 9
+      "escolha": 9,
+      "contorno": true
     },
     "w_ak47": {
-      "tamanho": 44,
+      "tamanho": 88,
       "modelo": "modelo_arma",
       "desc": "an AK-47 assault rifle with a wooden stock, wooden handguard and a curved banana magazine",
       "medida": "largura",
       "espelhar": false,
       "animar": false,
       "rodadas": 1,
-      "escolha": 3
+      "escolha": 3,
+      "contorno": true
     },
     "w_besta": {
-      "tamanho": 38,
+      "tamanho": 76,
       "modelo": "modelo_arma",
       "desc": "a hunting crossbow seen from directly above, lying flat and pointing right, a straight wooden stock running horizontally from left to right, and at its right end a wide curved dark bow crossing it vertically, the whole shape like a capital T lying on its side, a taut string running from both bow tips back to the middle of the stock in a V shape, a steel-tipped bolt lying along the top of the stock aiming right, worn scratched wood and frayed string",
       "medida": "largura",
       "espelhar": false,
       "animar": false,
       "rodadas": 3,
-      "escolha": 7
+      "escolha": 7,
+      "contorno": true
     },
     "w_chamas": {
-      "tamanho": 44,
+      "tamanho": 88,
       "modelo": "modelo_arma",
       "desc": "a homemade flamethrower in strict side profile, perfectly horizontal, nozzle pointing right, a fat rusty red fuel canister strapped under the middle of the gun with wire and duct tape, a rubber hose looping from the canister to the body, a long thin pipe nozzle with a small orange pilot flame at the right tip, a pistol grip and a crude metal stock at the left, scrap metal welded together, dented and dirty",
       "medida": "largura",
       "espelhar": false,
       "animar": false,
       "rodadas": 2,
-      "escolha": 5
+      "escolha": 5,
+      "contorno": true
     },
     "w_m79": {
-      "tamanho": 36,
+      "tamanho": 72,
       "modelo": "modelo_arma",
       "desc": "a stubby single-shot M79 grenade launcher in strict side view, lying perfectly level and horizontal, muzzle at the right end, the whole weapon short and squat, only about three times longer than it is tall, the right half of the weapon one single fat dark olive-green steel tube as tall as the wooden stock is thick, the same thickness from end to end and ending in a flat open end like a cut drainpipe, the left half a short chunky brown wooden stock with a rubber butt pad, a small square flip-up metal sight on top of the tube, a small trigger guard under the joint between stock and tube, bare green steel underneath the tube, scratched dirty wood and dull rusty dented steel",
       "medida": "largura",
@@ -427,10 +434,11 @@
       "fixo": "Keep exactly the same scratchy hand-drawn Don't Starve style, line thickness, worn dirty colors, perfectly horizontal side view with the muzzle pointing to the right, same position in the frame, same plain flat solid magenta background, the whole weapon visible, no hands, no text. The object stands directly on the magenta background: no dirt patch, no grass, no ground, no shadow under it.",
       "poses": {
         "desenho": "Turn this shotgun into an M79 grenade launcher in the same side view, perfectly horizontal, muzzle to the right. Make the whole weapon much SHORTER: total length only about three times its height. One single very fat short olive-green steel tube, as tall as the stock is thick and the same width from end to end, ending in a wide flat open muzzle. A short chunky wooden stock at the left, attached directly behind the tube, with a small trigger guard under the joint and a small square flip-up sight on top. Heavily worn: chipped olive paint showing bare metal, rust spots, scratched and grimy wood. No magazine, no pistol grip, no thin barrel, no pump."
-      }
+      },
+      "contorno": true
     },
     "w_aa12": {
-      "tamanho": 42,
+      "tamanho": 84,
       "modelo": "modelo_arma",
       "desc": "an AA-12 automatic combat shotgun in strict side view, perfectly level and horizontal, muzzle at the right end, a long straight boxy black receiver running the whole length of the gun like a rectangular beam, a big round flat drum magazine mounted underneath the receiver just in front of the trigger guard, drawn as a full pale worn grey metal disc seen face-on, the disc hanging completely below the bottom edge of the receiver like a wheel under a cart, the receiver passing straight over the top of the disc, one short thick barrel continuing straight forward from the receiver and wrapped in a black heat shield sleeve full of round holes, one pistol grip with one trigger guard behind the disc, a solid squared black stock at the left end in line with the receiver, chipped black paint, scratches and grime",
       "medida": "largura",
@@ -440,7 +448,8 @@
       "fixo": "Keep exactly the same scratchy hand-drawn Don't Starve style, line thickness, worn dirty colors, perfectly horizontal side view with the muzzle pointing to the right, same position in the frame, same plain flat solid magenta background, the whole weapon visible, no hands, no text. The object stands directly on the magenta background: no dirt patch, no grass, no ground, no shadow under it.",
       "poses": {
         "desenho": "Keep this gun's side view, muzzle to the right, but turn it into an AA-12 automatic shotgun. The receiver is one long straight rectangular black box from stock to barrel, with a solid squared stock in line at the left. The front third of the barrel is a thick black sleeve full of round holes. Directly under the receiver, right in front of the trigger guard, a LARGE round drum magazine, as tall as the stock, seen face-on as a dark gunmetal grey metal disc with a raised rim and a center hub, firmly attached to the bottom of the receiver. Only this drum: no box magazine, no curved magazine. Heavily worn: chipped black paint, scratches, grime and rust on the drum."
-      }
+      },
+      "contorno": true
     },
     "base0": {
       "tamanho": 240,
