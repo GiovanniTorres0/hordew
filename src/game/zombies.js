@@ -24,9 +24,9 @@ const ZombieLogic = {
   createZombie(type, x, y) {
     const def = ZOMBIES[type];
     const z = this.zombies.create(x, y, def.tex).setDepth(2);
-    const size = def.radius * 2 + 16;
-    z.body.setCircle(def.radius, (size - def.radius * 2) / 2, (size - def.radius * 2) / 2);
+    z.body.setCircle(def.radius, z.width / 2 - def.radius, z.height / 2 - def.radius);
     if (def.boss) z.body.pushable = false;
+    this.addShadow(z, def.radius * 2.6);
     z.def = def;
     z.hp = z.maxHp = def.hp * this.waveHpMul;
     z.wobble = Math.random() * 1000;
@@ -132,8 +132,12 @@ const ZombieLogic = {
     let angle = Phaser.Math.Angle.Between(z.x, z.y, tgt.x, tgt.y);
     if (!contact) angle += Math.sin((now + z.wobble) / 400) * 0.25;
     this.physics.velocityFromRotation(angle, contact ? speed * 0.2 : speed, z.body.velocity);
-    z.rotation = angle;
-    z.setScale(1 + Math.sin((now + z.wobble) / 120) * 0.04, 1);
+    this.face(z, angle);
+    // Passada (ou golpe, encostado no alvo) no ritmo da velocidade; por cima, o gingado de zumbi,
+    // menor em quem já tem quadros de animação
+    const anim = this.animate(z, contact ? 'ataque' : 'andar', Phaser.Math.Clamp(speed / 45, 0.6, 2.2));
+    z.setAngle(contact ? 0 : Math.sin((now + z.wobble) / 160) * (anim ? 3 : 6));
+    z.setScale(1, 1 + Math.sin((now + z.wobble) / 120) * 0.04);
 
     if (contact) {
       if (isPlayer) this.hurtPlayer(def.dps * dt);
@@ -167,7 +171,7 @@ const ZombieLogic = {
       }
       if (this.down) return false; // sem jogador, ataca a base como os outros
       this.physics.velocityFromRotation(toPlayer(), def.speed, z.body.velocity);
-      z.rotation = toPlayer();
+      this.face(z, toPlayer());
       if (distP < def.radius + 16) this.hurtPlayer(def.dps * dt);
       return true;
     }
@@ -218,7 +222,7 @@ const ZombieLogic = {
           return false;
         }
         z.setVelocity(0, 0);
-        z.rotation = toPlayer();
+        this.face(z, toPlayer());
         this.hurtPlayer(5 * dt);
         return true;
       }
@@ -239,7 +243,7 @@ const ZombieLogic = {
         if (now > z.modeUntil) {
           z.mode = 'charge';
           z.modeUntil = now + 1300;
-          this.physics.velocityFromRotation(z.rotation, 400, z.body.velocity);
+          this.physics.velocityFromRotation(z.facing, 400, z.body.velocity);
           Sfx.roar();
         }
         return true;
@@ -263,7 +267,7 @@ const ZombieLogic = {
       if (!this.down && now > z.cooldown && distP < 320) {
         z.mode = 'windup';
         z.modeUntil = now + 700;
-        z.rotation = toPlayer();
+        this.face(z, toPlayer());
         return true;
       }
       return false;
@@ -362,6 +366,7 @@ const ZombieLogic = {
 
     const def = z.def;
     this.particles.explode(def.radius > 20 ? 40 : 12, z.x, z.y);
+    this.bloodStain(z.x, z.y + z.displayHeight / 2 - 4, def.radius / 12);
     if (def.radius > 20) this.cameras.main.shake(250, 0.01);
     this.money += Math.max(1, Math.round(def.reward * this.diff.money * (this.event === 'dupla' ? 2 : 1)));
     if (this.pinnedBy === z) this.releasePins();

@@ -7,6 +7,7 @@ const TowerLogic = {
     this.rangeCircle.setVisible(!!(def && (def.range || def.blast)));
     if (def) {
       this.ghost.setTexture(def.tex);
+      this.ghost.setOrigin(0.5, 1 - GRID / 2 / this.ghost.height);
       this.rangeCircle.setRadius(def.range || def.blast);
       this.panel.close();
       this.shop.close();
@@ -50,10 +51,17 @@ const TowerLogic = {
     this.occupied.add(cell.key);
 
     const s = { type, def, x: cell.cx, y: cell.cy, cellKey: cell.key, spent: cost, levels: [0, 0, 0], lastShot: 0 };
-    if (def.block) s.sprite = this.blockers.create(cell.cx, cell.cy, def.tex).setDepth(1);
-    else s.sprite = this.add.image(cell.cx, cell.cy, def.tex).setDepth(0.9);
+    if (def.block) s.sprite = this.blockers.create(cell.cx, cell.cy, def.tex);
+    else s.sprite = this.add.image(cell.cx, cell.cy, def.tex);
+    this.standOn(s.sprite, GRID, GRID);
+    if (!def.block) s.sprite.setDepth(0.9); // minas e espinhos ficam rentes ao chão, sempre por baixo
     s.sprite.structure = s;
-    if (def.gunTex) s.gun = this.add.image(cell.cx, cell.cy, def.gunTex).setOrigin(14 / 40, 0.5).setDepth(3);
+    if (def.gunTex) {
+      // A arma fica em cima da base e gira; o tiro sai dela
+      s.gx = cell.cx;
+      s.gy = cell.cy + GRID / 2 - s.sprite.height * 0.72;
+      s.gun = this.add.image(s.gx, s.gy, def.gunTex).setOrigin(0.35, 0.5).setDepth(s.sprite.depth + 0.001);
+    }
     if (def.hp) s.hp = s.maxHp = def.hp;
     if (type === 'espinhos') s.durability = def.durability;
     this.computeStats(s);
@@ -187,20 +195,21 @@ const TowerLogic = {
       if (s.type === 'torreta' || s.type === 'chamas') {
         const z = this.nearestZombie(s.x, s.y, st.range);
         if (!z) return;
-        s.gun.rotation = Phaser.Math.Angle.Between(s.x, s.y, z.x, z.y);
+        s.gun.rotation = Phaser.Math.Angle.Between(s.gx, s.gy, z.x, z.y);
+        s.gun.setFlipY(Math.cos(s.gun.rotation) < 0); // desenhada de lado: não pode ficar de cabeça para baixo
         if (now - s.lastShot < st.fireDelay) return;
         s.lastShot = now;
-        if (s.type === 'torreta') this.fireBullet(s.x, s.y, s.gun.rotation, 24, { damage: st.damage, speed: 700 });
+        if (s.type === 'torreta') this.fireBullet(s.gx, s.gy, s.gun.rotation, 24, { damage: st.damage, speed: 700 });
         else {
           const a = s.gun.rotation + Phaser.Math.FloatBetween(-0.25, 0.25);
-          this.fireBullet(s.x, s.y, a, 22, { damage: st.damage, speed: 330, life: (st.range / 330) * 1000, burn: s.def.burn, tex: 'flame' });
+          this.fireBullet(s.gx, s.gy, a, 22, { damage: st.damage, speed: 330, life: (st.range / 330) * 1000, burn: s.def.burn, tex: 'flame' });
         }
       } else if (s.type === 'tesla') {
         if (this.event === 'apagao' || now - s.lastShot < st.fireDelay) return;
         const first = this.nearestZombie(s.x, s.y, st.range);
         if (!first) return;
         s.lastShot = now;
-        const points = [new Phaser.Math.Vector2(s.x, s.y)];
+        const points = [new Phaser.Math.Vector2(s.x, s.y + GRID / 2 - s.sprite.height * 0.9)]; // topo da bobina
         const hit = [first];
         let cur = first;
         while (hit.length < s.def.chain + s.levels[2]) {

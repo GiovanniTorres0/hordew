@@ -4,8 +4,10 @@ const PetLogic = {
   spawnPet(id) {
     if (this.pet) this.pet.destroy();
     const def = PETS[id];
-    const pet = this.physics.add.sprite(this.player.x - 30, this.player.y + 30, def.tex).setDepth(id === 'gaviao' ? 9 : 3);
+    // Gavião voa acima de todos, mas abaixo das barras de vida (6) e dos efeitos
+    const pet = this.physics.add.sprite(this.player.x - 30, this.player.y + 30, def.tex).setDepth(id === 'gaviao' ? 5.8 : 3);
     pet.def = def;
+    this.addShadow(pet, id === 'crocodilo' ? 70 : id === 'gaviao' ? 26 : pet.width * 0.8, id === 'gaviao' ? 40 : 0);
     pet.id = id;
     pet.lastAttack = 0;
     pet.nextScout = this.time.now + 5000;
@@ -15,10 +17,14 @@ const PetLogic = {
 
   moveTo(sprite, x, y, speed) {
     const dist = Phaser.Math.Distance.Between(sprite.x, sprite.y, x, y);
-    if (dist < 8) return sprite.setVelocity(0, 0);
+    if (dist < 8) {
+      this.animate(sprite, null);
+      return sprite.setVelocity(0, 0);
+    }
     const a = Phaser.Math.Angle.Between(sprite.x, sprite.y, x, y);
     this.physics.velocityFromRotation(a, Math.min(speed, dist * 4), sprite.body.velocity);
-    sprite.rotation = a;
+    this.face(sprite, a);
+    this.animate(sprite, 'andar', Math.min(speed, dist * 4) / 200);
   },
 
   updatePet(dt) {

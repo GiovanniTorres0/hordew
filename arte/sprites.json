@@ -1,0 +1,325 @@
+{
+  "_comentario": "Personagens em 3/4 (estilo Don't Starve). 'tamanho' é a altura final em px (ou largura, se 'medida' = 'largura'). 'escolha' é a semente aprovada.",
+  "modelo": "Juaner_dsstyle, game asset, full body character in three-quarter view, walking toward the RIGHT edge of the image, a weary grim survivor of a zombie apocalypse in a dark gothic world: {desc}. Dirty, tired, scratched, muted desaturated colors, white eyes. Whole body visible with empty margin around it, floating isolated on a plain flat solid magenta background, no text.",
+  "modelo_pet": "Juaner_dsstyle, game asset, full body side view of {desc}, moving toward the RIGHT edge of the image in the pose described. A scruffy, slightly eerie creature of a dark gothic world, muted desaturated colors. Whole body visible with empty margin around it, floating isolated on a plain flat solid magenta background, no text.",
+  "sprites": {
+    "z_comum": {
+      "tamanho": 64,
+      "desc": "a zombie lurching forward like a sleepwalker with BOTH arms raised and stretched straight out in front of it, horizontal and parallel to the ground at shoulder height, limp wrists with hands dangling down, greenish gray rotten skin, torn brown shirt, black X-shaped stitches across the forehead, mouth hanging open, slightly hunched, facing right",
+      "lora": 0.75,
+      "rodadas": 2,
+      "escolha": 25,
+      "espelhar": true
+    },
+    "z_corredor": {
+      "tamanho": 58,
+      "desc": "a thin lanky runner zombie in a torn red shirt sprinting toward the right, face and body pointing right, torso leaning forward, mouth open with exposed teeth, glowing red eyes, clawed hands reaching forward",
+      "lora": 0.75,
+      "rodadas": 1,
+      "escolha": 12,
+      "espelhar": true
+    },
+    "z_blindado": {
+      "tamanho": 70,
+      "desc": "a zombie in heavy gray riot gear: a gray metal riot helmet with a dark smoked face shield pulled down over the whole face, a bulky gray armored vest with large round rivets, metal shoulder pads and shin guards, rotten gray arms stretched forward",
+      "lora": 0.75,
+      "rodadas": 1,
+      "escolha": 19,
+      "espelhar": true
+    },
+    "z_brutamonte": {
+      "tamanho": 96,
+      "desc": "an enormous obese-muscular brute zombie as wide as it is tall, gigantic rounded shoulders and back, a small bald head low between the shoulders, huge thick forearms with knuckles on the ground like a gorilla, short thick legs, torn purple shirt",
+      "lora": 0.6,
+      "rodadas": 1,
+      "escolha": 16,
+      "espelhar": true
+    },
+    "z_venenoso": {
+      "tamanho": 80,
+      "desc": "a sickly zombie with dozens of small green pustules scattered ALL OVER its skin like a rash: on its cheeks, forehead, neck, bare chest, belly and along both bare arms, each boil the size of a grape, NO cluster on the back, sickly yellow-green skin, green slime dripping from its mouth and fingertips, tattered olive rags",
+      "rodadas": 7,
+      "lora": 0.75,
+      "escolha": 43,
+      "espelhar": true
+    },
+    "z_boomer": {
+      "tamanho": 88,
+      "desc": "a bloated rotting zombie with an enormous swollen belly bursting out of a torn stained beige shirt, sickly greenish gray decayed skin covered in oozing yellow pus boils, a tiny head with hollow eye sockets and exposed teeth, short thin legs",
+      "rodadas": 1,
+      "escolha": 16
+    },
+    "z_spitter": {
+      "tamanho": 72,
+      "desc": "a female zombie with long stringy hair, a very long thin stretched neck, jaw hanging open, glowing green acid drooling from the mouth down the chin, yellow rags dress, head and face pointing to the right",
+      "rodadas": 1,
+      "escolha": 15,
+      "espelhar": true
+    },
+    "z_smoker": {
+      "tamanho": 70,
+      "desc": "a tall gaunt hunched zombie in a long tattered gray coat, BOTH legs visible, empty hands hanging at its sides, its mouth wide open with ONE extremely long thick blackish-brown tongue shooting straight forward horizontally from its mouth at head height like a taut rope, as long as its whole body, the tongue held stiff and level, not hanging down, not forked, rotten gray face",
+      "rodadas": 7,
+      "escolha": 43,
+      "espelhar": false
+    },
+    "z_hunter": {
+      "tamanho": 56,
+      "desc": "a zombie crouched in a low four-legged pounce stance like a cat, knees bent to the ground, both clawed hands planted on the ground in front, dark navy hoodie with the hood pulled down hiding the face in black shadow, long sharp white claws",
+      "lora": 0.75,
+      "escolha": 13
+    },
+    "z_charger": {
+      "tamanho": 88,
+      "desc": "a lopsided mutant zombie with ONE single monstrous arm: a gigantic swollen bulging club of muscle bigger than its whole torso, ending in a huge boulder-sized fist dragging on the ground in front of it; its other arm is only a tiny shriveled stump; the whole body leans heavily toward the giant arm, torn brown shirt",
+      "lora": 0.5,
+      "rodadas": 2,
+      "escolha": 24,
+      "espelhar": true
+    },
+    "z_jockey": {
+      "tamanho": 48,
+      "desc": "a small goblin-like zombie scuttling low on all fours like a monkey, very long thin arms with knuckles on the ground, its spine bent into a lumpy fleshy hunchback with visible ribs and stitches, the hump SMALLER than its head and clearly part of its back, bald head with pointed ears, wide creepy toothy grin, purple rags",
+      "lora": 0.6,
+      "rodadas": 7,
+      "escolha": 45,
+      "espelhar": true
+    },
+    "z_tank": {
+      "tamanho": 132,
+      "desc": "a colossal zombie boss seen from the side walking right, shaped like a boulder, much wider than tall, a hunched mountain of gray cracked rotten muscle, bare chest, only shreds of a dark purple shirt on the shoulders, two gigantic rock-like shoulders rising above ONE tiny head sunk deep between them, white dead eyes, two massive arms thicker than its body with enormous knuckles resting on the ground like a gorilla, short stumpy legs",
+      "rodadas": 7,
+      "lora": 0.5,
+      "pendente": "7 rodadas sem aprovação: nenhuma semente saiu colossal e larga (segunda cabeça, pedra nas costas ou magro e alto). Fica com a arte antiga desenhada por código."
+    },
+    "z_witch": {
+      "tamanho": 64,
+      "desc": "a pale thin zombie woman crouching low and crying, head bowed, long messy black hair falling over her face, very long sharp red claws on both hands, dirty torn white dress, facing right",
+      "lora": 0.75,
+      "rodadas": 1,
+      "escolha": 17
+    },
+    "p_jose": {
+      "tamanho": 64,
+      "roupa": true,
+      "desc": "a tired young man survivor with a worn faded orange cap, messy brown hair, light skin with dark circles under the eyes and dirt smudges on the face, plain white t-shirt, dirty torn dark pants, bandaged forearm, empty hands, no weapon",
+      "rodadas": 1,
+      "escolha": 16
+    },
+    "p_pedro": {
+      "tamanho": 68,
+      "roupa": true,
+      "desc": "a sturdy broad-shouldered dark-skinned man survivor with a weary scowl, short black hair, stubble and a scar on the cheek, chest and face turned toward the viewer in three-quarter front view while walking to the right, plain white t-shirt, dirty worn dark pants and boots, bandaged hand, empty open hands, no weapon",
+      "rodadas": 1,
+      "escolha": 16
+    },
+    "p_jussara": {
+      "tamanho": 62,
+      "roupa": true,
+      "desc": "a tired slim young woman survivor with messy red hair in a ponytail, light tan skin with dirt smudges and dark circles under the eyes, plain white t-shirt, torn dirty dark pants, worn boots, bandaged wrist, empty hands, no weapon",
+      "rodadas": 1,
+      "escolha": 16
+    },
+    "pet_cachorro": {
+      "tamanho": 29,
+      "pet": true,
+      "desc": "a scruffy scrawny caramel brown mutt with matted dirty fur, dark brown floppy ears, a ragged tail, thin bony legs, all four legs visible while walking, dull muted colors, side view facing right",
+      "rodadas": 1,
+      "escolha": 16,
+      "espelhar": true
+    },
+    "pet_crocodilo": {
+      "tamanho": 84,
+      "medida": "largura",
+      "pet": true,
+      "desc": "a long low dark green crocodile walking flat close to the ground on four very short stubby legs, all four legs visible, long narrow snout, very long thick tail as long as its body, side view facing right",
+      "escolha": 6
+    },
+    "pet_gato": {
+      "tamanho": 20,
+      "pet": true,
+      "desc": "a scrawny gray striped tabby cat with scruffy fur, a torn notched ear, wide staring eyes, bony legs, tail up, walking, dull muted colors",
+      "rodadas": 1,
+      "escolha": 16,
+      "espelhar": true
+    },
+    "pet_gaviao": {
+      "tamanho": 38,
+      "pet": true,
+      "desc": "a brown hawk with a white head flying with its wings spread",
+      "escolha": 1,
+      "animar": false
+    },
+    "pet_coelho": {
+      "tamanho": 38,
+      "medida": "largura",
+      "pet": true,
+      "desc": "a scruffy wild gray hare in side view facing right, crouched low with its belly near the ground, FOUR legs visible: two short front paws on the ground and two big folded hind legs with long hind feet, compact rounded body, matted dirty gray fur with a white belly and a small white tail tuft, two long upright ragged ears, one ear with a torn notch, a small dark beady eye",
+      "rodadas": 7,
+      "pendente": "7 rodadas sem aprovação: a lebre nunca saiu agachada e a cara puxa para mascote. Fica com a arte antiga desenhada por código."
+    },
+    "turret_base": {
+      "tamanho": 44,
+      "modelo": "modelo_objeto",
+      "desc": "a squat wooden gun turret platform made of nailed weathered planks and iron bands, a round iron pivot on top, no gun on it",
+      "medida": "largura",
+      "rodadas": 1,
+      "escolha": 30,
+      "espelhar": false
+    },
+    "turret_gun": {
+      "tamanho": 40,
+      "modelo": "modelo_objeto",
+      "desc": "a short thick rusty black iron cannon barrel lying perfectly horizontal, muzzle pointing to the RIGHT, a round breech knob at the left end, two iron reinforcement rings, ONLY the barrel floating in the air, NO stand, NO pole, NO pivot, NO base, NO wheels, nothing under it",
+      "medida": "largura",
+      "rodadas": 1
+    },
+    "tesla": {
+      "tamanho": 78,
+      "modelo": "modelo_objeto",
+      "desc": "a tall rickety tesla coil tower on three crooked wooden tripod legs, a big thick copper wire coil wrapped around the upper half, a dark iron ball on the very top, three thick jagged pale cyan lightning arcs leaping from the iron ball, the arcs drawn as solid bold zigzag lines, no glow cloud",
+      "rodadas": 1
+    },
+    "flame_base": {
+      "tamanho": 44,
+      "modelo": "modelo_objeto",
+      "desc": "a squat rusty iron fuel tank platform with pipes and valves, peeling red paint, nothing mounted on top",
+      "medida": "largura",
+      "rodadas": 1,
+      "escolha": 30,
+      "espelhar": false
+    },
+    "flame_gun": {
+      "tamanho": 40,
+      "modelo": "modelo_objeto",
+      "desc": "a rusty iron flamethrower nozzle lying perfectly horizontal pointing to the RIGHT: a fat round fuel cylinder at the left end, a long narrowing metal pipe to the right with a flared tip and a tiny blue pilot flame at the tip, ONLY the nozzle floating in the air, NO stand, NO pole, NO pivot, NO base, nothing under it",
+      "medida": "largura",
+      "rodadas": 1
+    },
+    "barricade": {
+      "tamanho": 48,
+      "modelo": "modelo_objeto",
+      "desc": "a crude barricade seen in three-quarter view from slightly above: two thick crooked wooden posts with three crooked planks nailed across at different angles, a big dented rusty corrugated sheet metal panel nailed over the middle, protruding rusty nails, NO ground patch under it",
+      "medida": "largura",
+      "rodadas": 1
+    },
+    "mine": {
+      "tamanho": 30,
+      "modelo": "modelo_objeto",
+      "desc": "a flat round rusty iron landmine shaped like a low wide disc lying FLAT on the ground, seen from slightly above so the top face is clearly visible, a bright red button in the center of the top face, half sunk in a small low mound of dirt, no text, no letters",
+      "medida": "largura",
+      "rodadas": 1
+    },
+    "floodlight": {
+      "tamanho": 82,
+      "modelo": "modelo_objeto",
+      "desc": "a tall rusty iron pole with a big round floodlight lamp on top glowing pale yellow",
+      "rodadas": 1,
+      "escolha": 31,
+      "espelhar": false
+    },
+    "spikes": {
+      "tamanho": 46,
+      "modelo": "modelo_objeto",
+      "desc": "five or six THICK sharpened wooden stakes and two or three heavy rusty iron spikes, short and chunky, angled outward in different directions like a hedgehog, sticking out of a small low mound of dark dirt, wide silhouette",
+      "medida": "largura",
+      "rodadas": 1
+    },
+    "crate": {
+      "tamanho": 34,
+      "modelo": "modelo_objeto",
+      "desc": "a battered wooden supply crate with a faded red cross painted on the side and rope handles",
+      "medida": "largura",
+      "rodadas": 1,
+      "escolha": 32,
+      "espelhar": false
+    },
+    "heli": {
+      "tamanho": 170,
+      "modelo": "modelo_objeto",
+      "desc": "a battered olive green military rescue helicopter in flight, seen from the side and facing RIGHT, rotor blades on top",
+      "medida": "largura",
+      "rodadas": 1,
+      "escolha": 31,
+      "espelhar": false
+    },
+    "tree": {
+      "tamanho": 124,
+      "modelo": "modelo_objeto",
+      "desc": "a crooked dead spooky tree with twisted bare branches and a few dark leaves, a gnarled trunk",
+      "rodadas": 1,
+      "escolha": 31,
+      "espelhar": false
+    },
+    "lamp": {
+      "tamanho": 100,
+      "modelo": "modelo_objeto",
+      "desc": "a crooked old iron street lamp post with a dim yellow lantern on top, slightly tilted",
+      "rodadas": 1,
+      "escolha": 31,
+      "espelhar": false
+    },
+    "tomb": {
+      "tamanho": 56,
+      "modelo": "modelo_objeto",
+      "desc": "a crooked cracked old gravestone with moss and a rounded top",
+      "rodadas": 1,
+      "escolha": 31,
+      "espelhar": false
+    },
+    "base": {
+      "tamanho": 240,
+      "modelo": "modelo_objeto",
+      "desc": "a small crooked two-story gothic purple wooden house with a dark shingled roof, boarded-up windows glowing yellow, a front door, a spiral carved on the roof",
+      "medida": "largura",
+      "rodadas": 1,
+      "escolha": 31,
+      "espelhar": false
+    },
+    "ground0": {
+      "tamanho": 320,
+      "modelo": "modelo_chao",
+      "textura": true,
+      "desc": "Subúrbio: patchy dull green grass and dry dead grass tufts over dark brown dirt, a few scattered pebbles and fallen dry leaves",
+      "escolha": 52
+    },
+    "ground1": {
+      "tamanho": 320,
+      "modelo": "modelo_chao",
+      "textura": true,
+      "desc": "Centro: a weathered gray concrete sidewalk of large square slabs, cracked and stained, dirt and weeds in the cracks",
+      "escolha": 52
+    },
+    "ground2": {
+      "tamanho": 320,
+      "modelo": "modelo_chao",
+      "textura": true,
+      "desc": "Cemitério: dark damp graveyard soil with sparse dead gray-green grass, moss patches, scattered dead leaves and small stones",
+      "escolha": 53
+    },
+    "street0": {
+      "tamanho": 320,
+      "modelo": "modelo_chao",
+      "textura": true,
+      "desc": "Subúrbio street: worn cracked dark gray asphalt, faded and patched, small potholes and grit",
+      "escolha": 51
+    },
+    "street1": {
+      "tamanho": 320,
+      "modelo": "modelo_chao",
+      "textura": true,
+      "desc": "Centro street: old dark cobblestone pavement with irregular rounded stones and dirt between them",
+      "escolha": 51
+    },
+    "street2": {
+      "tamanho": 320,
+      "modelo": "modelo_chao",
+      "textura": true,
+      "desc": "Cemitério road: a muddy brown dirt path with wheel ruts, puddle stains and small stones",
+      "escolha": 50
+    }
+  },
+  "modelo_zumbi": "Juaner_dsstyle, game asset, full body side view of an undead ZOMBIE monster moving toward the RIGHT edge of the image in the pose described: {desc}. It is dead and rotting, menacing and grotesque, not a living human, in torn bloodstained rags, muted desaturated colors. Whole body visible with empty margin around it, floating isolated on a plain flat solid magenta background, no text.",
+  "modelo_objeto": "Juaner_dsstyle, game asset, {desc}, three-quarter view from slightly above, like an object in Don't Starve. Dark gothic, weathered and worn, muted desaturated colors. Whole object visible with empty margin around it, floating isolated on a plain flat solid magenta background, no text, no letters, no logo.",
+  "modelo_chao": "Juaner_dsstyle, seamless tileable ground texture seen from directly above, flat top-down orthographic, {desc}. Hand-drawn scratchy texture like the ground in Don't Starve, dark gothic, muted desaturated colors, evenly lit, the pattern fills the whole image edge to edge, no objects, no characters, no text."
+}

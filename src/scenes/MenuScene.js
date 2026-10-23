@@ -14,7 +14,7 @@ class MenuScene extends Phaser.Scene {
     this.walkers = [];
     for (let i = 0; i < 6; i++) {
       const tex = ['z_comum', 'z_corredor', 'z_blindado'][i % 3];
-      const z = this.add.image(Phaser.Math.Between(0, GAME_W), Phaser.Math.Between(420, 700), tex).setRotation(Math.PI).setAlpha(0.8);
+      const z = this.add.image(Phaser.Math.Between(0, GAME_W), Phaser.Math.Between(420, 700), tex).setFlipX(true).setAlpha(0.8);
       z.speed = Phaser.Math.Between(15, 40);
       this.walkers.push(z);
     }
@@ -70,6 +70,7 @@ class MenuScene extends Phaser.Scene {
   update(time, delta) {
     this.walkers.forEach((z) => {
       z.x -= (z.speed * delta) / 1000;
+      z.setAngle(Math.sin((time + z.speed * 97) / 160) * 6);
       if (z.x < -40) z.x = GAME_W + 40;
     });
   }

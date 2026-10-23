@@ -57,7 +57,11 @@ function hatch(g, x, y, w, h, color, alpha = 0.35, step = 5) {
 function makeTextures(scene) {
   const g = scene.make.graphics({ x: 0, y: 0, add: false });
   const P = PALETTE;
-  const done = (key, w, h) => { g.generateTexture(key, w, h); g.clear(); };
+  // Texturas que já vieram de assets/sprites (desenhadas) não são substituídas pelas feitas por código
+  const done = (key, w, h) => {
+    if (!scene.textures.exists(key)) g.generateTexture(key, w, h);
+    g.clear();
+  };
 
   // Chão de cada nível: manchas, tufos de grama, rachaduras e espiral
   LEVELS.forEach((lv, i) => {
@@ -124,9 +128,23 @@ function makeTextures(scene) {
   hatch(g, 4, BASE_H - 18, BASE_W - 8, 14, P.outline, 0.25, 6);
   done('base', BASE_W, BASE_H);
 
-  // Balas e projéteis
-  g.fillStyle(P.bullet).fillCircle(4, 4, 4);
-  done('bullet', 8, 8);
+  // Balas e projéteis. A bala comum é um rastro: cauda apagada atrás, ponta clara na frente (gira com o tiro)
+  for (let i = 0; i < 16; i++) g.fillStyle(0xffe9a8, (i / 16) ** 2 * 0.8).fillRect(i, 1.5, 1, 2);
+  g.fillStyle(0xfff6d8).fillCircle(17, 2.5, 2.2);
+  done('bullet', 20, 5);
+  // Clarão do cano
+  g.fillStyle(0xffd27a, 0.9).fillTriangle(0, 3, 12, 6, 0, 9).fillTriangle(4, 0, 9, 6, 4, 12);
+  g.fillStyle(0xfff6d8).fillCircle(4, 6, 3);
+  done('clarao', 12, 12);
+  // Sombra sob os pés: elipse escura de borda suave
+  for (let i = 6; i >= 1; i--) g.fillStyle(0x0d0a12, 0.09).fillEllipse(16, 6, 32 * i / 6, 12 * i / 6);
+  done('sombra', 32, 12);
+  // Mancha de sangue no chão (fica onde o zumbi morreu e some devagar)
+  [[12, 8, 9, 5], [6, 5, 4, 3], [20, 11, 4, 2.5], [17, 3, 3, 2], [4, 11, 2, 1.5], [23, 6, 2, 1.5]].forEach(([x, y, rx, ry]) => {
+    g.fillStyle(0x3d0c0c, 0.85).fillEllipse(x, y, rx * 2, ry * 2);
+  });
+  g.fillStyle(0x5e1414, 0.7).fillEllipse(11, 7, 9, 5);
+  done('mancha', 26, 16);
   g.lineStyle(2, P.outline).fillStyle(0xd9c27a).fillRect(1, 3, 20, 4).strokeRect(1, 3, 20, 4);
   g.fillStyle(0xe8453c).fillTriangle(20, 0, 26, 5, 20, 10);
   g.fillStyle(0xf4ecff).fillTriangle(0, 1, 5, 5, 0, 9);
@@ -379,6 +397,16 @@ function makeTextures(scene) {
   g.fillStyle(0xf4ecff).fillCircle(3, 12, 3);
   done('pet_coelho', 30, 24);
 
+  // Arma do jogador: pistola pequena separada do corpo, gira na direção do mouse (cano para a direita).
+  // Do tamanho da mão do personagem desenhado (~12% da altura dele), ferro gasto e cabo de madeira.
+  g.fillStyle(0x2a2622).fillRect(3, 1, 13, 4);
+  g.fillStyle(0x58534a).fillRect(4, 1.5, 11, 1);
+  g.fillStyle(0x1a1612).fillRect(15, 1.5, 1, 3);
+  g.fillStyle(0x4a3424).fillTriangle(3, 4, 8, 4, 4, 10).fillTriangle(8, 4, 6.5, 10, 4, 10);
+  g.lineStyle(1, 0x15110d, 0.9).strokeRect(3, 1, 13, 4).lineBetween(8, 4, 6.5, 10).lineBetween(3, 4, 4, 10).lineBetween(4, 10, 6.5, 10);
+  g.lineStyle(1, 0x15110d, 0.8).strokeCircle(9.5, 6, 1.6);
+  done('arma', 17, 11);
+
   // Partícula de gosma
   g.fillStyle(0xffffff).fillCircle(3, 3, 3);
   done('dot', 6, 6);
@@ -400,9 +428,57 @@ function makeTextures(scene) {
   CHARACTERS.forEach((c) => makePlayerTexture(scene, c, OUTFITS[0], `char_${c.id}`));
 }
 
+// Animações de uma folha de quadros: <key>_andar (passada, parado, passada contrária, parado) e
+// <key>_ataque (tronco inclinado e de volta). A velocidade de cada boneco ajusta o ritmo com timeScale.
+function makeAnims(scene, key) {
+  [['andar', [1, 0, 2, 0], 9], ['ataque', [3, 0], 5]].forEach(([nome, frames, frameRate]) => {
+    const k = `${key}_${nome}`;
+    if (scene.anims.exists(k)) scene.anims.remove(k);
+    scene.anims.create({ key: k, frames: frames.map((frame) => ({ key, frame })), frameRate, repeat: -1 });
+  });
+}
+
+// Cor da roupa apagada e puxada para o sépia, para não brigar com a paleta suja da arte desenhada
+function mutedOutfit(c) {
+  const r = (c >> 16) & 255, g = (c >> 8) & 255, b = c & 255;
+  const cinza = 0.3 * r + 0.59 * g + 0.11 * b;
+  const mix = (v, s) => Math.round((v * 0.55 + cinza * 0.25 + s * 0.2) * 0.85);
+  return (mix(r, 150) << 16) | (mix(g, 128) << 8) | mix(b, 98);
+}
+
 // Personagem visto de cima: corpo com a cor da roupa, cabeça, cabelo ou chapéu e a arma
 function makePlayerTexture(scene, char, outfit, key) {
   if (scene.textures.exists(key)) scene.textures.remove(key);
+  // Personagem desenhado (3/4): pinta a camisa branca com a cor da roupa usando a máscara _roupa
+  const art = `p_${char.id}`;
+  if (scene.textures.exists(art)) {
+    const body = scene.textures.get(art).getSourceImage();
+    const canvas = scene.textures.createCanvas(key, body.width, body.height);
+    const ctx = canvas.getContext();
+    ctx.drawImage(body, 0, 0);
+    if (scene.textures.exists(`${art}_roupa`)) {
+      const mask = scene.textures.get(`${art}_roupa`).getSourceImage();
+      const tmp = document.createElement('canvas');
+      tmp.width = body.width;
+      tmp.height = body.height;
+      const t = tmp.getContext('2d');
+      t.drawImage(mask, 0, 0);
+      t.globalCompositeOperation = 'multiply';
+      t.fillStyle = `#${mutedOutfit(outfit).toString(16).padStart(6, '0')}`;
+      t.fillRect(0, 0, tmp.width, tmp.height);
+      t.globalCompositeOperation = 'destination-in';
+      t.drawImage(mask, 0, 0);
+      ctx.drawImage(tmp, 0, 0);
+    }
+    // Folha de quadros: recorta os mesmos quadros na textura pintada
+    const fr = ANIM_FRAMES[art];
+    if (fr) {
+      for (let i = 0; i * fr[0] < body.width; i++) canvas.add(i, 0, i * fr[0], 0, fr[0], fr[1]);
+      makeAnims(scene, key);
+    }
+    canvas.refresh();
+    return;
+  }
   const g = scene.make.graphics({ x: 0, y: 0, add: false });
   const P = PALETTE;
   sketchRect(g, 18, 15, 20, 6, P.gun, 2.5);

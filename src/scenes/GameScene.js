@@ -58,6 +58,11 @@ class GameScene extends Phaser.Scene {
     this.particles = this.add.particles(0, 0, 'dot', {
       speed: { min: 60, max: 180 }, lifespan: 450, scale: { start: 1.2, end: 0 }, tint: PALETTE.blood, emitting: false,
     }).setDepth(5);
+    this.bloodParticles = this.add.particles(0, 0, 'dot', {
+      speed: { min: 50, max: 160 }, lifespan: 380, scale: { start: 0.7, end: 0.1 }, gravityY: 300,
+      tint: [0x6e1515, 0x8a1c1c, 0x4a0e0e], emitting: false,
+    }).setDepth(5);
+    this.stains = [];
     this.fireParticles = this.add.particles(0, 0, 'dot', {
       speed: { min: 80, max: 260 }, lifespan: 500, scale: { start: 2.2, end: 0 }, tint: [0xffa53c, 0xfff27a, 0xe8453c], emitting: false,
     }).setDepth(5);
@@ -76,6 +81,9 @@ class GameScene extends Phaser.Scene {
 
     this.createInput();
     this.hud = new Hud(this);
+    // Flash vermelho na tela ao levar dano (fica acima do mundo, abaixo dos textos do HUD)
+    this.hurtFlash = this.add.rectangle(0, 0, this.scale.width, this.scale.height, 0x8a0f0f, 1)
+      .setOrigin(0).setScrollFactor(0).setDepth(8).setAlpha(0);
     this.shop = new Shop(this);
     this.panel = new TowerPanel(this);
     this.startIntermission(40);
@@ -87,8 +95,13 @@ class GameScene extends Phaser.Scene {
     const lv = this.level;
     this.add.tileSprite(0, 0, WORLD_W, WORLD_H, `ground${this.levelIndex}`).setOrigin(0);
     // Duas ruas que se cruzam na base
-    this.add.rectangle(0, BASE_Y - 55, WORLD_W, 110, lv.street).setOrigin(0);
-    this.add.rectangle(BASE_X - 55, 0, 110, WORLD_H, lv.street).setOrigin(0);
+    // Com textura desenhada (street<n>) a rua é ladrilhada; senão, faixa de cor lisa
+    const street = `street${this.levelIndex}`;
+    const road = (x, y, w, h) => (this.textures.exists(street)
+      ? this.add.tileSprite(x, y, w, h, street).setOrigin(0).setTilePosition(x, y)
+      : this.add.rectangle(x, y, w, h, lv.street).setOrigin(0));
+    road(0, BASE_Y - 55, WORLD_W, 110);
+    road(BASE_X - 55, 0, 110, WORLD_H);
     const marks = this.add.graphics().fillStyle(0xe9e2c8, 0.6);
     for (let x = 20; x < WORLD_W; x += 80) if (Math.abs(x - BASE_X) > 80) marks.fillRect(x, BASE_Y - 3, 40, 6);
     for (let y = 20; y < WORLD_H; y += 80) if (Math.abs(y - BASE_Y) > 80) marks.fillRect(BASE_X - 3, y, 6, 40);
@@ -100,14 +113,15 @@ class GameScene extends Phaser.Scene {
       const x = rnd.between(40, WORLD_W - 40);
       const y = rnd.between(60, WORLD_H - 20);
       if (Math.abs(x - BASE_X) < 120 || Math.abs(y - BASE_Y) < 120) continue;
-      this.add.image(x, y, lv.decor).setOrigin(0.5, 1).setAngle(rnd.between(-12, 12)).setAlpha(0.85).setDepth(0.5);
+      this.add.image(x, y, lv.decor).setOrigin(0.5, 1).setAngle(rnd.between(-3, 3)).setDepth(this.depthAt(y));
       placed += 1;
     }
     if (this.cameras.main.postFX) this.cameras.main.postFX.addVignette(0.5, 0.5, 0.95, 0.35);
   }
 
   createBase() {
-    const sprite = this.blockers.create(BASE_X, BASE_Y, 'base').setDepth(1);
+    const sprite = this.blockers.create(BASE_X, BASE_Y, 'base');
+    this.standOn(sprite, BASE_W, BASE_H);
     this.base = {
       type: 'base', def: { name: 'Base', block: true, light: 260 }, sprite, x: BASE_X, y: BASE_Y,
       hw: BASE_W / 2, hh: BASE_H / 2, hp: this.diff.baseHp, maxHp: this.diff.baseHp,
@@ -174,7 +188,11 @@ class GameScene extends Phaser.Scene {
     makePlayerTexture(this, this.char, this.outfit, 'player');
     this.player = this.physics.add.sprite(BASE_X, BASE_Y + BASE_H / 2 + 50, 'player').setDepth(3);
     this.player.setCollideWorldBounds(true);
-    this.player.body.setCircle(13, 5, 5);
+    this.player.body.setCircle(13, this.player.width / 2 - 13, this.player.height / 2 - 13);
+    // Câmera 3/4: o corpo só espelha; quem gira na direção do mouse é a arma
+    this.gun = this.add.image(0, 0, 'arma').setOrigin(0.25, 0.4);
+    this.addShadow(this.player, 30);
+    this.aim = 0;
     this.lastShot = 0;
     this.bullets = this.physics.add.group({ defaultKey: 'bullet', maxSize: 400 });
   }
@@ -252,6 +270,7 @@ class GameScene extends Phaser.Scene {
     if (this.state === 'over') return;
     this.updateStructures(dt);
     this.updateEnemyShots(dt);
+    this.sortDepth();
     this.cleanupBullets();
     this.drawHpBars();
     this.drawFx();
@@ -273,7 +292,8 @@ class GameScene extends Phaser.Scene {
     const v = new Phaser.Math.Vector2(vx, vy).normalize().scale(speed);
 
     const wp = this.worldPointer();
-    p.rotation = Phaser.Math.Angle.Between(p.x, p.y, wp.x, wp.y);
+    this.aim = Phaser.Math.Angle.Between(p.x, p.y, wp.x, wp.y);
+    this.face(p, this.aim);
     let canShoot = !this.buildType && !this.shop.isOpen && !this.clickOnUI;
 
     // Presos por especiais: Hunter imobiliza, Jockey conduz, Smoker puxa
@@ -291,26 +311,117 @@ class GameScene extends Phaser.Scene {
       v.scale(0.3).add(new Phaser.Math.Vector2(Math.cos(a) * 120, Math.sin(a) * 120));
     }
     p.setVelocity(v.x, v.y);
-    p.setScale(1, 1 + (v.lengthSq() > 0 ? Math.sin(time / 70) * 0.05 : 0));
+    const moving = v.lengthSq() > 0;
+    p.setScale(1, 1 + (moving ? Math.sin(time / 70) * 0.05 : 0));
+    const anim = this.animate(p, moving ? 'andar' : null, 1.2);
+    p.setAngle(moving ? Math.sin(time / 110) * (anim ? 2 : 5) : 0);
+
+    // Arma na altura da mão, do lado para onde o jogador olha
+    const side = p.flipX ? -1 : 1;
+    const gx = p.x + side * p.height * 0.09;
+    const gy = p.y + p.height * 0.08;
+    this.gun.setPosition(gx, gy).setRotation(this.aim).setFlipY(Math.cos(this.aim) < 0).setDepth(p.depth + 0.001);
 
     if (canShoot && this.input.activePointer.leftButtonDown() && time - this.lastShot > this.weapon.fireDelay) {
       const w = this.weapon;
       for (let i = 0; i < w.pellets; i++) {
-        const angle = p.rotation + Phaser.Math.FloatBetween(-w.spread, w.spread) / 2;
-        this.fireBullet(p.x, p.y, angle, 22, w);
+        const angle = this.aim + Phaser.Math.FloatBetween(-w.spread, w.spread) / 2;
+        this.fireBullet(gx, gy, angle, 13, w);
       }
       this.lastShot = time;
+      if (w !== WEAPONS.chamas) this.muzzleFlash(gx + Math.cos(this.aim) * 13, gy + Math.sin(this.aim) * 13, this.aim);
       if (w !== WEAPONS.chamas || Math.random() < 0.2) Sfx.shot();
     }
+  }
+
+  // Toca a animação do boneco desenhado ('andar', 'ataque' ou null para parado).
+  // Devolve false se a textura não tem quadros (arte antiga desenhada por código), para quem chamou gingar no lugar.
+  animate(sprite, nome, ritmo = 1) {
+    const base = sprite.texture.key;
+    if (!this.anims.exists(`${base}_andar`)) return false;
+    if (!nome) {
+      if (sprite.anims.isPlaying) sprite.anims.stop();
+      sprite.setFrame(0);
+    } else {
+      sprite.play(`${base}_${nome}`, true);
+      sprite.anims.timeScale = ritmo;
+    }
+    return true;
+  }
+
+  // Câmera 3/4: personagens são desenhados olhando para a direita e só espelham.
+  // facing guarda o ângulo real (usado, por exemplo, na investida do Charger).
+  // Zona morta: andando quase na vertical, mantém o lado em que já estava (senão o desvio do caminho faz piscar).
+  face(sprite, angle) {
+    sprite.facing = angle;
+    const c = Math.cos(angle);
+    if (Math.abs(c) > 0.3) sprite.setFlipX(c < 0);
+  }
+
+  // Quem está mais embaixo na tela (pés mais perto da câmera) fica na frente.
+  // Personagens, construções e decoração usam a mesma régua: 2 a 3, pela altura dos pés no mundo.
+  depthAt(bottomY) {
+    return 2 + bottomY / WORLD_H;
+  }
+
+  sortDepth() {
+    const feet = (s) => this.depthAt(s.y + s.displayHeight / 2);
+    this.zombies.getChildren().forEach((z) => { z.setDepth(feet(z)); this.moveShadow(z); });
+    if (!this.down) this.player.setDepth(feet(this.player));
+    this.moveShadow(this.player);
+    if (this.pet && this.pet.id !== 'gaviao') this.pet.setDepth(feet(this.pet));
+    if (this.pet) this.moveShadow(this.pet);
+  }
+
+  // Sombra no chão sob os pés (camada 1.6: acima do chão e das manchas, abaixo de tudo que fica de pé).
+  // largura em px; alto = distância até o chão (o gavião voa, a sombra fica bem abaixo dele).
+  addShadow(sprite, largura, alto = 0) {
+    const sombra = this.add.image(sprite.x, sprite.y, 'sombra').setDepth(1.6).setScale(largura / 32, largura / 32 * 0.9);
+    sprite.shadow = sombra;
+    sprite.shadowLift = alto;
+    sprite.once('destroy', () => sombra.destroy());
+    return sombra;
+  }
+
+  moveShadow(s) {
+    if (!s.shadow) return;
+    s.shadow.setPosition(s.x, s.y + s.displayHeight / 2 - 2 + s.shadowLift).setVisible(s.visible);
+  }
+
+  // Sangue: respingo na direção do golpe e, quando morre, uma mancha no chão que some devagar
+  bloodSplash(x, y, angle, n) {
+    const a = Phaser.Math.RadToDeg(angle);
+    this.bloodParticles.setEmitterAngle({ min: a - 30, max: a + 30 });
+    this.bloodParticles.emitParticleAt(x, y, n);
+  }
+
+  bloodStain(x, y, size) {
+    const m = this.add.image(x, y, 'mancha').setDepth(1.5).setAngle(Phaser.Math.Between(0, 359))
+      .setScale(size * Phaser.Math.FloatBetween(0.8, 1.2), size * Phaser.Math.FloatBetween(0.5, 0.7));
+    this.stains.push(m);
+    if (this.stains.length > 60) this.stains.shift().destroy();
+    this.tweens.add({ targets: m, alpha: 0, delay: 20000, duration: 6000, onComplete: () => m.destroy() });
+  }
+
+  // Câmera 3/4: o objeto fica de pé sobre a sua área no chão (w x h, centrada em x, y);
+  // o desenho pode ser mais alto que ela, mas a colisão continua sendo só essa área.
+  standOn(sprite, w, h) {
+    sprite.setOrigin(0.5, 1 - h / 2 / sprite.height);
+    if (sprite.body) {
+      sprite.refreshBody();
+      sprite.body.setSize(w, h, false);
+      sprite.body.setOffset((sprite.width - w) / 2, sprite.height - h);
+    }
+    return sprite.setDepth(this.depthAt(sprite.y + h / 2));
   }
 
   // shot: { damage, speed, pierce, blast, burn, life, tex }
   fireBullet(x, y, angle, offset, shot, damageMul = 1) {
     const bullet = this.bullets.get(x + Math.cos(angle) * offset, y + Math.sin(angle) * offset);
     if (!bullet) return;
-    bullet.setTexture(shot.tex || 'bullet').setActive(true).setVisible(true).setDepth(2).setRotation(angle).setAlpha(1).setScale(1);
+    bullet.setTexture(shot.tex || 'bullet').setActive(true).setVisible(true).setDepth(3.5).setRotation(angle).setAlpha(1).setScale(1);
     bullet.body.enable = true;
-    bullet.body.setSize(bullet.width, bullet.height);
+    bullet.body.setSize(Math.min(bullet.width, 10), Math.min(bullet.height, 10));
     bullet.damage = shot.damage * damageMul;
     bullet.pierce = shot.pierce || 0;
     bullet.blast = shot.blast || 0;
@@ -319,6 +430,11 @@ class GameScene extends Phaser.Scene {
     bullet.born = this.time.now;
     bullet.hits = new Set();
     this.physics.velocityFromRotation(angle, shot.speed || 700, bullet.body.velocity);
+  }
+
+  muzzleFlash(x, y, angle) {
+    const f = this.add.image(x, y, 'clarao').setOrigin(0.2, 0.5).setRotation(angle).setDepth(3.6).setBlendMode('ADD');
+    this.tweens.add({ targets: f, alpha: 0, scale: 1.4, duration: 70, onComplete: () => f.destroy() });
   }
 
   killBullet(bullet) {
@@ -347,6 +463,7 @@ class GameScene extends Phaser.Scene {
       this.explode(bullet.x, bullet.y, bullet.blast, bullet.damage);
       return this.killBullet(bullet);
     }
+    if (!bullet.burn) this.bloodSplash(z.x, z.y - z.displayHeight * 0.15, bullet.rotation, 5);
     this.damageZombie(z, bullet.damage, bullet.burn);
     if (bullet.pierce > 0) bullet.pierce -= 1;
     else this.killBullet(bullet);
@@ -367,6 +484,11 @@ class GameScene extends Phaser.Scene {
     this.hp -= amount;
     this.damageTaken += amount;
     if (amount > 3) this.cameras.main.shake(80, 0.004);
+    if (this.now > (this.hurtFlashAt || 0)) {
+      this.hurtFlashAt = this.now + 350;
+      this.hurtFlash.setAlpha(Math.min(0.45, 0.15 + amount * 0.03));
+      this.tweens.add({ targets: this.hurtFlash, alpha: 0, duration: 300 });
+    }
     if (!this.player.isTinted) {
       this.player.setTint(0xff6666);
       this.time.delayedCall(120, () => this.player.clearTint());
@@ -380,6 +502,7 @@ class GameScene extends Phaser.Scene {
     this.downThisWave = true;
     this.releasePins();
     this.player.setVisible(false).setVelocity(0, 0);
+    this.gun.setVisible(false);
     this.player.body.enable = false;
     this.setBuild(null);
     this.hud.banner('Você caiu! Volta na próxima horda');
@@ -391,6 +514,7 @@ class GameScene extends Phaser.Scene {
     this.down = false;
     this.hp = this.maxHp;
     this.player.setPosition(BASE_X, BASE_Y + BASE_H / 2 + 50).setVisible(true);
+    this.gun.setVisible(true);
     this.player.body.enable = true;
   }
 
@@ -487,11 +611,11 @@ class GameScene extends Phaser.Scene {
     this.zombies.getChildren().forEach((z) => {
       if (z.hp >= z.maxHp) return;
       const w = z.def.radius * 2;
-      bar(z.x - w / 2, z.y - z.def.radius - 12, w, z.hp / z.maxHp, 0xe8453c);
+      bar(z.x - w / 2, z.y - z.displayHeight / 2 - 8, w, z.hp / z.maxHp, 0xe8453c);
     });
     this.structures.forEach((s) => {
       if (!s.maxHp || s.hp >= s.maxHp) return;
-      bar(s.x - 18, s.y - 28, 36, s.hp / s.maxHp, 0x7fdfff);
+      bar(s.x - 18, s.y + GRID / 2 - s.sprite.displayHeight - 8, 36, s.hp / s.maxHp, 0x7fdfff);
     });
   }
 
