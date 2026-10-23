@@ -245,6 +245,22 @@ function servidor() {
   await foto('09e_dicas_h', 'Bilhete de dicas reaberto com [H] durante o jogo');
   await page.evaluate(() => { const s = game.scene.getScene('Game'); s.input.keyboard.emit('keydown-H'); });
 
+  // Casa nos 3 estados de dano: com o desenho base<n>_dano1/2 a imagem troca
+  const danos = [];
+  for (const [frac, nome] of [[0.5, '09f_casa_avariada'], [0.2, '09g_casa_ruinas']]) {
+    danos.push(await page.evaluate((frac) => {
+      const s = game.scene.getScene('Game');
+      s.base.hp = s.base.maxHp * frac;
+      s.updateBaseLook();
+      s.player.setPosition(s.base.sprite.x, s.base.sprite.y + 150);
+      return s.base.sprite.texture.key;
+    }, frac));
+    await page.waitForTimeout(400);
+    await foto(nome, `Casa com ${frac * 100}% de vida: ${danos[danos.length - 1]}`);
+  }
+  await page.evaluate(() => { const s = game.scene.getScene('Game'); s.base.hp = s.base.maxHp; s.updateBaseLook(); });
+  checar('casa troca de desenho nos estados de dano', danos[0].endsWith('_dano1') && danos[1].endsWith('_dano2'), danos.join(', '));
+
   // Desempenho: quadros por segundo com tudo em cena
   const fps = await page.evaluate(() => new Promise((ok) => {
     let n = 0;
