@@ -120,6 +120,18 @@ function servidor() {
   const esq = await page.evaluate(() => { const s = game.scene.getScene('Game'); return { flip: s.player.flipX, rot: s.player.rotation, armaFlipY: s.gun.flipY }; });
   checar('mira à esquerda: jogador espelha, arma acompanha', esq.flip && esq.armaFlipY && Math.abs(esq.rot) < 0.2, JSON.stringify(esq));
 
+  // Armas desenhadas: AK-47 e escopeta na mão, mirando para a direita (arma de perfil, cano para fora)
+  for (const id of ['ak47', 'escopeta']) {
+    await page.evaluate((w) => { const s = game.scene.getScene('Game'); s.owned.push(w); s.weapon = WEAPONS[w]; }, id);
+    c = await centro();
+    await page.mouse.move(c.x + 280, c.y + 40);
+    await page.mouse.down();
+    await page.waitForTimeout(300);
+    await foto(`05_arma_${id}`, `Jogador com a ${id} desenhada, atirando para a direita`);
+    await page.mouse.up();
+  }
+  await page.evaluate(() => { const s = game.scene.getScene('Game'); s.weapon = WEAPONS.pistola; });
+
   // Zumbis andando: precisam espelhar na direção do jogador e nunca girar mais que o gingado
   await page.waitForTimeout(1500);
   await foto('06_horda_chegando', 'A horda se aproximando do jogador');
