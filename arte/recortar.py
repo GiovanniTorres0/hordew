@@ -54,6 +54,7 @@ def recortar(caminho, s, bruta=False, molde=None):
         m = Image.open(molde).convert("RGB").resize(img.size)
         fora = mascara_fundo(np.array(m))
         fundo |= ~ndimage.binary_dilation(~fora, iterations=max(2, img.size[0] // 150))
+        fundo[np.nonzero(~fora)[0].max() + 1:] = True  # nada abaixo da base da casa original
     if s.get("fundo_largo"):
         # Sombra rosa escura e pouco saturada colada ao objeto (ex.: base da árvore): cresce o fundo por ela
         f = rgb.astype(np.float32) / 255

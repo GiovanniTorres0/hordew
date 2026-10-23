@@ -19,6 +19,7 @@ def recorte(caminho, molde=None):
     if molde:  # estados de dano: o mesmo corte por silhueta do original que recortar.py faz
         fora = mascara_fundo(np.array(Image.open(molde).convert("RGB").resize((1024, 1024))))
         fundo |= ~ndimage.binary_dilation(~fora, iterations=6)
+        fundo[np.nonzero(~fora)[0].max() + 1:] = True
     alfa = (~fundo) * 255
     im = Image.fromarray(np.dstack([rgb, alfa]).astype(np.uint8), "RGBA")
     return im.crop(im.getbbox() or (0, 0, 1024, 1024))
