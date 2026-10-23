@@ -575,6 +575,7 @@ class GameScene extends Phaser.Scene {
       this.smokedBy.mode = 'walk';
       this.smokedBy.cooldown = this.time.now + 7000;
     }
+    if (this.pinnedBy) this.hud.clearBanner(); // o 'Hunter! Aperte Espaço' não fica na tela depois de solto
     this.pinnedBy = null;
     this.smokedBy = null;
     this.pinBreak = 0;
@@ -667,8 +668,8 @@ class GameScene extends Phaser.Scene {
       const coberto = this.zombies.getChildren().some((z) => z.depth > p.depth && Math.abs(z.x - p.x) < z.displayWidth / 2 + 10
         && z.y - z.displayHeight / 2 < pes && z.y + z.displayHeight / 2 > p.y);
       if (coberto) {
-        g.lineStyle(2, 0xe9dcc6, 0.8).strokeEllipse(p.x, pes, 34, 12);
-        g.lineStyle(1.5, 0xe9dcc6, 0.55).strokeRoundedRect(p.x - p.displayWidth / 2 + 4, p.y - p.displayHeight / 2, p.displayWidth - 8, p.displayHeight - 4, 10);
+        g.lineStyle(4, 0x1a140c, 0.6).strokeEllipse(p.x, pes, 38, 14);
+        g.lineStyle(2.5, 0xe9dcc6, 0.9).strokeEllipse(p.x, pes, 38, 14);
       }
     }
     const now = this.time.now;
@@ -767,7 +768,7 @@ class GameScene extends Phaser.Scene {
     this.shop.close();
     this.panel.close();
     this.setBuild(null);
-    let stats = this.wave > 0 ? `Você chegou à horda ${this.wave} (${this.diff.name}).` : `A casa caiu antes da primeira horda (${this.diff.name}).`;
+    let stats = this.wave > 0 ? `Você chegou à horda ${this.wave} (${this.diff.name}).` : `Antes da primeira horda (${this.diff.name}).`;
     if (this.infinite) stats += ` Recorde no modo infinito: horda ${saveInfiniteRecord(this.levelIndex, this.wave)}.`;
     this.hud.endScreen('FIM DE JOGO', reason, stats, '[R] recomeçar   [M] menu');
     Sfx.lose();

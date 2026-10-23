@@ -596,6 +596,11 @@ class Hud {
     this.scene.tweens.add({ targets: this.floatLine, alpha: 0, delay: 2200, duration: 600 });
   }
 
+  clearBanner() {
+    this.scene.tweens.killTweensOf(this.bannerText);
+    this.bannerText.setAlpha(0);
+  }
+
   endScreen(title, reason, stats, hint) {
     const s = this.scene;
     s.tweens.killTweensOf(this.bannerText);
