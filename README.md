@@ -4,6 +4,8 @@ Tower defense de zumbis em 2D para navegador. Escolha seu personagem (José Perd
 
 **Jogue online:** https://giovannitorres0.github.io/hordew/
 
+**Progresso da próxima versão:** https://giovannitorres0.github.io/hordew/progresso/
+
 ## 🧪 Testar mudanças (para o grupo)
 
 **Lista de tudo que está para testar:** https://giovannitorres0.github.io/hordew/preview/
