@@ -120,6 +120,18 @@ function servidor() {
   const esq = await page.evaluate(() => { const s = game.scene.getScene('Game'); return { flip: s.player.flipX, rot: s.player.rotation, armaFlipY: s.gun.flipY }; });
   checar('mira à esquerda: jogador espelha, arma acompanha', esq.flip && esq.armaFlipY && Math.abs(esq.rot) < 0.2, JSON.stringify(esq));
 
+  // Armas desenhadas: AK-47 e escopeta na mão, mirando para a direita (arma de perfil, cano para fora)
+  for (const id of ['ak47', 'escopeta']) {
+    await page.evaluate((w) => { const s = game.scene.getScene('Game'); s.owned.push(w); s.weapon = WEAPONS[w]; }, id);
+    c = await centro();
+    await page.mouse.move(c.x + 280, c.y + 40);
+    await page.mouse.down();
+    await page.waitForTimeout(300);
+    await foto(`05_arma_${id}`, `Jogador com a ${id} desenhada, atirando para a direita`);
+    await page.mouse.up();
+  }
+  await page.evaluate(() => { const s = game.scene.getScene('Game'); s.weapon = WEAPONS.pistola; });
+
   // Zumbis andando: precisam espelhar na direção do jogador e nunca girar mais que o gingado
   await page.waitForTimeout(1500);
   await foto('06_horda_chegando', 'A horda se aproximando do jogador');
@@ -196,6 +208,59 @@ function servidor() {
   await page.waitForTimeout(800);
   await foto('09_construcoes', 'Todas as construções colocadas perto do jogador, com zumbis em volta');
 
+  // Interface: painel da torre, loja e o bilhete de dicas ([H])
+  await page.evaluate(() => {
+    const s = game.scene.getScene('Game');
+    s.panel.open(s.structures.find((t) => t.def.upgradable) || s.base);
+  });
+  await page.waitForTimeout(400);
+  await foto('09b_painel_torre', 'Painel de upgrades de uma torre (botão direito), em madeira e metal');
+  await page.evaluate(() => {
+    const s = game.scene.getScene('Game');
+    s.panel.close();
+    s.money = 300;
+    s.shop.open();
+  });
+  await page.waitForTimeout(400);
+  await foto('09c_loja', 'Loja aberta na aba de armas: madeira, tiras de papel, preço escrito à mão');
+  await page.evaluate(() => { const s = game.scene.getScene('Game'); s.shop.tab = 'pet'; s.shop.render(); });
+  await page.waitForTimeout(300);
+  await foto('09d_loja_pets', 'Loja na aba de pets, com o desenho de cada pet');
+  const dicas = await page.evaluate(() => {
+    const s = game.scene.getScene('Game');
+    s.shop.close();
+    s.hud.bannerText.setAlpha(0);
+    s.hud.update();
+    const inicio = s.hud.tips.visible; // na horda 0 o bilhete aparece sozinho
+    s.wave = Math.max(1, s.wave);
+    s.hud.update();
+    const antes = s.hud.tips.visible;
+    s.input.keyboard.emit('keydown-H');
+    s.hud.update();
+    return { inicio, antes, depois: s.hud.tips.visible };
+  });
+  checar('bilhete de dicas some depois da 1ª horda e volta com [H]', dicas.inicio && !dicas.antes && dicas.depois, JSON.stringify(dicas));
+  await page.evaluate(() => { const h = game.scene.getScene('Game').hud; h.scene.tweens.killTweensOf(h.bannerText); h.bannerText.setAlpha(0); });
+  await page.waitForTimeout(300);
+  await foto('09e_dicas_h', 'Bilhete de dicas reaberto com [H] durante o jogo');
+  await page.evaluate(() => { const s = game.scene.getScene('Game'); s.input.keyboard.emit('keydown-H'); });
+
+  // Casa nos 3 estados de dano: com o desenho base<n>_dano1/2 a imagem troca
+  const danos = [];
+  for (const [frac, nome] of [[0.5, '09f_casa_avariada'], [0.2, '09g_casa_ruinas']]) {
+    danos.push(await page.evaluate((frac) => {
+      const s = game.scene.getScene('Game');
+      s.base.hp = s.base.maxHp * frac;
+      s.updateBaseLook();
+      s.player.setPosition(s.base.sprite.x, s.base.sprite.y + 150);
+      return s.base.sprite.texture.key;
+    }, frac));
+    await page.waitForTimeout(400);
+    await foto(nome, `Casa com ${frac * 100}% de vida: ${danos[danos.length - 1]}`);
+  }
+  await page.evaluate(() => { const s = game.scene.getScene('Game'); s.base.hp = s.base.maxHp; s.updateBaseLook(); });
+  checar('casa troca de desenho nos estados de dano', danos[0].endsWith('_dano1') && danos[1].endsWith('_dano2'), danos.join(', '));
+
   // Desempenho: quadros por segundo com tudo em cena
   const fps = await page.evaluate(() => new Promise((ok) => {
     let n = 0;
@@ -219,6 +284,14 @@ function servidor() {
     await foto(`10_fase${level + 1}`, `Fase ${level + 1}: chão, rua e decoração, com José (roupa verde) e alguns zumbis`);
   }
 
+  // Tela de fim de jogo e menu de preparação
+  await page.evaluate(() => { game.scene.getScene('Game').gameOver('A casa caiu.'); });
+  await page.waitForTimeout(600);
+  await foto('11_fim', 'Tela de fim de jogo');
+
+  // Música gravada: as 8 faixas decodificadas depois do primeiro clique, e o clima certo tocando
+  const musica = await page.evaluate(() => ({ faixas: Music.tracksLoaded(), clima: Music.mood() }));
+  checar('música gravada carregada (8 faixas)', musica.faixas === 8, JSON.stringify(musica));
   checar('sem erros no console', erros.length === 0, erros.slice(0, 10).join(' | '));
   checar('sem arquivos faltando', falhas.length === 0, falhas.slice(0, 10).join(' | '));
 

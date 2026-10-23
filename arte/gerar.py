@@ -24,10 +24,15 @@ def fluxo(prompt, semente, lora=1.0):
     }
 
 
-def gerar(prompt, semente, saida, lora=1.0):
-    corpo = json.dumps({"prompt": fluxo(prompt, semente, lora)}).encode()
+def enviar(fluxo_api):
+    """Põe um fluxo na fila do ComfyUI e devolve o id."""
+    corpo = json.dumps({"prompt": fluxo_api}).encode()
     req = urllib.request.Request(URL + "/prompt", data=corpo, headers={"Content-Type": "application/json"})
-    pid = json.load(urllib.request.urlopen(req))["prompt_id"]
+    return json.load(urllib.request.urlopen(req))["prompt_id"]
+
+
+def esperar_e_baixar(pid, no_saida, saida, chave="images"):
+    """Espera o fluxo terminar e grava o arquivo do nó de saída indicado (imagem, ou áudio com chave="audio")."""
     while True:
         h = json.load(urllib.request.urlopen(f"{URL}/history/{pid}"))
         if pid in h:
@@ -35,10 +40,14 @@ def gerar(prompt, semente, saida, lora=1.0):
         time.sleep(0.5)
     if h[pid].get("status", {}).get("status_str") != "success":
         raise RuntimeError(json.dumps(h[pid].get("status"))[:500])
-    img = h[pid]["outputs"]["10"]["images"][0]
+    img = h[pid]["outputs"][no_saida][chave][0]
     q = f"{URL}/view?filename={img['filename']}&subfolder={img['subfolder']}&type={img['type']}"
     with open(saida, "wb") as f:
         f.write(urllib.request.urlopen(q).read())
+
+
+def gerar(prompt, semente, saida, lora=1.0):
+    esperar_e_baixar(enviar(fluxo(prompt, semente, lora)), "10", saida)
 
 
 def main():
