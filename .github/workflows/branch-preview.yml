@@ -67,7 +67,10 @@ jobs:
             {
               echo "$BRANCH"
               git -C src log -1 --format='%cd' --date=format:'%d/%m/%Y %H:%M'
-              git -C src log -1 --no-merges --format='%s'
+              # nome da última mudança própria da branch (ignora merges e o que veio da main)
+              git -C src fetch -q --depth 30 origin main || true
+              MSG=$(git -C src log -1 --no-merges --format='%s' FETCH_HEAD..HEAD 2>/dev/null)
+              echo "${MSG:-$(git -C src log -1 --format='%s')}"
               git -C src log -1 --format='%h'
             } > "$DEST/.preview-info"
           fi
