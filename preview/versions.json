@@ -1,5 +1,5 @@
 [
-{"slug":"claude-camera-3-4","branch":"claude/camera-3-4","date":"23/10/2026 19:55","msg":"Anel forte em vez da caixa no jogador encoberto; banner do Hunter some ao soltar; fim de jogo sem texto repetido","sha":"bbcb75a"}
+{"slug":"claude-camera-3-4","branch":"claude/camera-3-4","date":"23/10/2026 20:42","msg":"Multiplayer cooperativo online por link (PeerJS): sala com código, até 4 jogadores na mesma casa, dinheiro da equipe; página de progresso volta a abrir (89%)","sha":"2a2f9a4"}
 ,{"slug":"claude-issue-4-20261023-0247","branch":"claude/issue-4-20261023-0247","date":"23/10/2026 02:48","msg":"Noite: zumbis só aparecem na luz e lanterna do jogador em cone","sha":"777da43"}
 ,{"slug":"claude-issue-3-20261023-0059","branch":"claude/issue-3-20261023-0059","date":"22/10/2026 23:35","msg":"feat: adiciona um rio longe da casa","sha":"363305d"}
 ]

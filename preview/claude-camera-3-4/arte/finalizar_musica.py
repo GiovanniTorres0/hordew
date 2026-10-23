@@ -7,7 +7,7 @@ import av
 import numpy as np
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
-ALVO = {"dia": -19.0, "noite": -17.0, "tank": -16.0, "witch": -23.0}
+ALVO = {"dia": -22.0, "noite": -20.0, "tank": -19.0, "witch": -25.0}
 
 
 def ler(caminho):
