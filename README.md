@@ -4,6 +4,20 @@ Tower defense de zumbis em 2D para navegador. Escolha seu personagem (José Perd
 
 **Jogue online:** https://giovannitorres0.github.io/hordew/
 
+## 🧪 Testar mudanças (para o grupo)
+
+**Lista de tudo que está para testar:** https://giovannitorres0.github.io/hordew/preview/
+
+Como funciona:
+
+1. Abra uma [Issue](https://github.com/GiovanniTorres0/hordew/issues/new) com `@claude` no texto pedindo a mudança (ex.: "@claude coloca um rio no mapa").
+2. O Claude cria uma branch com a alteração e responde na Issue com o **link de teste**.
+3. O link de cada branch segue o formato `https://giovannitorres0.github.io/hordew/preview/<nome-da-branch>/`, trocando `/` por `-`.
+   Ex.: a branch `claude/issue-3-20261023-0059` fica em
+   https://giovannitorres0.github.io/hordew/preview/claude-issue-3-20261023-0059/
+4. O link leva 1 ou 2 minutos para ficar pronto depois de cada mudança. Recarregue com **Ctrl+F5** para não pegar a versão antiga.
+5. Ficou bom? Comente na Issue e clique em **Create PR** para levar a mudança para a versão oficial. Mais detalhes em [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Como jogar
 
 | Tecla | Ação |

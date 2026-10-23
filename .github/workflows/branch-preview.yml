@@ -1,0 +1,102 @@
+# Cada branch (ex.: as que o Claude cria a partir das Issues) ganha um link de teste:
+# https://giovannitorres0.github.io/hordew/preview/<nome-da-branch-com-/-trocado-por-->/
+# A lista de todas as prévias fica em https://giovannitorres0.github.io/hordew/preview/
+# A prévia é apagada quando a branch é apagada.
+name: Prévia da branch
+
+on:
+  push:
+    branches-ignore: [main, gh-pages]
+  delete:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch para publicar a prévia
+        required: true
+
+permissions:
+  contents: write
+
+concurrency: pages-deploy
+
+jobs:
+  preview:
+    if: github.event_name != 'delete' || github.event.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descobrir a branch
+        id: info
+        run: |
+          if [ "${{ github.event_name }}" = "delete" ]; then
+            BRANCH="${{ github.event.ref }}"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            BRANCH="${{ inputs.branch }}"
+          else
+            BRANCH="${GITHUB_REF_NAME}"
+          fi
+          SLUG=$(echo "$BRANCH" | sed 's#[^A-Za-z0-9._-]#-#g')
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
+
+      - name: Baixar a branch
+        if: github.event_name != 'delete'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.info.outputs.branch }}
+          path: src
+
+      - name: Baixar o site (gh-pages)
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: site
+
+      - name: Atualizar prévia e lista
+        env:
+          BRANCH: ${{ steps.info.outputs.branch }}
+          SLUG: ${{ steps.info.outputs.slug }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          esc() { sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g'; }
+          DEST="site/preview/$SLUG"
+          rm -rf "$DEST"
+          if [ "$EVENT" != "delete" ]; then
+            mkdir -p "$DEST"
+            rsync -a --exclude .git --exclude .github src/ "$DEST/"
+            {
+              echo "$BRANCH"
+              git -C src log -1 --format='%cd' --date=format:'%d/%m/%Y %H:%M'
+              git -C src log -1 --format='%s'
+            } > "$DEST/.preview-info"
+          fi
+
+          mkdir -p site/preview
+          {
+            echo '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">'
+            echo '<meta name="viewport" content="width=device-width,initial-scale=1">'
+            echo '<title>Hordew: prévias para testar</title>'
+            echo '<style>body{font-family:system-ui,sans-serif;max-width:760px;margin:40px auto;padding:0 16px;background:#111;color:#eee}a{color:#7fd67f}li{margin:14px 0}small{color:#aaa}</style>'
+            echo '</head><body><h1>Hordew: prévias para testar</h1>'
+            echo '<p>Cada mudança feita a partir de uma Issue aparece aqui. Clique, jogue e comente na Issue se ficou bom. Versão oficial: <a href="../">giovannitorres0.github.io/hordew</a></p><ul>'
+            found=0
+            for f in $(ls -t site/preview/*/.preview-info 2>/dev/null); do
+              d=$(basename "$(dirname "$f")")
+              b=$(sed -n 1p "$f" | esc); dt=$(sed -n 2p "$f" | esc); msg=$(sed -n 3p "$f" | esc)
+              echo "<li><a href=\"$d/\"><b>$b</b></a><br><small>$msg · atualizado em $dt</small></li>"
+              found=1
+            done
+            [ $found = 0 ] && echo '<li>Nenhuma prévia no momento.</li>'
+            echo '</ul></body></html>'
+          } > site/preview/index.html
+
+          cd site
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A preview
+          git diff --cached --quiet && exit 0
+          git commit -m "Prévia: $BRANCH ($EVENT)"
+          for i in 1 2 3; do git pull --rebase origin gh-pages && git push origin gh-pages && break; sleep 5; done
+
+      - name: Mostrar link
+        if: github.event_name != 'delete'
+        run: echo "### Link para testar: https://giovannitorres0.github.io/hordew/preview/${{ steps.info.outputs.slug }}/" >> "$GITHUB_STEP_SUMMARY"

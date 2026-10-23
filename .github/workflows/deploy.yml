@@ -1,5 +1,5 @@
 # Publica a versão oficial (branch main) na raiz do GitHub Pages.
-# As prévias dos Pull Requests ficam em pr-preview/ e não são apagadas aqui.
+# As prévias dos Pull Requests (pr-preview/) e das branches (preview/) não são apagadas aqui.
 name: Publicar jogo
 
 on:
@@ -20,5 +20,7 @@ jobs:
         with:
           folder: .
           branch: gh-pages
-          clean-exclude: pr-preview/
+          clean-exclude: |
+            pr-preview/
+            preview/
           force: false

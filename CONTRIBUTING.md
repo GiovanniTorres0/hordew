@@ -9,3 +9,9 @@
    Ao fazer o merge, a versão oficial em https://giovannitorres0.github.io/hordew/ é atualizada sozinha.
 
 Dica: para jogar sem cache depois de uma atualização, recarregue com Ctrl+F5.
+
+## Mudanças feitas pelo Claude a partir de Issues
+
+Quando o Claude resolve uma Issue ele cria uma branch (sem Pull Request). Cada branch ganha um link de teste automático:
+`https://giovannitorres0.github.io/hordew/preview/<nome-da-branch-com-/-trocado-por-->/`.
+Todos os links ficam listados em https://giovannitorres0.github.io/hordew/preview/
