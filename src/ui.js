@@ -451,8 +451,8 @@ class Hud {
     scene.input.keyboard.on('keydown-H', () => { this.tipsForced = !this.tips.visible; });
 
     this.makeToolbar();
-    this.bannerText = fixed(scene.add.text(GAME_W / 2, GAME_H / 2 + 130, '', {
-      ...TEXT, fontFamily: TITLE_FONT, fontSize: '58px', color: UI.blood, stroke: '#120e0b', strokeThickness: 9, align: 'center',
+    this.bannerText = fixed(scene.add.text(GAME_W / 2, 112, '', {
+      ...TEXT, fontFamily: TITLE_FONT, fontSize: '44px', color: UI.blood, stroke: '#120e0b', strokeThickness: 7, align: 'center',
     }).setOrigin(0.5).setAlpha(0), 25);
     this.floatLine = fixed(scene.add.text(GAME_W / 2, GAME_H - 172, '', { ...TEXT, fontSize: '20px', color: UI.gold }).setOrigin(0.5).setAlpha(0), 24);
 
