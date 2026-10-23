@@ -160,7 +160,7 @@ const EVENTS = {
   dupla: { name: 'Horda dupla', desc: 'O dobro de zumbis, o dobro de dinheiro' },
 };
 
-const TITLE_FONT = '"Creepster", "Trebuchet MS", sans-serif';
+const TITLE_FONT = '"Rubik Dirt", Impact, sans-serif';
 
 const START_MONEY = 200;
 const BASE_ARMOR = 0.3; // a base recebe só 30% do dano dos zumbis
