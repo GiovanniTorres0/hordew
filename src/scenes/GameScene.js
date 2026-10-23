@@ -43,6 +43,14 @@ class GameScene extends Phaser.Scene {
     this.puddles = [];
     this.bolts = [];
     this.darkness = 0;
+    // Cooperativo online (src/game/coop.js): net = { role: 'host' | 'guest', me, roster }
+    this.net = this.setup.net || null;
+    this.isHost = !!(this.net && this.net.role === 'host');
+    this.isGuest = !!(this.net && this.net.role === 'guest');
+    this.others = new Map(); // bonecos dos outros jogadores
+    this.shotOwner = 0;
+    this.netShots = [];
+    this.netEvents = [];
   }
 
   create() {
@@ -88,6 +96,7 @@ class GameScene extends Phaser.Scene {
     this.shop = new Shop(this);
     this.panel = new TowerPanel(this);
     this.startIntermission(40);
+    if (this.net) this.netStart();
   }
 
   // ---------- Mapa ----------
@@ -149,6 +158,7 @@ class GameScene extends Phaser.Scene {
     };
     this.base.baseTex = tex;
     sprite.structure = this.base;
+    this.base.nid = 0;
   }
 
   // ---------- Noite ----------
@@ -173,6 +183,7 @@ class GameScene extends Phaser.Scene {
       if (this.event === 'apagao' && (s.type === 'tesla' || s.type === 'farol')) return;
       list.push([s.x, s.y, s.stats.light]);
     });
+    this.others.forEach((o) => { if (!o.down) list.push([o.s.x, o.s.y, PLAYER.light]); });
     if (this.pet && this.pet.scouting) list.push([this.pet.x, this.pet.y, this.pet.def.scout.light]);
     this.zombies.getChildren().forEach((z) => { if (z.burn && z.burn.t > 0) list.push([z.x, z.y, 60]); });
     return list.map(([x, y, r]) => [x, y, r * fog]);
@@ -229,12 +240,18 @@ class GameScene extends Phaser.Scene {
     this.input.keyboard.on('keydown-P', () => this.togglePause());
     this.input.keyboard.on('keydown-SPACE', () => {
       if (this.pinnedBy) this.struggle();
+      else if (this.state === 'intermission' && this.isGuest) this.ask({ t: 'chamar' });
       else if (this.state === 'intermission' && !this.paused) this.startWave(true);
     });
-    this.input.keyboard.on('keydown-R', () => { if (this.state === 'over') this.scene.restart(this.setup); });
-    this.input.keyboard.on('keydown-M', () => { if (this.state === 'over') this.scene.start('Menu'); });
+    // No cooperativo só o anfitrião recomeça; os amigos recomeçam junto quando ele recomeça
+    this.input.keyboard.on('keydown-R', () => { if (this.state === 'over' && !this.isGuest) this.scene.restart(this.setup); });
+    this.input.keyboard.on('keydown-M', () => {
+      if (this.state !== 'over') return;
+      if (this.net) Net.leave();
+      this.scene.start('Menu');
+    });
     this.input.keyboard.on('keydown-N', () => {
-      if (this.state === 'over' && this.won && this.levelIndex + 1 < LEVELS.length) {
+      if (this.state === 'over' && this.won && !this.isGuest && this.levelIndex + 1 < LEVELS.length) {
         this.scene.restart({ ...this.setup, level: this.levelIndex + 1 });
       }
     });
@@ -262,12 +279,12 @@ class GameScene extends Phaser.Scene {
   }
 
   nextWeapon() {
-    const i = this.owned.indexOf(Object.keys(WEAPONS).find((k) => WEAPONS[k] === this.weapon));
+    const i = this.owned.indexOf(this.weaponId());
     this.weapon = WEAPONS[this.owned[(i + 1) % this.owned.length]];
   }
 
   togglePause() {
-    if (this.state === 'over') return;
+    if (this.state === 'over' || this.net) return; // online não dá para parar o mundo dos outros
     this.paused = !this.paused;
     if (this.paused) {
       this.physics.pause();
@@ -282,10 +299,12 @@ class GameScene extends Phaser.Scene {
   }
 
   update(time, delta) {
+    if (this.isGuest) return this.guestUpdate(time, delta);
     if (this.state === 'over' || this.paused) return;
     const dt = Math.min(delta, 50) / 1000;
     this.now = this.time.now;
     this.updatePlayer(time, dt);
+    if (this.net) this.updateOthers(dt);
     this.updateGhost();
     this.updatePet(dt);
     this.updateZombies(dt);
@@ -303,6 +322,7 @@ class GameScene extends Phaser.Scene {
     }
     this.hud.update();
     this.updateBaseLook();
+    if (this.net) this.netTick();
   }
 
   updatePlayer(time, dt) {
@@ -341,28 +361,38 @@ class GameScene extends Phaser.Scene {
     const anim = this.animate(p, moving ? 'andar' : null, 1.2);
     p.setAngle(moving ? Math.sin(time / 110) * (anim ? 2 : 5) : 0);
 
-    // Arma na altura da mão, do lado para onde o jogador olha
-    const side = p.flipX ? -1 : 1;
-    const gx = p.x + side * p.height * 0.09;
-    const gy = p.y + p.height * 0.08;
-    // Cada arma tem o seu desenho (w_<id>); sem ele, a pistola feita por código
-    const wid = Object.keys(WEAPONS).find((k) => WEAPONS[k] === this.weapon);
-    const wtex = this.textures.exists(`w_${wid}`) ? `w_${wid}` : 'arma';
-    // Desenhos exportados em resolução dobrada e com contorno; a 0.7 ficam um pouco maiores que o real
-    if (this.gun.texture.key !== wtex) this.gun.setTexture(wtex).setOrigin(wtex === 'arma' ? 0.25 : 0.3, wtex === 'arma' ? 0.4 : 0.55).setScale(wtex === 'arma' ? 1 : wtex === 'w_pistola' ? 0.5 : 0.7); // pistola menor: na escala das outras ficava do tamanho do antebraço
-    this.gun.setPosition(gx, gy).setRotation(this.aim).setFlipY(Math.cos(this.aim) < 0).setDepth(p.depth + 0.001);
+    const wid = this.weaponId();
+    const { gx, gy } = this.placeGun(p, this.gun, this.aim, wid);
 
     if (canShoot && this.input.activePointer.leftButtonDown() && time - this.lastShot > this.weapon.fireDelay) {
       const w = this.weapon;
+      const angles = [];
+      this.shotOwner = this.net ? this.net.me : 0;
       for (let i = 0; i < w.pellets; i++) {
         const angle = this.aim + Phaser.Math.FloatBetween(-w.spread, w.spread) / 2;
+        angles.push(angle);
         this.fireBullet(gx, gy, angle, this.gun.displayWidth * 0.7, w);
       }
+      this.shotOwner = 0;
+      if (this.isGuest) this.netShot(gx, gy, angles, wid, this.gun.displayWidth * 0.7);
       this.lastShot = time;
       const muzzle = this.gun.displayWidth * 0.7;
       if (w !== WEAPONS.chamas) this.muzzleFlash(gx + Math.cos(this.aim) * muzzle, gy + Math.sin(this.aim) * muzzle, this.aim);
       if (w !== WEAPONS.chamas || Math.random() < 0.2) Sfx.gun(wid);
     }
+  }
+
+  // Arma na altura da mão, do lado para onde o boneco olha; devolve de onde sai o tiro
+  placeGun(p, gun, aim, wid) {
+    const side = p.flipX ? -1 : 1;
+    const gx = p.x + side * p.height * 0.09;
+    const gy = p.y + p.height * 0.08;
+    // Cada arma tem o seu desenho (w_<id>); sem ele, a pistola feita por código
+    const wtex = this.textures.exists(`w_${wid}`) ? `w_${wid}` : 'arma';
+    // Desenhos exportados em resolução dobrada e com contorno; a 0.7 ficam um pouco maiores que o real
+    if (gun.texture.key !== wtex) gun.setTexture(wtex).setOrigin(wtex === 'arma' ? 0.25 : 0.3, wtex === 'arma' ? 0.4 : 0.55).setScale(wtex === 'arma' ? 1 : wtex === 'w_pistola' ? 0.5 : 0.7); // pistola menor: na escala das outras ficava do tamanho do antebraço
+    gun.setPosition(gx, gy).setRotation(aim).setFlipY(Math.cos(aim) < 0).setDepth(p.depth + 0.001);
+    return { gx, gy };
   }
 
   // Toca a animação do boneco desenhado ('andar', 'ataque' ou null para parado).
@@ -402,6 +432,11 @@ class GameScene extends Phaser.Scene {
     this.moveShadow(this.player);
     if (this.pet && this.pet.id !== 'gaviao') this.pet.setDepth(feet(this.pet));
     if (this.pet) this.moveShadow(this.pet);
+    this.others.forEach((o) => {
+      o.s.setDepth(feet(o.s));
+      o.gun.setDepth(o.s.depth + 0.001);
+      this.moveShadow(o.s);
+    });
   }
 
   // Sombra no chão sob os pés (camada 1.6: acima do chão e das manchas, abaixo de tudo que fica de pé).
@@ -459,12 +494,17 @@ class GameScene extends Phaser.Scene {
     bullet.body.setSize(Math.min(bullet.width, 10), Math.min(bullet.height, 10));
     bullet.damage = shot.damage * damageMul;
     bullet.pierce = shot.pierce || 0;
-    bullet.blast = shot.blast || 0;
+    bullet.blast = this.isGuest ? 0 : shot.blast || 0; // na tela do amigo a explosão vem do anfitrião
     bullet.burn = shot.burn || 0;
     bullet.life = shot.life || 1600;
     bullet.born = this.time.now;
     bullet.hits = new Set();
     this.physics.velocityFromRotation(angle, shot.speed || 700, bullet.body.velocity);
+    if (this.isHost) {
+      const pk = this.packShot(shot);
+      if (this.shotOwner) pk.w = this.weaponId(shot);
+      this.netShots.push([Math.round(x), Math.round(y), +angle.toFixed(3), Math.round(offset), pk, this.shotOwner || 0]);
+    }
   }
 
   muzzleFlash(x, y, angle) {
@@ -494,6 +534,15 @@ class GameScene extends Phaser.Scene {
   hitZombie(bullet, z) {
     if (!bullet.active || bullet.hits.has(z)) return;
     bullet.hits.add(z);
+    if (this.isGuest) {
+      // Bala de enfeite: só o sangue e o piscar; o dano conta no anfitrião
+      if (!bullet.burn) this.bloodSplash(z.x, z.y - z.displayHeight * 0.15, bullet.rotation, 5);
+      z.setTint(0xffb4a4);
+      this.time.delayedCall(70, () => z.active && z.clearTint());
+      if (bullet.pierce > 0) bullet.pierce -= 1;
+      else this.killBullet(bullet);
+      return;
+    }
     if (bullet.blast) {
       this.explode(bullet.x, bullet.y, bullet.blast, bullet.damage);
       return this.killBullet(bullet);
@@ -508,6 +557,7 @@ class GameScene extends Phaser.Scene {
     this.fireParticles.explode(24, x, y);
     this.cameras.main.shake(120, 0.006);
     Sfx.boom();
+    this.netEvent(['x', Math.round(x), Math.round(y)]);
     this.zombies.getChildren().slice().forEach((z) => {
       if (Phaser.Math.Distance.Between(x, y, z.x, z.y) < radius + z.def.radius) this.damageZombie(z, damage);
     });
@@ -597,11 +647,11 @@ class GameScene extends Phaser.Scene {
     if (early && this.intermissionLeft > 1) {
       const bonus = Math.floor(this.intermissionLeft * EARLY_BONUS * this.diff.money);
       this.money += bonus;
-      this.hud.floatText(`+$${bonus} por chamar antes`);
+      this.announceFloat(`+$${bonus} por chamar antes`);
     }
     this.wave += 1;
     const w = buildWave(this.wave, { levelIndex: this.levelIndex, difficulty: this.diff, director: this.director });
-    this.waveHpMul = w.hpMul;
+    this.waveHpMul = w.hpMul * (1 + 0.35 * this.others.size); // mais gente atirando, zumbis mais duros
     this.spawnQueue = w.zombies;
     this.event = w.event;
     this.waveStats = { baseHp: this.base.hp };
@@ -611,7 +661,7 @@ class GameScene extends Phaser.Scene {
     this.state = 'wave';
     this.setNight(true);
     const ev = this.event ? `\n${EVENTS[this.event].name}: ${EVENTS[this.event].desc}` : '';
-    this.hud.banner(`Horda ${this.wave}${ev}`);
+    this.announce(`Horda ${this.wave}${ev}`);
     if (this.event === 'chuva') this.rain.start();
     if (w.witch) this.spawnWitch();
     this.spawnTimer = this.time.addEvent({ delay: w.spawnDelay, loop: true, callback: () => this.spawnNext() });
@@ -632,8 +682,9 @@ class GameScene extends Phaser.Scene {
     const bonus = Math.round((20 + this.wave * 4) * this.diff.money * (this.event === 'dupla' ? 2 : 1));
     this.money += bonus;
     this.respawnPlayer();
+    this.netEvent(['onda']);
     if (this.wave >= this.wavesToWin) return this.victory();
-    this.hud.banner(`Horda ${this.wave} vencida! +$${bonus}`, UI.green);
+    this.announce(`Horda ${this.wave} vencida! +$${bonus}`, UI.green);
     this.startIntermission(INTERMISSION);
   }
 
@@ -652,6 +703,10 @@ class GameScene extends Phaser.Scene {
     this.structures.forEach((s) => {
       if (!s.maxHp || s.hp >= s.maxHp) return;
       bar(s.x - 18, s.y + GRID / 2 - s.sprite.displayHeight - 8, 36, s.hp / s.maxHp, 0x7fdfff);
+    });
+    this.others.forEach((o) => {
+      if (o.down || !o.maxHp || o.hp >= o.maxHp) return;
+      bar(o.s.x - 18, o.s.y - o.s.displayHeight / 2 - 22, 36, o.hp / o.maxHp, 0xd0331f);
     });
   }
 
@@ -751,7 +806,10 @@ class GameScene extends Phaser.Scene {
     if (kind === 'pet') this.spawnPet(id);
     if (id === 'colete') { this.maxHp += 50; this.hp += 50; }
     if (id === 'kit') this.hp = this.maxHp;
-    if (id === 'reparo') this.base.hp = Math.min(this.base.maxHp, this.base.hp + 200);
+    if (id === 'reparo') {
+      if (this.isGuest) this.ask({ t: 'reparo' });
+      else this.base.hp = Math.min(this.base.maxHp, this.base.hp + 200);
+    }
     this.hud.banner(`Pegou: ${crate.item.name}`, UI.gold);
     crate.destroy();
     Sfx.pick();
@@ -772,6 +830,8 @@ class GameScene extends Phaser.Scene {
     if (this.infinite) stats += ` Recorde no modo infinito: horda ${saveInfiniteRecord(this.levelIndex, this.wave)}.`;
     this.hud.endScreen('FIM DE JOGO', reason, stats, '[R] recomeçar   [M] menu');
     Sfx.lose();
+    this.netEvent(['fim', 'FIM DE JOGO', reason, stats, false]);
+    this.netFlush();
   }
 
   victory() {
@@ -790,5 +850,7 @@ class GameScene extends Phaser.Scene {
     const hint = hasNext ? `[N] próximo nível: ${LEVELS[this.levelIndex + 1].name}   [M] menu` : '[R] jogar de novo   [M] menu';
     this.hud.endScreen('VITÓRIA!', reason, `Medalha ${this.diff.name} conquistada. Modo infinito liberado neste nível.`, hint);
     Sfx.win();
+    this.netEvent(['fim', 'VITÓRIA!', reason, 'Vocês seguraram a casa juntos!', true]);
+    this.netFlush();
   }
 }

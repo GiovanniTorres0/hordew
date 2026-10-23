@@ -4,6 +4,13 @@ class MenuScene extends Phaser.Scene {
   }
 
   create() {
+    Net.leave(); // voltar ao menu sai de qualquer sala
+    // Chegou por um link de convite (?sala=CODIGO): vai direto escolher o boneco e entrar
+    const sala = Net.takeInvite();
+    if (sala) {
+      this.scene.start('Setup', { level: 0, sala });
+      return;
+    }
     this.add.tileSprite(0, 0, GAME_W, GAME_H, 'ground0').setOrigin(0);
     this.add.rectangle(0, 0, GAME_W, GAME_H, 0x0c0a08, 0.5).setOrigin(0);
     [[90, 250], [1180, 220], [160, 650], [1120, 680], [300, 160], [980, 140]].forEach(([x, y], i) =>
@@ -60,7 +67,7 @@ class MenuScene extends Phaser.Scene {
     tape(this, GAME_W / 2 - 370, 530, -35, 56);
     tape(this, GAME_W / 2 + 370, 530, 35, 56);
     this.add.text(GAME_W / 2, 590,
-      'WASD andar · Mouse mirar · Clique atirar · [Q] trocar arma\n[1] a [7] construir · botão direito numa torre: upgrades\n[L] loja entre hordas · [Espaço] chamar a horda\nEstrelas: dificuldades vencidas (Fácil, Médio, Difícil, Impossível)',
+      'WASD andar · Mouse mirar · Clique atirar · [Q] trocar arma\n[1] a [7] construir · botão direito numa torre: upgrades\n[L] loja entre hordas · [Espaço] chamar a horda\nCom amigo: escolha o nível, "Jogar com amigo" e mande o link',
       { fontFamily: NOTE_FONT, fontSize: '17px', color: UI.ink, align: 'center', lineSpacing: 6 },
     ).setOrigin(0.5).setAngle(-0.8);
 
@@ -73,6 +80,7 @@ class MenuScene extends Phaser.Scene {
   }
 
   update(time, delta) {
+    if (!this.walkers) return;
     this.walkers.forEach((z) => {
       z.x -= (z.speed * delta) / 1000;
       z.setAngle(Math.sin((time + z.speed * 97) / 160) * 6);

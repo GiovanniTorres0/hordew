@@ -443,7 +443,7 @@ class Hud {
         + 'WASD anda · mouse mira e atira\n'
         + '[1]–[7] constrói · botão direito: upgrade\n'
         + '[L] loja entre hordas · [Q] troca a arma\n'
-        + '[Espaço] chama a horda · [P] pausa\n'
+        + (scene.net ? '[Espaço] chama a horda · dinheiro da equipe\n' : '[Espaço] chama a horda · [P] pausa\n')
         + '[H] esconde este bilhete',
         { fontFamily: NOTE_FONT, fontSize: '15px', color: UI.ink, lineSpacing: 5 }),
     ]);
@@ -536,7 +536,7 @@ class Hud {
     if (day) {
       const early = Math.floor(s.intermissionLeft * EARLY_BONUS * s.diff.money);
       this.dayTitle.setText(`Próxima horda em ${Math.ceil(s.intermissionLeft)}s`);
-      this.dayKeys.setText(`[Espaço] chamar já (+$${early})  ·  [L] loja  ·  [P] pausa`);
+      this.dayKeys.setText(`[Espaço] chamar já (+$${early})  ·  [L] loja${s.net ? '' : '  ·  [P] pausa'}`);
     }
     const tipsOn = this.tipsForced !== null ? this.tipsForced : day && s.wave === 0;
     this.tips.setVisible(tipsOn && s.state !== 'over' && !s.shop.isOpen && this.bannerText.alpha < 0.05);
@@ -565,6 +565,7 @@ class Hud {
       g.fillStyle(z.def.boss || z.def === ZOMBIES.witch ? 0xffffff : 0xd0331f);
       g.fillCircle(x + z.x * k, y + z.y * k, z.def.boss ? 3.5 : 1.8);
     });
+    s.others.forEach((o) => { if (!o.down) g.fillStyle(0x7fc4e0).fillCircle(x + o.s.x * k, y + o.s.y * k, 3); });
     if (!s.down) g.fillStyle(0xe0b04a).fillCircle(x + s.player.x * k, y + s.player.y * k, 3);
     const cam = s.cameras.main;
     g.lineStyle(1, 0xe9e1cc, 0.5).strokeRect(x + cam.scrollX * k, y + cam.scrollY * k, GAME_W * k, GAME_H * k);
@@ -718,6 +719,15 @@ class Shop {
     if (e.owned) return;
     if (s.money < e.cost) {
       this.note.setText('Dinheiro insuficiente').setColor(UI.blood);
+      return;
+    }
+    // No cooperativo o dinheiro é da equipe e fica com o anfitrião: o amigo pede e a caixa cai quando ele aprova
+    if (s.isGuest) {
+      if (e.kind === 'pet') this.note.setText('Pet só para quem criou a sala').setColor(UI.blood);
+      else {
+        s.ask({ t: 'compra', kind: e.kind, id: e.id });
+        this.note.setText('Pedido enviado...').setColor(UI.gold);
+      }
       return;
     }
     s.money -= e.cost;

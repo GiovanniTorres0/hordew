@@ -15,9 +15,9 @@ const ZombieLogic = {
     ][side];
     this.createZombie(type, pos[0], pos[1]);
     if (type === 'tank') {
-      this.hud.banner('TANK!');
+      this.announce('TANK!');
       this.cameras.main.shake(400, 0.008);
-      Sfx.roar();
+      this.netSfx('roar');
     } else if (Math.random() < 0.2) Sfx.groan();
   },
 
@@ -35,6 +35,8 @@ const ZombieLogic = {
     }
     this.addShadow(z, def.radius * 2.6);
     z.def = def;
+    z.type = type;
+    z.nid = this.nidSeq = (this.nidSeq || 0) + 1; // id para o cooperativo
     z.hp = z.maxHp = def.hp * this.waveHpMul;
     z.wobble = Math.random() * 1000;
     z.slow = 1;
@@ -53,7 +55,7 @@ const ZombieLogic = {
     z.mode = 'sit';
     z.optional = true; // a horda acaba mesmo com ela viva
     z.body.moves = false;
-    this.hud.floatText('Uma Witch está chorando por perto... não chegue perto');
+    this.announceFloat('Uma Witch está chorando por perto... não chegue perto');
   },
 
   // Distância de um zumbi até a borda de uma construção (retângulo)
@@ -65,13 +67,13 @@ const ZombieLogic = {
     return Math.sqrt(dx * dx + dy * dy);
   },
 
-  // Alvo: jogador perto (ou vomitado), senão a construção bloqueante mais próxima no caminho, senão a base
+  // Alvo: o jogador mais perto (ou o vomitado), senão a construção bloqueante mais próxima no caminho, senão a base
   pickTarget(z) {
-    const p = this.player;
-    if (!this.down) {
-      const range = this.now < this.camoUntil ? 60 : PLAYER.chaseRange;
-      const d = Phaser.Math.Distance.Between(z.x, z.y, p.x, p.y);
-      if (this.now < this.bileUntil || d < range) return { kind: 'player' };
+    if (!this.down && this.now < this.bileUntil) return { kind: 'player', p: this.player };
+    const near = this.nearestPerson(z);
+    if (near.p) {
+      const range = near.p === this.player && this.now < this.camoUntil ? 60 : PLAYER.chaseRange;
+      if (near.d < range) return { kind: 'player', p: near.p };
     }
     let best = null;
     let bestD = 110;
@@ -104,10 +106,12 @@ const ZombieLogic = {
     const def = z.def;
     let speed = def.speed * z.slow * (this.event === 'rapida' ? 1.4 : 1) * (this.now < this.bileUntil ? 1.3 : 1);
     z.slow = 1;
+    // Especiais só miram o anfitrião (distP); os comuns, a pessoa mais perto (near)
     const distP = this.down ? 1e9 : Phaser.Math.Distance.Between(z.x, z.y, p.x, p.y);
+    const near = this.nearestPerson(z);
 
     // Aura de veneno (inspirado nos infectados de The Last of Us): dano a 1 metro
-    if (def.aura && distP < def.aura + 12) this.hurtPlayer(def.auraDps * dt);
+    if (def.aura && near.p && near.d < def.aura + 12) this.hurtWho(near.p, def.auraDps * dt);
 
     if (this.updateSpecial(z, dt, now, distP)) return;
 
@@ -115,13 +119,15 @@ const ZombieLogic = {
       z.target = this.pickTarget(z);
       z.retargetAt = now + 350;
     }
-    const tgt = z.target.kind === 'player' && !this.down ? p : (z.target.s && (z.target.s.hp > 0) ? z.target.s : this.base);
-    const isPlayer = tgt === p;
-    const contact = isPlayer ? distP < def.radius + 16 : this.rectDist(z, tgt) < def.radius + 8;
+    const alvo = z.target.kind === 'player' && z.target.p && !this.personDown(z.target.p) ? z.target.p : null;
+    const tgt = alvo || (z.target.s && (z.target.s.hp > 0) ? z.target.s : this.base);
+    const isPlayer = !!alvo;
+    const distT = isPlayer ? Phaser.Math.Distance.Between(z.x, z.y, tgt.x, tgt.y) : 0;
+    const contact = isPlayer ? distT < def.radius + 16 : this.rectDist(z, tgt) < def.radius + 8;
 
     // Spitter para a distância e cospe ácido
     if (def === ZOMBIES.spitter) {
-      const d = isPlayer ? distP : this.rectDist(z, tgt);
+      const d = isPlayer ? distT : this.rectDist(z, tgt);
       if (d < 220) {
         speed = 0;
         if (now > z.cooldown) {
@@ -131,9 +137,9 @@ const ZombieLogic = {
       }
     }
     // Tank arremessa pedras em quem estiver longe
-    if (def === ZOMBIES.tank && !this.down && distP > 180 && distP < 600 && now > z.cooldown) {
+    if (def === ZOMBIES.tank && near.p && near.d > 180 && near.d < 600 && now > z.cooldown) {
       z.cooldown = now + 6000;
-      this.throwShot(z, p.x, p.y, 'rock');
+      this.throwShot(z, near.p.x, near.p.y, 'rock');
     }
 
     let angle = Phaser.Math.Angle.Between(z.x, z.y, tgt.x, tgt.y);
@@ -147,7 +153,7 @@ const ZombieLogic = {
     z.setScale(z.baseScale, z.baseScale * (1 + Math.sin((now + z.wobble) / 120) * 0.04));
 
     if (contact) {
-      if (isPlayer) this.hurtPlayer(def.dps * dt);
+      if (isPlayer) this.hurtWho(tgt, def.dps * dt);
       else this.damageStructure(tgt, def.dps * def.struct * dt);
     }
     // Boomer vomita em quem chegar perto
@@ -294,8 +300,8 @@ const ZombieLogic = {
     if (z.mode !== 'sit') return;
     z.mode = 'rage';
     z.body.moves = true;
-    this.hud.banner('A Witch acordou!');
-    Sfx.scream();
+    this.announce('A Witch acordou!');
+    this.netSfx('scream');
   },
 
   // Vômito do Boomer: todos os zumbis vêm atrás do jogador por 6 segundos
@@ -313,6 +319,7 @@ const ZombieLogic = {
     const img = this.add.image(z.x, z.y, kind).setDepth(8);
     this.enemyShots.push({ img, tx, ty, kind, speed: kind === 'rock' ? 380 : 300 });
     if (kind === 'acid') Sfx.spit();
+    this.netEvent(['a', Math.round(z.x), Math.round(z.y), Math.round(tx), Math.round(ty), kind]);
   },
 
   updateEnemyShots(dt) {
@@ -327,13 +334,16 @@ const ZombieLogic = {
         s.img.rotation += dt * 8;
         return true;
       }
-      if (s.kind === 'acid') this.addPuddle(s.tx, s.ty, 'puddle', 50, 5000);
+      // Na tela do amigo é só o desenho: a poça e o dano vêm do anfitrião
+      if (s.kind === 'acid') { if (!this.isGuest) this.addPuddle(s.tx, s.ty, 'puddle', 50, 5000); }
       else {
         this.cameras.main.shake(150, 0.006);
-        if (!this.down && Phaser.Math.Distance.Between(s.tx, s.ty, this.player.x, this.player.y) < 45) this.hurtPlayer(25);
-        this.structures.concat([this.base]).forEach((st) => {
-          if (st.def.block && this.rectDist({ x: s.tx, y: s.ty }, st) < 40) this.damageStructure(st, 40);
-        });
+        if (!this.isGuest) {
+          this.peopleNear(s.tx, s.ty, 45).forEach((who) => this.hurtWho(who, 25));
+          this.structures.concat([this.base]).forEach((st) => {
+            if (st.def.block && this.rectDist({ x: s.tx, y: s.ty }, st) < 40) this.damageStructure(st, 40);
+          });
+        }
       }
       s.img.destroy();
       return false;
@@ -343,7 +353,8 @@ const ZombieLogic = {
     this.puddles = this.puddles.filter((pd) => {
       if (now > pd.until) { pd.img.destroy(); return false; }
       pd.img.setAlpha(Math.min(1, (pd.until - now) / 1000));
-      if (!this.down && Phaser.Math.Distance.Between(pd.x, pd.y, this.player.x, this.player.y) < pd.r) this.hurtPlayer(8 * dt);
+      if (this.isGuest) return true;
+      this.peopleNear(pd.x, pd.y, pd.r).forEach((who) => this.hurtWho(who, 8 * dt));
       if (pd.kind === 'puddle') {
         this.structures.concat([this.base]).forEach((st) => {
           if (st.maxHp && this.rectDist(pd, st) < pd.r * 0.6) this.damageStructure(st, 6 * dt);
@@ -356,6 +367,7 @@ const ZombieLogic = {
   addPuddle(x, y, kind, r, ms) {
     const img = this.add.image(x, y, kind).setDepth(0.8).setScale(r / 50);
     this.puddles.push({ img, x, y, r, kind, until: this.time.now + ms });
+    this.netEvent(['p', Math.round(x), Math.round(y), kind, r, ms]);
   },
 
   // silent = dano contínuo (fogo, sangramento) sem piscar
@@ -375,6 +387,7 @@ const ZombieLogic = {
     const def = z.def;
     this.particles.explode(def.radius > 20 ? 40 : 12, z.x, z.y);
     this.bloodStain(z.x, z.y + z.displayHeight / 2 - 4, def.radius / 12);
+    this.netEvent(['m', Math.round(z.x), Math.round(z.y + z.displayHeight / 2 - 4), def.radius]);
     if (def.radius > 20) this.cameras.main.shake(250, 0.01);
     this.money += Math.max(1, Math.round(def.reward * this.diff.money * (this.event === 'dupla' ? 2 : 1)));
     if (this.pinnedBy === z) this.releasePins();
@@ -384,7 +397,7 @@ const ZombieLogic = {
       if (!this.down && Phaser.Math.Distance.Between(z.x, z.y, this.player.x, this.player.y) < 90) this.bile();
     }
     if (def === ZOMBIES.venenoso) this.addPuddle(z.x, z.y, 'poison', 55, 4000);
-    if (def === ZOMBIES.witch) this.hud.floatText(`Witch derrotada! +$${Math.round(def.reward * this.diff.money)}`);
+    if (def === ZOMBIES.witch) this.announceFloat(`Witch derrotada! +$${Math.round(def.reward * this.diff.money)}`);
     z.destroy();
     Sfx.splat();
   },
