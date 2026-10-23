@@ -43,11 +43,17 @@ def mascara_fundo(rgb):
     return fundo
 
 
-def recortar(caminho, s, bruta=False):
-    """Recorta o personagem; com bruta=True devolve só o recorte (já virado), sem reduzir de tamanho."""
+def recortar(caminho, s, bruta=False, molde=None):
+    """Recorta o personagem; com bruta=True devolve só o recorte (já virado), sem reduzir de tamanho.
+    molde: desenho original no mesmo enquadramento (estados de dano). Tudo fora da silhueta dele, um pouco
+    alargada, vira fundo: o Kontext adora pôr poça, terra e pedras em volta da casa."""
     img = Image.open(caminho).convert("RGB")
     rgb = np.array(img)
     fundo = mascara_fundo(rgb)
+    if molde:
+        m = Image.open(molde).convert("RGB").resize(img.size)
+        fora = mascara_fundo(np.array(m))
+        fundo |= ~ndimage.binary_dilation(~fora, iterations=max(2, img.size[0] // 150))
     if s.get("fundo_largo"):
         # Sombra rosa escura e pouco saturada colada ao objeto (ex.: base da árvore): cresce o fundo por ela
         f = rgb.astype(np.float32) / 255
@@ -237,7 +243,7 @@ def main():
         for estado in s.get("estados", []):
             desenho = os.path.join(AQUI, "bruto", "anim", "aprovados", f"{chave}_{estado}.png")
             if os.path.exists(desenho):
-                recortar(desenho, s)[0].save(os.path.join(SAIDA, f"{chave}_{estado}.png"), optimize=True)
+                recortar(desenho, s, molde=bruto)[0].save(os.path.join(SAIDA, f"{chave}_{estado}.png"), optimize=True)
                 feitos.append(f"{chave}_{estado}")
     with open(os.path.join(RAIZ, "src", "sprites.js"), "w", encoding="utf-8") as js:
         js.write("// Gerado por arte/recortar.py: sprites desenhados que existem em assets/sprites.\n")
