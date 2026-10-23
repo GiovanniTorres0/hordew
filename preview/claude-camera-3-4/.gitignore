@@ -1,0 +1,11 @@
+.claude/*
+!.claude/agents/
+node_modules/
+*.log
+
+
+# Imagens brutas geradas pela IA (grandes; só os sprites finais vão para assets/)
+arte/bruto/
+arte/teste/
+__pycache__/
+testes/saida/
