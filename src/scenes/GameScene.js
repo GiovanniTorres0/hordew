@@ -119,13 +119,31 @@ class GameScene extends Phaser.Scene {
     if (this.cameras.main.postFX) this.cameras.main.postFX.addVignette(0.5, 0.5, 0.95, 0.35);
   }
 
+  // 3 estados de dano: inteira, avariada (abaixo de 2/3) e em ruínas (abaixo de 1/3).
+  // Com os desenhos base<n>_dano1/_dano2 troca a imagem; sem eles, escurece e avermelha a casa.
+  updateBaseLook() {
+    const b = this.base;
+    const stage = b.hp > b.maxHp * 0.66 ? 0 : b.hp > b.maxHp * 0.33 ? 1 : 2;
+    if (stage === b.stage) return;
+    b.stage = stage;
+    const tex = `${b.baseTex}_dano${stage}`;
+    if (stage && this.textures.exists(tex)) {
+      b.sprite.setTexture(tex).clearTint();
+    } else {
+      b.sprite.setTexture(b.baseTex).setTint([0xffffff, 0xcdb8a4, 0x9a7a68][stage]);
+    }
+  }
+
   createBase() {
-    const sprite = this.blockers.create(BASE_X, BASE_Y, 'base');
+    // Cada mapa tem o seu abrigo (base0..2); sem o desenho, a casa padrão
+    const tex = this.textures.exists(`base${this.levelIndex}`) ? `base${this.levelIndex}` : 'base';
+    const sprite = this.blockers.create(BASE_X, BASE_Y, tex);
     this.standOn(sprite, BASE_W, BASE_H);
     this.base = {
       type: 'base', def: { name: 'Base', block: true, light: 260 }, sprite, x: BASE_X, y: BASE_Y,
       hw: BASE_W / 2, hh: BASE_H / 2, hp: this.diff.baseHp, maxHp: this.diff.baseHp,
     };
+    this.base.baseTex = tex;
     sprite.structure = this.base;
   }
 
@@ -280,6 +298,7 @@ class GameScene extends Phaser.Scene {
       if (this.intermissionLeft <= 0) this.startWave(false);
     }
     this.hud.update();
+    this.updateBaseLook();
   }
 
   updatePlayer(time, dt) {
@@ -320,16 +339,21 @@ class GameScene extends Phaser.Scene {
     const side = p.flipX ? -1 : 1;
     const gx = p.x + side * p.height * 0.09;
     const gy = p.y + p.height * 0.08;
+    // Cada arma tem o seu desenho (w_<id>); sem ele, a pistola feita por código
+    const wid = Object.keys(WEAPONS).find((k) => WEAPONS[k] === this.weapon);
+    const wtex = this.textures.exists(`w_${wid}`) ? `w_${wid}` : 'arma';
+    if (this.gun.texture.key !== wtex) this.gun.setTexture(wtex).setOrigin(wtex === 'arma' ? 0.25 : 0.3, wtex === 'arma' ? 0.4 : 0.55);
     this.gun.setPosition(gx, gy).setRotation(this.aim).setFlipY(Math.cos(this.aim) < 0).setDepth(p.depth + 0.001);
 
     if (canShoot && this.input.activePointer.leftButtonDown() && time - this.lastShot > this.weapon.fireDelay) {
       const w = this.weapon;
       for (let i = 0; i < w.pellets; i++) {
         const angle = this.aim + Phaser.Math.FloatBetween(-w.spread, w.spread) / 2;
-        this.fireBullet(gx, gy, angle, 13, w);
+        this.fireBullet(gx, gy, angle, this.gun.displayWidth * 0.7, w);
       }
       this.lastShot = time;
-      if (w !== WEAPONS.chamas) this.muzzleFlash(gx + Math.cos(this.aim) * 13, gy + Math.sin(this.aim) * 13, this.aim);
+      const muzzle = this.gun.displayWidth * 0.7;
+      if (w !== WEAPONS.chamas) this.muzzleFlash(gx + Math.cos(this.aim) * muzzle, gy + Math.sin(this.aim) * muzzle, this.aim);
       if (w !== WEAPONS.chamas || Math.random() < 0.2) Sfx.shot();
     }
   }

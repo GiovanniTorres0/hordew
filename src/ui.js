@@ -645,7 +645,7 @@ class Shop {
     const s = this.scene;
     if (this.tab === 'weapon') {
       return Object.keys(WEAPONS).filter((id) => id !== 'pistola').map((id) => ({
-        kind: 'weapon', id, name: WEAPONS[id].name, desc: WEAPONS[id].desc, cost: WEAPONS[id].cost, owned: s.owned.includes(id),
+        kind: 'weapon', id, name: WEAPONS[id].name, desc: WEAPONS[id].desc, cost: WEAPONS[id].cost, owned: s.owned.includes(id), icon: `w_${id}`,
       }));
     }
     if (this.tab === 'pet') {

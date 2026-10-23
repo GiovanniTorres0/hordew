@@ -43,7 +43,8 @@ def mascara_fundo(rgb):
     return fundo
 
 
-def recortar(caminho, s):
+def recortar(caminho, s, bruta=False):
+    """Recorta o personagem; com bruta=True devolve só o recorte (já virado), sem reduzir de tamanho."""
     img = Image.open(caminho).convert("RGB")
     rgb = np.array(img)
     fundo = mascara_fundo(rgb)
@@ -83,14 +84,20 @@ def recortar(caminho, s):
     if s.get("espelhar"):
         sprite = sprite.transpose(Image.FLIP_LEFT_RIGHT)
         roupa = roupa and roupa.transpose(Image.FLIP_LEFT_RIGHT)
+    if bruta:
+        return sprite
     w, h = sprite.size
     k = s["tamanho"] / (w if s.get("medida") == "largura" else h)
     tam = (max(1, round(w * k)), max(1, round(h * k)))
     if not anima(s):
         return sprite.resize(tam, Image.LANCZOS), roupa and roupa.resize(tam, Image.LANCZOS), None
     quadril = s.get("quadril", 0.62 if s.get("pet") else 0.58)
-    folha = lambda im: folha_quadros(np.array(im), quadril, s.get("pet"), k)
-    sprite, quadro = folha(sprite)
+    # Quadro de ataque desenhado (Flux Kontext, aprovado pelo robô) entra no lugar do ataque por deformação
+    chave = os.path.basename(caminho).rsplit("_", 1)[0]
+    desenho = os.path.join(AQUI, "bruto", "anim", "aprovados", f"{chave}_ataque.png")
+    atk = np.array(recortar(desenho, s, bruta=True)) if os.path.exists(desenho) else None
+    folha = lambda im, atk=None: folha_quadros(np.array(im), quadril, s.get("pet"), k, atk)
+    sprite, quadro = folha(sprite, atk)
     return sprite, roupa and folha(roupa)[0], quadro
 
 
@@ -127,7 +134,15 @@ def deslocar_linhas(a, desl):
     return out
 
 
-def folha_quadros(a, quadril, pet, k):
+def pe_de_tras(a):
+    """x mais à esquerda (o personagem olha para a direita) nos 8% de baixo: o pé de trás, que não sai do chão."""
+    al = a[..., 3] > 0
+    ys = np.nonzero(al.any(1))[0]
+    baixo = al[int(ys.max() - (ys.max() - ys.min()) * 0.08):ys.max() + 1]
+    return np.nonzero(baixo.any(0))[0].min()
+
+
+def folha_quadros(a, quadril, pet, k, atk=None):
     """Folha com 4 quadros do mesmo tamanho: parado, passada, passada contrária e ataque (tronco inclinado
     para a frente, pernas em passada). A largura ganha folga dos dois lados para a inclinação caber."""
     h, w = a.shape[:2]
@@ -155,7 +170,24 @@ def folha_quadros(a, quadril, pet, k):
         corpo = passada(1)
         return deslocar_linhas(corpo, subida * h * 0.09)
 
-    quadros = [a, passada(1), passada(-1), ataque()]
+    if atk is None:
+        quadros = [a, passada(1), passada(-1), ataque()]
+    else:
+        # Ataque desenhado na mesma escala: apoiado no chão e com o pé de trás no mesmo lugar (sem recuo);
+        # se for mais alto que o original, todos os quadros ganham espaço em cima
+        ah, aw = atk.shape[:2]
+        extra = max(0, ah - h)
+        quadros = [np.pad(q, ((extra, 0), (0, 0), (0, 0))) for q in (a, passada(1), passada(-1))]
+        H = h + extra
+        q = np.zeros((H, W, 4), np.uint8)
+        dx = pe_de_tras(a) - pe_de_tras(atk)
+        for y in range(ah):
+            ty = H - ah + y
+            x0, x1 = max(0, dx), min(W, dx + aw)
+            if x1 > x0:
+                q[ty, x0:x1] = atk[y, x0 - dx:x1 - dx]
+        quadros.append(q)
+        h = H
     folha = Image.fromarray(np.concatenate(quadros, axis=1), "RGBA")
     fw, fh = max(1, round(W * k)), max(1, round(h * k))
     return folha.resize((fw * 4, fh), Image.LANCZOS), [fw, fh]
