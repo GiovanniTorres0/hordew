@@ -76,7 +76,9 @@ def recortar(caminho, s, bruta=False, molde=None):
         peso = ndimage.gaussian_filter(dentro, 3) + 1e-4
         cor = np.dstack([ndimage.gaussian_filter(o[..., i] * dentro, 3) / peso for i in range(3)])
         cor = cor / lum(cor)[..., None]
-        novo = cor * lum(rgb.astype(np.float32))[..., None]
+        # O dano só escurece (rombo, fuligem, sangue): onde o Kontext clareou a parede, fica a claridade do original
+        claro = np.minimum(lum(rgb.astype(np.float32)), ndimage.gaussian_filter(lum(o), 1.5) * 1.1)
+        novo = cor * claro[..., None]
         rgb = np.where(fundo[..., None], rgb, np.clip(novo * 0.8 + rgb * 0.2, 0, 255)).astype(np.uint8)
     if s.get("fundo_largo"):
         # Sombra rosa escura e pouco saturada colada ao objeto (ex.: base da árvore): cresce o fundo por ela
@@ -105,6 +107,13 @@ def recortar(caminho, s, bruta=False, molde=None):
     alfa = ndimage.gaussian_filter(alfa, 0.7) * corpo + 0
     rgba = np.dstack([np.clip(f, 0, 255), alfa * 255]).astype(np.uint8)
 
+    if "saturacao" in s or "claridade" in s:
+        # Ajuste de cor por chave (ex.: pedra puxada para o cinza de concreto, barricada menos berrante)
+        f = rgba[..., :3].astype(np.float32)
+        cinza = (f[..., 0] * 0.3 + f[..., 1] * 0.59 + f[..., 2] * 0.11)[..., None]
+        f = cinza + (f - cinza) * s.get("saturacao", 1.0)
+        rgba[..., :3] = np.clip(f * s.get("claridade", 1.0), 0, 255).astype(np.uint8)
+
     ys, xs = np.nonzero(corpo)
     caixa = (xs.min(), ys.min(), xs.max() + 1, ys.max() + 1)
     sprite = Image.fromarray(rgba, "RGBA").crop(caixa)
@@ -129,7 +138,7 @@ def recortar(caminho, s, bruta=False, molde=None):
     chave = os.path.basename(caminho).rsplit("_", 1)[0]
     desenho = os.path.join(AQUI, "bruto", "anim", "aprovados", f"{chave}_ataque.png")
     atk = np.array(recortar(desenho, s, bruta=True)) if os.path.exists(desenho) else None
-    folha = lambda im, atk=None: folha_quadros(np.array(im), quadril, s.get("pet"), k, atk)
+    folha = lambda im, atk=None: folha_quadros(np.array(im), quadril, s.get("pet"), k, atk, s.get("passo"), s.get("balanco", 0))
     sprite, quadro = folha(sprite, atk)
     return sprite, roupa and folha(roupa)[0], quadro
 
@@ -175,7 +184,7 @@ def pe_de_tras(a):
     return np.nonzero(baixo.any(0))[0].min()
 
 
-def folha_quadros(a, quadril, pet, k, atk=None):
+def folha_quadros(a, quadril, pet, k, atk=None, passo_k=None, balanco=0):
     """Folha com 4 quadros do mesmo tamanho: parado, passada, passada contrária e ataque (tronco inclinado
     para a frente, pernas em passada). A largura ganha folga dos dois lados para a inclinação caber."""
     h, w = a.shape[:2]
@@ -191,13 +200,15 @@ def folha_quadros(a, quadril, pet, k, atk=None):
     cx = int((cols.min() + cols.max()) / 2) if len(cols) else W // 2
     frente = a.copy(); frente[:, :cx] = 0
     tras = a.copy(); tras[:, cx:] = 0
-    passo = h * (0.09 if pet else 0.075)
+    passo = h * (passo_k or (0.09 if pet else 0.075))
 
     def passada(sinal):
         pf = deslocar_linhas(frente, sinal * descida * passo)
         pt = deslocar_linhas(tras, -sinal * descida * passo)
         # A perna da frente fica por cima da de trás
-        return np.where(pf[..., 3:4] > 0, pf, pt)
+        q = np.where(pf[..., 3:4] > 0, pf, pt)
+        # balanco: tronco e braços gingam para o lado contrário da passada (bichos pesados, pernas curtas)
+        return deslocar_linhas(q, -sinal * subida * h * balanco) if balanco else q
 
     def ataque():
         corpo = passada(1)

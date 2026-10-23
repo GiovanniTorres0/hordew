@@ -75,6 +75,7 @@ class GameScene extends Phaser.Scene {
 
     this.hpBars = this.add.graphics().setDepth(6);
     this.fx = this.add.graphics().setDepth(7);
+    this.fxChao = this.add.graphics().setDepth(0.9); // gás no chão, por baixo dos corpos
     this.rangeCircle = this.add.circle(0, 0, 100, 0xffffff, 0.08).setStrokeStyle(2, 0xffffff, 0.3).setVisible(false).setDepth(1);
     this.createNight();
     this.cameras.main.startFollow(this.player, true, 0.15, 0.15);
@@ -319,6 +320,8 @@ class GameScene extends Phaser.Scene {
     let canShoot = !this.buildType && !this.shop.isOpen && !this.clickOnUI;
 
     // Presos por especiais: Hunter imobiliza, Jockey conduz, Smoker puxa
+    // (se o zumbi sumiu sem passar pela morte, o jogador fica livre em vez de travado para sempre)
+    if ((this.pinnedBy && !this.pinnedBy.active) || (this.smokedBy && !this.smokedBy.active)) this.releasePins();
     if (this.pinnedBy) {
       canShoot = false;
       const z = this.pinnedBy;
@@ -346,7 +349,7 @@ class GameScene extends Phaser.Scene {
     const wid = Object.keys(WEAPONS).find((k) => WEAPONS[k] === this.weapon);
     const wtex = this.textures.exists(`w_${wid}`) ? `w_${wid}` : 'arma';
     // Desenhos exportados em resolução dobrada e com contorno; a 0.7 ficam um pouco maiores que o real
-    if (this.gun.texture.key !== wtex) this.gun.setTexture(wtex).setOrigin(wtex === 'arma' ? 0.25 : 0.3, wtex === 'arma' ? 0.4 : 0.55).setScale(wtex === 'arma' ? 1 : 0.7);
+    if (this.gun.texture.key !== wtex) this.gun.setTexture(wtex).setOrigin(wtex === 'arma' ? 0.25 : 0.3, wtex === 'arma' ? 0.4 : 0.55).setScale(wtex === 'arma' ? 1 : wtex === 'w_pistola' ? 0.5 : 0.7); // pistola menor: na escala das outras ficava do tamanho do antebraço
     this.gun.setPosition(gx, gy).setRotation(this.aim).setFlipY(Math.cos(this.aim) < 0).setDepth(p.depth + 0.001);
 
     if (canShoot && this.input.activePointer.leftButtonDown() && time - this.lastShot > this.weapon.fireDelay) {
@@ -572,6 +575,7 @@ class GameScene extends Phaser.Scene {
       this.smokedBy.mode = 'walk';
       this.smokedBy.cooldown = this.time.now + 7000;
     }
+    if (this.pinnedBy) this.hud.clearBanner(); // o 'Hunter! Aperte Espaço' não fica na tela depois de solto
     this.pinnedBy = null;
     this.smokedBy = null;
     this.pinBreak = 0;
@@ -654,6 +658,20 @@ class GameScene extends Phaser.Scene {
   drawFx() {
     const g = this.fx;
     g.clear();
+    this.fxChao.clear();
+    // Anel claro nos pés do jogador: não some no meio da horda
+    if (!this.down) {
+      const p = this.player;
+      const pes = p.y + p.displayHeight / 2 - 2;
+      this.fxChao.lineStyle(2, 0xe9dcc6, 0.45).strokeEllipse(p.x, pes, 34, 12);
+      // Encoberto por um zumbi na frente: o anel e um contorno do corpo vão por cima de tudo
+      const coberto = this.zombies.getChildren().some((z) => z.depth > p.depth && Math.abs(z.x - p.x) < z.displayWidth / 2 + 10
+        && z.y - z.displayHeight / 2 < pes && z.y + z.displayHeight / 2 > p.y);
+      if (coberto) {
+        g.lineStyle(4, 0x1a140c, 0.6).strokeEllipse(p.x, pes, 38, 14);
+        g.lineStyle(2.5, 0xe9dcc6, 0.9).strokeEllipse(p.x, pes, 38, 14);
+      }
+    }
     const now = this.time.now;
     this.bolts = this.bolts.filter((b) => b.until > now);
     this.bolts.forEach((b) => {
@@ -665,11 +683,15 @@ class GameScene extends Phaser.Scene {
     if (this.smokedBy) this.drawTongue(g, this.smokedBy, this.player, now);
     this.zombies.getChildren().forEach((z) => {
       if (z.def.aura) {
-        // Nuvem de gás em volta do Venenoso: bolhas que giram devagar, em vez de um disco chapado
-        for (let i = 0; i < 5; i++) {
-          const a = now / 1800 + i * 1.257 + z.x * 0.01;
-          const r = z.def.aura * (0.45 + 0.12 * Math.sin(now / 700 + i));
-          g.fillStyle(0x6f7a3a, 0.07).fillCircle(z.x + Math.cos(a) * z.def.aura * 0.4, z.y + Math.sin(a) * z.def.aura * 0.3, r);
+        // Nuvem de gás em volta do Venenoso, no chão por baixo dos corpos: anel de fumaça que gira devagar,
+        // mais ralo no meio para o zumbi e o jogador continuarem legíveis
+        for (let i = 0; i < 6; i++) {
+          const a = now / 1800 + i * 1.047 + z.x * 0.01;
+          const r = z.def.aura * (0.32 + 0.08 * Math.sin(now / 700 + i));
+          const cx = z.x + Math.cos(a) * z.def.aura * 0.55;
+          const cy = z.y + Math.sin(a) * z.def.aura * 0.4;
+          this.fxChao.fillStyle(0x4e5232, 0.1).fillCircle(cx, cy, r);
+          this.fxChao.lineStyle(2, 0x1e1e10, 0.3).strokeCircle(cx, cy, r);
         }
       }
       if (z.mode === 'crouch' || z.mode === 'windup') g.lineStyle(2, 0xe8453c, 0.8).strokeCircle(z.x, z.y, z.def.radius + 8);
@@ -690,10 +712,10 @@ class GameScene extends Phaser.Scene {
       const onda = Math.sin(t * Math.PI * 3 + now / 90) * 5 * Math.sin(t * Math.PI);
       pts.push(new Phaser.Math.Vector2(from.x + dx * t + nx * onda, from.y + dy * t + ny * onda));
     }
-    g.lineStyle(6, 0x2a1418, 0.9).strokePoints(pts);
-    g.lineStyle(3.5, 0x8a3a44).strokePoints(pts);
-    g.lineStyle(1.2, 0xc06a6e, 0.8).strokePoints(pts.map((p) => new Phaser.Math.Vector2(p.x, p.y - 1)));
-    for (let i = 3; i < n; i += 4) g.fillStyle(0x5a2228).fillCircle(pts[i].x, pts[i].y, 2.6);
+    g.lineStyle(6, 0x1e0c10, 0.9).strokePoints(pts);
+    g.lineStyle(3.5, 0x6a2430).strokePoints(pts);
+    g.lineStyle(1.2, 0x9a4a50, 0.7).strokePoints(pts.map((p) => new Phaser.Math.Vector2(p.x, p.y - 1)));
+    for (let i = 3; i < n; i += 4) g.fillStyle(0x441a20).fillCircle(pts[i].x, pts[i].y, 2.6);
   }
 
   // ---------- Loja e helicóptero ----------
@@ -746,7 +768,7 @@ class GameScene extends Phaser.Scene {
     this.shop.close();
     this.panel.close();
     this.setBuild(null);
-    let stats = `Você chegou à horda ${this.wave} (${this.diff.name}).`;
+    let stats = this.wave > 0 ? `Você chegou à horda ${this.wave} (${this.diff.name}).` : `Antes da primeira horda (${this.diff.name}).`;
     if (this.infinite) stats += ` Recorde no modo infinito: horda ${saveInfiniteRecord(this.levelIndex, this.wave)}.`;
     this.hud.endScreen('FIM DE JOGO', reason, stats, '[R] recomeçar   [M] menu');
     Sfx.lose();

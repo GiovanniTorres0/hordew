@@ -15,7 +15,7 @@ for chave, poses in av.items():
     for pose, a in poses.items():
         if a.get("veredito") == "aprovado":
             origem = os.path.join(AQUI, "bruto", "anim", f"{chave}_{pose}_{a['semente']}.png")
-            if pose == "desenho":
+            if pose.startswith("desenho") or pose == "limpo":
                 shutil.copy(origem, os.path.join(AQUI, "bruto", f"{chave}_{100 + a['semente']}.png"))
                 s["escolha"] = 100 + a["semente"]
                 s.pop("pendente", None)
