@@ -98,7 +98,9 @@ const Music = (() => {
 
   // ---------- Faixas gravadas ----------
   // Só entra aqui o que já existe em assets/music (arquivo faltando vira erro 404 no console)
-  const TRACKS = {};
+  const TRACKS = {
+    day: ['dia_a', 'dia_b'], night: ['noite_a', 'noite_b'], tank: ['tank_a', 'tank_b'], witch: ['witch_a', 'witch_b'],
+  };
   const XF = 4; // segundos de cruzamento entre uma faixa e a próxima
   const buffers = {}; // clima -> lista de AudioBuffer já decodificados
   const turn = {}; // qual variação toca em seguida
@@ -227,5 +229,6 @@ const Music = (() => {
     } catch (e) { /* ignora */ }
   }, 500);
 
-  return { play, stop, toggleMute, isMuted: () => muted };
+  const tracksLoaded = () => Object.values(buffers).reduce((n, l) => n + l.length, 0);
+  return { play, stop, toggleMute, isMuted: () => muted, tracksLoaded, mood: () => mood };
 })();
