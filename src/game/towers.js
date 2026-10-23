@@ -43,14 +43,21 @@ const TowerLogic = {
   tryBuild(p) {
     const cell = this.snap(p);
     if (!this.canBuildAt(cell)) return;
+    if (this.isGuest) return this.ask({ t: 'construir', tipo: this.buildType, x: cell.cx, y: cell.cy });
     const type = this.buildType;
-    const def = BUILDINGS[type];
     const cost = this.buildCost(type);
     this.money -= cost;
     this.builtCount[type] = (this.builtCount[type] || 0) + 1;
-    this.occupied.add(cell.key);
+    this.placeStructure(type, cell).spent = cost;
+    Sfx.build();
+  },
 
-    const s = { type, def, x: cell.cx, y: cell.cy, cellKey: cell.key, spent: cost, levels: [0, 0, 0], lastShot: 0 };
+  // Põe a construção no mapa (sem cobrar); no amigo, nid vem do anfitrião
+  placeStructure(type, cell, nid) {
+    const def = BUILDINGS[type];
+    this.occupied.add(cell.key);
+    const s = { type, def, x: cell.cx, y: cell.cy, cellKey: cell.key, spent: 0, levels: [0, 0, 0], lastShot: 0 };
+    s.nid = nid || (this.nidSeq = (this.nidSeq || 0) + 1);
     if (def.block) s.sprite = this.blockers.create(cell.cx, cell.cy, def.tex);
     else s.sprite = this.add.image(cell.cx, cell.cy, def.tex);
     this.standOn(s.sprite, GRID, GRID);
@@ -66,7 +73,7 @@ const TowerLogic = {
     if (type === 'espinhos') s.durability = def.durability;
     this.computeStats(s);
     this.structures.push(s);
-    Sfx.build();
+    return s;
   },
 
   structureAt(x, y) {
@@ -100,6 +107,7 @@ const TowerLogic = {
   },
 
   upgrade(s, path) {
+    if (this.isGuest) return this.ask({ t: 'upgrade', id: s.nid, linha: path });
     const cost = this.upgradeCost(s, path);
     if (!this.canUpgrade(s, path) || this.money < cost) return false;
     this.money -= cost;
@@ -117,6 +125,7 @@ const TowerLogic = {
   },
 
   repair(s) {
+    if (this.isGuest) return this.ask({ t: 'consertar', id: s.nid });
     const cost = this.repairCost(s);
     if (!cost || this.money < cost) return false;
     this.money -= cost;
@@ -131,6 +140,7 @@ const TowerLogic = {
 
   sell(s) {
     if (s === this.base) return;
+    if (this.isGuest) return this.ask({ t: 'vender', id: s.nid });
     this.money += this.sellValue(s);
     this.removeStructure(s);
     Sfx.sell();
@@ -154,15 +164,15 @@ const TowerLogic = {
       if (s.hp <= 0) this.gameOver('Os zumbis destruíram a base!');
       else if (this.now - (this.lastBaseAlarm || 0) > 4000) {
         this.lastBaseAlarm = this.now;
-        this.hud.floatText('A base está sendo atacada!');
-        Sfx.alarm();
+        this.announceFloat('A base está sendo atacada!');
+        this.netSfx('alarm');
       }
       return;
     }
     if (s.hp <= 0) {
       this.particles.explode(16, s.x, s.y);
-      this.hud.floatText(`${s.def.name} destruída!`);
-      Sfx.crack();
+      this.announceFloat(`${s.def.name} destruída!`);
+      this.netSfx('crack');
       this.removeStructure(s);
     }
   },
@@ -224,6 +234,7 @@ const TowerLogic = {
           points.push(new Phaser.Math.Vector2(z.x, z.y));
         });
         this.bolts.push({ points, until: now + 120 });
+        this.netEvent(['z', points.flatMap((v) => [Math.round(v.x), Math.round(v.y)])]);
         hit.forEach((z) => this.damageZombie(z, st.damage));
         Sfx.zap();
       } else if (s.type === 'espinhos') {
