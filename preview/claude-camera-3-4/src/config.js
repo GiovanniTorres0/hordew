@@ -71,14 +71,14 @@ const PET_SIGHT = 200; // distância do jogador em que o pet procura zumbis
 // pierce = quantos zumbis a bala atravessa; blast = raio da explosão; burn = segundos queimando
 const WEAPONS = {
   pistola: { name: '9mm', cost: 0, fireDelay: 260, damage: 1, pellets: 1, spread: 0.04, speed: 700, desc: 'A de sempre' },
-  mp7: { name: 'MP7', cost: 200, fireDelay: 80, damage: 0.7, pellets: 1, spread: 0.12, speed: 750, desc: 'Submetralhadora rápida' },
-  escopeta: { name: 'Escopeta', cost: 180, fireDelay: 700, damage: 1.2, pellets: 7, spread: 0.5, speed: 650, desc: '7 balas espalhadas' },
-  handcannon: { name: 'Pistola .50', cost: 250, fireDelay: 450, damage: 4, pellets: 1, spread: 0.02, speed: 900, pierce: 1, desc: 'Atravessa 2 zumbis' },
-  ak47: { name: 'AK-47', cost: 320, fireDelay: 110, damage: 1.3, pellets: 1, spread: 0.08, speed: 800, desc: 'Fuzil automático' },
+  mp7: { name: 'MP7', cost: 200, fireDelay: 80, damage: 0.7, pellets: 1, spread: 0.12, speed: 750, trail: 0.8, tint: 0xffe08a, desc: 'Submetralhadora rápida' },
+  escopeta: { name: 'Escopeta', cost: 180, fireDelay: 700, damage: 1.2, pellets: 7, spread: 0.5, speed: 650, trail: 0.6, tint: 0xffb060, desc: '7 balas espalhadas' },
+  handcannon: { name: 'Pistola .50', cost: 250, fireDelay: 450, damage: 4, pellets: 1, spread: 0.02, speed: 900, pierce: 1, trail: 1.8, tint: 0xfff4d0, desc: 'Atravessa 2 zumbis' },
+  ak47: { name: 'AK-47', cost: 320, fireDelay: 110, damage: 1.3, pellets: 1, spread: 0.08, speed: 800, trail: 1.3, tint: 0xffd070, desc: 'Fuzil automático' },
   besta: { name: 'Besta', cost: 350, fireDelay: 900, damage: 10, pellets: 1, spread: 0, speed: 1000, pierce: 4, tex: 'bolt', desc: 'Virote que atravessa 5' },
   chamas: { name: 'Lança-chamas', cost: 400, fireDelay: 45, damage: 0.25, pellets: 1, spread: 0.35, speed: 380, life: 380, burn: 3, tex: 'flame', desc: 'Curto alcance, põe fogo' },
   m79: { name: 'M79', cost: 450, fireDelay: 1100, damage: 7, pellets: 1, spread: 0, speed: 550, blast: 90, tex: 'grenade', desc: 'Granada com explosão' },
-  aa12: { name: 'AA-12', cost: 550, fireDelay: 210, damage: 1, pellets: 6, spread: 0.45, speed: 680, desc: 'Escopeta automática' },
+  aa12: { name: 'AA-12', cost: 550, fireDelay: 210, damage: 1, pellets: 6, spread: 0.45, speed: 680, trail: 0.6, tint: 0xffa850, desc: 'Escopeta automática' },
 };
 
 const SHOP_ITEMS = [

@@ -233,6 +233,12 @@ def main():
             roupa.save(os.path.join(SAIDA, f"{chave}_roupa.png"), optimize=True)
             roupas.append(chave)
         print(f"{chave}: {sprite.size[0]}x{sprite.size[1]}")
+        # Estados de dano das casas (Kontext, aprovados à mão): viram <chave>_dano1, <chave>_dano2
+        for estado in s.get("estados", []):
+            desenho = os.path.join(AQUI, "bruto", "anim", "aprovados", f"{chave}_{estado}.png")
+            if os.path.exists(desenho):
+                recortar(desenho, s)[0].save(os.path.join(SAIDA, f"{chave}_{estado}.png"), optimize=True)
+                feitos.append(f"{chave}_{estado}")
     with open(os.path.join(RAIZ, "src", "sprites.js"), "w", encoding="utf-8") as js:
         js.write("// Gerado por arte/recortar.py: sprites desenhados que existem em assets/sprites.\n")
         js.write("// Texturas que não estão aqui continuam sendo desenhadas por código (textures.js).\n")

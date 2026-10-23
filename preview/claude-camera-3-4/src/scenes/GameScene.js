@@ -354,7 +354,7 @@ class GameScene extends Phaser.Scene {
       this.lastShot = time;
       const muzzle = this.gun.displayWidth * 0.7;
       if (w !== WEAPONS.chamas) this.muzzleFlash(gx + Math.cos(this.aim) * muzzle, gy + Math.sin(this.aim) * muzzle, this.aim);
-      if (w !== WEAPONS.chamas || Math.random() < 0.2) Sfx.shot();
+      if (w !== WEAPONS.chamas || Math.random() < 0.2) Sfx.gun(wid);
     }
   }
 
@@ -445,6 +445,9 @@ class GameScene extends Phaser.Scene {
     if (!bullet) return;
     // Rastro com a ponta na posição da bala: a cauda fica para trás e nunca nasce atrás do cano
     bullet.setTexture(shot.tex || 'bullet').setOrigin(shot.tex ? 0.5 : 0.85, 0.5).setActive(true).setVisible(true).setDepth(3.5).setRotation(angle).setAlpha(1).setScale(1);
+    // Rastro de cada arma: comprimento (trail) e cor (tint) da bala; torres e armas sem isso usam a bala padrão
+    bullet.setScale(shot.trail || 1, shot.trail ? Math.min(1.3, 0.6 + shot.trail * 0.4) : 1);
+    if (shot.tint) bullet.setTint(shot.tint); else bullet.clearTint();
     bullet.body.enable = true;
     bullet.body.setSize(Math.min(bullet.width, 10), Math.min(bullet.height, 10));
     bullet.damage = shot.damage * damageMul;
