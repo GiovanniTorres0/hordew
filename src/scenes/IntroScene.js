@@ -24,8 +24,8 @@ class IntroScene extends Phaser.Scene {
     spiral(moon, 1040, 150, 55, 3);
     [[150, 700], [330, 690], [900, 705], [1150, 700]].forEach(([x, y], i) =>
       this.add.image(x, y, i % 2 ? 'tomb' : 'tree').setOrigin(0.5, 1).setScale(1.6).setAngle(i % 2 ? 10 : -6));
-    this.add.image(560, 640, 'pet_cachorro').setScale(2.2).setRotation(-Math.PI / 2);
-    this.add.image(640, 640, 'char_jose').setScale(2.2).setRotation(-Math.PI / 2);
+    this.add.image(560, 640, 'pet_cachorro').setScale(2.2);
+    this.add.image(640, 640, 'char_jose').setScale(2.2);
 
     this.text = this.add.text(GAME_W / 2, 300, '', {
       fontFamily: FONT, fontSize: '30px', color: '#f4ecff', align: 'center', lineSpacing: 14,
