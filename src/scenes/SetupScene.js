@@ -27,7 +27,7 @@ class SetupScene extends Phaser.Scene {
     this.charCards = CHARACTERS.map((c, i) => {
       const x = GAME_W / 2 + (i - 1) * 300;
       const bg = this.add.rectangle(x, 200, 260, 140, 0x3f2a4f).setStrokeStyle(4, 0x1b1424).setInteractive({ useHandCursor: true });
-      const img = this.add.image(x, 180, `char_${c.id}`).setScale(2.4).setRotation(-Math.PI / 2);
+      const img = this.add.image(x, 180, `char_${c.id}`);
       this.add.text(x, 238, c.name, { ...TEXT, fontSize: '20px', color: '#ffd86b' }).setOrigin(0.5);
       this.add.text(x, 262, `${c.desc} · vida ${c.hp}`, { ...TEXT, fontSize: '14px' }).setOrigin(0.5);
       bg.on('pointerdown', () => { this.choice.char = i; this.refresh(); });
@@ -72,6 +72,7 @@ class SetupScene extends Phaser.Scene {
       bg.setStrokeStyle(4, i === c.char ? 0xffd86b : 0x1b1424);
       makePlayerTexture(this, CHARACTERS[i], OUTFITS[c.outfit], `char_${CHARACTERS[i].id}`);
       img.setTexture(`char_${CHARACTERS[i].id}`);
+      img.setScale(90 / img.height); // cabe no cartão, seja o desenho antigo ou o novo
     });
     this.swatches.forEach((sw, i) => sw.setStrokeStyle(4, i === c.outfit ? 0xffd86b : 0x1b1424));
     this.diffButtons.forEach((b, i) => b.bg.setStrokeStyle(3, i === c.difficulty ? 0xffd86b : 0x1b1424));
