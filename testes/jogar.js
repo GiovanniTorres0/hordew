@@ -209,10 +209,36 @@ function servidor() {
     s.zombies.getChildren().slice().forEach((z) => { if (z.shadow) z.shadow.destroy(); z.destroy(); });
   });
 
-  // Noite: lanterna e legibilidade no escuro
-  await page.evaluate(() => { const s = game.scene.getScene('Game'); s.tweens.killTweensOf(s); s.darkness = 0.8; });
+  // Efeitos no chão: poça de bile do Spitter e gás do Venenoso perto do jogador
+  await page.evaluate(() => {
+    const s = game.scene.getScene('Game');
+    s.hurtPlayer = () => {};
+    s.addPuddle(s.player.x - 110, s.player.y + 40, 'puddle', 50, 60000);
+    s.addPuddle(s.player.x + 120, s.player.y + 50, 'poison', 55, 60000);
+    s.createZombie('venenoso', s.player.x + 120, s.player.y + 20).hp = 99999;
+    s.createZombie('spitter', s.player.x - 110, s.player.y - 10).hp = 99999;
+  });
+  await page.waitForTimeout(600);
+  await foto('07c_efeitos', 'Poça de bile do Spitter (esquerda) e veneno e gás do Venenoso (direita)');
+
+  // Noite: lanterna e legibilidade no escuro, com zumbis dentro e fora do cone da lanterna
+  await page.evaluate(() => {
+    const s = game.scene.getScene('Game');
+    s.tweens.killTweensOf(s);
+    s.darkness = 0.8;
+    s.zombies.getChildren().slice().forEach((z) => { if (z.shadow) z.shadow.destroy(); z.destroy(); });
+    [['comum', 160, -30], ['corredor', 240, 60], ['boomer', -200, 40], ['witch', 60, 170]].forEach(([t, dx, dy]) => {
+      const z = s.createZombie(t, s.player.x + dx, s.player.y + dy);
+      z.hp = 99999;
+      z.speed = 0;
+    });
+  });
   await page.waitForTimeout(500);
-  await foto('08_noite', 'À noite, com a lanterna do jogador');
+  await foto('08_noite', 'À noite, com a lanterna do jogador e zumbis dentro e fora do cone');
+  await page.evaluate(() => {
+    const s = game.scene.getScene('Game');
+    s.zombies.getChildren().slice().forEach((z) => { if (z.shadow) z.shadow.destroy(); z.destroy(); });
+  });
   await page.evaluate(() => { game.scene.getScene('Game').darkness = 0; });
 
   // Construções em volta do jogador

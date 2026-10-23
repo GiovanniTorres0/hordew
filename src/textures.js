@@ -155,17 +155,20 @@ function makeTextures(scene) {
   g.fillStyle(0xffa53c).fillCircle(7, 7, 7);
   g.fillStyle(0xfff27a).fillCircle(7, 7, 3);
   done('flame', 14, 14);
-  blob(g, 8, 8, 7, 6, P.acid, 0.15, 2);
+  // Cuspe do Spitter: bolota oliva suja com contorno, no tom da poça
+  blob(g, 8, 8, 7, 6, 0x5c6030, 0.15, 2);
+  g.fillStyle(0x34361c, 0.8).fillCircle(9, 10, 3);
+  g.fillStyle(0xb8b888, 0.4).fillCircle(6, 6, 1.5);
   done('acid', 16, 16);
   blob(g, 14, 14, 12, 11, 0x7d7487, 0.15, 3);
   hatch(g, 6, 14, 16, 8, P.outline, 0.4, 4);
   done('rock', 28, 28);
   // Poça de bile: contorno de tinta, miolo oliva sujo e pouco saturado, manchas e respingos escuros
   const borda = wobblePoints(50, 50, 44, 40, 0.16);
-  g.fillStyle(0x34361c, 0.5).fillPoints(borda, true);
-  g.fillStyle(0x5c6030, 0.45).fillPoints(wobblePoints(50, 51, 37, 33, 0.14), true);
+  g.fillStyle(0x24240f, 0.5).fillPoints(borda, true);
+  g.fillStyle(0x4a4c26, 0.4).fillPoints(wobblePoints(50, 51, 37, 33, 0.14), true);
   [[38, 58, 12, 7], [62, 42, 9, 6], [52, 64, 6, 4]].forEach(([x, y, rx, ry]) => g.fillStyle(0x2c2c16, 0.4).fillPoints(wobblePoints(x, y, rx, ry, 0.25, 10), true));
-  g.lineStyle(2, 0x1a140c, 0.7).strokePoints(borda, true);
+  g.lineStyle(3, 0x14100a, 0.8).strokePoints(borda, true);
   [[92, 30, 4], [10, 66, 3], [82, 86, 3], [20, 16, 2.5], [96, 58, 2]].forEach(([x, y, r]) => {
     g.fillStyle(0x4a4c22, 0.65).fillCircle(x, y, r);
     g.lineStyle(1, 0x1a140c, 0.6).strokeCircle(x, y, r);

@@ -656,6 +656,8 @@ class GameScene extends Phaser.Scene {
     const g = this.fx;
     g.clear();
     this.fxChao.clear();
+    // Anel claro nos pés do jogador: não some no meio da horda
+    if (!this.down) this.fxChao.lineStyle(2, 0xe9dcc6, 0.45).strokeEllipse(this.player.x, this.player.y + this.player.displayHeight / 2 - 2, 34, 12);
     const now = this.time.now;
     this.bolts = this.bolts.filter((b) => b.until > now);
     this.bolts.forEach((b) => {
