@@ -56,7 +56,7 @@ def main():
     poses = {**POSES, **s.get("poses", {})}
     nomes = opc("--poses", ",".join(poses)).split(",")
     # --ref troca a imagem de partida (ex.: um passo já aprovado, para tirar dele o passo contrário)
-    origem = opc("--ref", os.path.join("bruto", f"{chave}_{s['escolha']}.png"))
+    origem = opc("--ref", None) or os.path.join("bruto", f"{chave}_{s['escolha']}.png")
     ref = os.path.basename(origem)
     shutil.copy(os.path.join(AQUI, origem), os.path.join(COMFY_INPUT, ref))
     os.makedirs(os.path.join(AQUI, "bruto", "anim"), exist_ok=True)
