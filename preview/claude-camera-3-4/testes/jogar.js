@@ -196,6 +196,40 @@ function servidor() {
   await page.waitForTimeout(800);
   await foto('09_construcoes', 'Todas as construções colocadas perto do jogador, com zumbis em volta');
 
+  // Interface: painel da torre, loja e o bilhete de dicas ([H])
+  await page.evaluate(() => {
+    const s = game.scene.getScene('Game');
+    s.panel.open(s.structures.find((t) => t.def.upgradable) || s.base);
+  });
+  await page.waitForTimeout(400);
+  await foto('09b_painel_torre', 'Painel de upgrades de uma torre (botão direito), em madeira e metal');
+  await page.evaluate(() => {
+    const s = game.scene.getScene('Game');
+    s.panel.close();
+    s.money = 300;
+    s.shop.open();
+  });
+  await page.waitForTimeout(400);
+  await foto('09c_loja', 'Loja aberta na aba de armas: madeira, tiras de papel, preço escrito à mão');
+  await page.evaluate(() => { const s = game.scene.getScene('Game'); s.shop.tab = 'pet'; s.shop.render(); });
+  await page.waitForTimeout(300);
+  await foto('09d_loja_pets', 'Loja na aba de pets, com o desenho de cada pet');
+  const dicas = await page.evaluate(() => {
+    const s = game.scene.getScene('Game');
+    s.shop.close();
+    const inicio = s.hud.tips.visible; // na horda 0 o bilhete aparece sozinho
+    s.wave = Math.max(1, s.wave);
+    s.hud.update();
+    const antes = s.hud.tips.visible;
+    s.input.keyboard.emit('keydown-H');
+    s.hud.update();
+    return { inicio, antes, depois: s.hud.tips.visible };
+  });
+  checar('bilhete de dicas some depois da 1ª horda e volta com [H]', dicas.inicio && !dicas.antes && dicas.depois, JSON.stringify(dicas));
+  await page.waitForTimeout(300);
+  await foto('09e_dicas_h', 'Bilhete de dicas reaberto com [H] durante o jogo');
+  await page.evaluate(() => { const s = game.scene.getScene('Game'); s.input.keyboard.emit('keydown-H'); });
+
   // Desempenho: quadros por segundo com tudo em cena
   const fps = await page.evaluate(() => new Promise((ok) => {
     let n = 0;
@@ -218,6 +252,11 @@ function servidor() {
     await page.waitForTimeout(500);
     await foto(`10_fase${level + 1}`, `Fase ${level + 1}: chão, rua e decoração, com José (roupa verde) e alguns zumbis`);
   }
+
+  // Tela de fim de jogo e menu de preparação
+  await page.evaluate(() => { game.scene.getScene('Game').gameOver('A casa caiu.'); });
+  await page.waitForTimeout(600);
+  await foto('11_fim', 'Tela de fim de jogo');
 
   checar('sem erros no console', erros.length === 0, erros.slice(0, 10).join(' | '));
   checar('sem arquivos faltando', falhas.length === 0, falhas.slice(0, 10).join(' | '));

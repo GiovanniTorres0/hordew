@@ -598,7 +598,7 @@ class GameScene extends Phaser.Scene {
     this.money += bonus;
     this.respawnPlayer();
     if (this.wave >= this.wavesToWin) return this.victory();
-    this.hud.banner(`Horda ${this.wave} vencida! +$${bonus}`);
+    this.hud.banner(`Horda ${this.wave} vencida! +$${bonus}`, UI.green);
     this.startIntermission(INTERMISSION);
   }
 
@@ -674,7 +674,7 @@ class GameScene extends Phaser.Scene {
     if (id === 'colete') { this.maxHp += 50; this.hp += 50; }
     if (id === 'kit') this.hp = this.maxHp;
     if (id === 'reparo') this.base.hp = Math.min(this.base.maxHp, this.base.hp + 200);
-    this.hud.banner(`Pegou: ${crate.item.name}`);
+    this.hud.banner(`Pegou: ${crate.item.name}`, UI.gold);
     crate.destroy();
     Sfx.pick();
   }

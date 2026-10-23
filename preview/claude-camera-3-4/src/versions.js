@@ -10,12 +10,12 @@
   let known = null; // datas das versões na primeira leitura, para detectar novidades
 
   const css = `
-    #hv-bar { position: fixed; top: 8px; right: 8px; z-index: 10; display: flex; gap: 6px; font: 13px system-ui, sans-serif; }
-    #hv-bar button, #hv-box button { background: #2a1f38; color: #f4ecff; border: 1px solid #5b4a73; border-radius: 6px; padding: 5px 9px; cursor: pointer; font: inherit; }
-    #hv-bar button:hover, #hv-box button:hover { background: #3b2d50; }
+    #hv-bar { position: fixed; bottom: 10px; right: 10px; z-index: 10; display: flex; gap: 6px; font: 13px system-ui, sans-serif; }
+    #hv-bar button, #hv-box button { background: #2b2823; color: #e9e1cc; border: 1px solid #6b5a44; border-radius: 3px; padding: 5px 9px; cursor: pointer; font: inherit; }
+    #hv-bar button:hover, #hv-box button:hover { background: #4a3d2e; }
     #hv-bar .hv-new { background: #3d6b2a; border-color: #7fd67f; }
-    #hv-box { position: fixed; top: 44px; right: 8px; z-index: 10; width: min(380px, calc(100vw - 32px)); max-height: 70vh; overflow: auto;
-      background: #1b1424ee; color: #f4ecff; border: 1px solid #5b4a73; border-radius: 8px; padding: 12px; font: 13px system-ui, sans-serif; }
+    #hv-box { position: fixed; bottom: 46px; right: 8px; z-index: 10; width: min(380px, calc(100vw - 32px)); max-height: 70vh; overflow: auto;
+      background: #16130fee; color: #e9e1cc; border: 1px solid #6b5a44; border-radius: 8px; padding: 12px; font: 13px system-ui, sans-serif; }
     #hv-box h3 { margin: 0 0 8px; font-size: 15px; }
     #hv-box a { color: #7fd67f; }
     #hv-box .hv-item { padding: 6px 0; border-top: 1px solid #3b2d50; }
