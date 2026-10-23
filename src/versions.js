@@ -138,4 +138,10 @@
   renderBar(false);
   check();
   setInterval(check, 60000);
+  // Durante a partida a barra some para não cobrir a interface do jogo
+  setInterval(() => {
+    const playing = typeof game !== 'undefined' && game.scene && game.scene.isActive('Game');
+    bar.style.display = playing ? 'none' : 'flex';
+    if (playing) box.hidden = true;
+  }, 500);
 })();

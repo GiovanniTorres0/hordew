@@ -217,6 +217,8 @@ function servidor() {
   const dicas = await page.evaluate(() => {
     const s = game.scene.getScene('Game');
     s.shop.close();
+    s.hud.bannerText.setAlpha(0);
+    s.hud.update();
     const inicio = s.hud.tips.visible; // na horda 0 o bilhete aparece sozinho
     s.wave = Math.max(1, s.wave);
     s.hud.update();
