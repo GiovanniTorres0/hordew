@@ -261,6 +261,9 @@ function servidor() {
   await page.waitForTimeout(600);
   await foto('11_fim', 'Tela de fim de jogo');
 
+  // Música gravada: as 8 faixas decodificadas depois do primeiro clique, e o clima certo tocando
+  const musica = await page.evaluate(() => ({ faixas: Music.tracksLoaded(), clima: Music.mood() }));
+  checar('música gravada carregada (8 faixas)', musica.faixas === 8, JSON.stringify(musica));
   checar('sem erros no console', erros.length === 0, erros.slice(0, 10).join(' | '));
   checar('sem arquivos faltando', falhas.length === 0, falhas.slice(0, 10).join(' | '));
 
