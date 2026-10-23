@@ -41,3 +41,7 @@ Tower defense de zumbis em 2D para navegador. Escolha seu personagem (José Perd
 - `src/sfx.js`: efeitos sonoros sintetizados
 
 Feito com [Phaser 3](https://phaser.io).
+
+## Como colaborar
+
+Veja o passo a passo em [CONTRIBUTING.md](CONTRIBUTING.md): abra uma Issue, teste o link de prévia do Pull Request e aprove.
