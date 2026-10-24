@@ -1,4 +1,4 @@
 claude/camera-3-4
-23/10/2026 20:42
-Multiplayer cooperativo online por link (PeerJS): sala com código, até 4 jogadores na mesma casa, dinheiro da equipe; página de progresso volta a abrir (89%)
-2a2f9a4
+23/10/2026 21:04
+Multiplayer funciona entre redes diferentes: se a conexão direta não fecha, passa pela retransmissão (MQTT público); sala de espera com bilhete mostrando quem entrou, aviso com som e no título da aba
+29f3248
