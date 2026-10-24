@@ -118,7 +118,8 @@ const CoopLogic = {
   netTick() {
     const now = this.time.now;
     if (now < this.netAt) return;
-    this.netAt = now + (this.isGuest ? EU_MS : SNAP_MS);
+    // Pela retransmissão manda menos pacotes (o servidor público não aguenta a mesma rajada)
+    this.netAt = now + (this.isGuest ? (Net.lento() ? 90 : EU_MS) : (Net.lento() ? 100 : SNAP_MS));
     if (this.isGuest) {
       this.sendMine();
       if (now - this.lastSnap > SILENCIO_MS) this.netLeft('h');
