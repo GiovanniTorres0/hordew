@@ -42,6 +42,7 @@ class SetupScene extends Phaser.Scene {
       return { bg, img, edge };
     });
 
+    this.rowsToHide = []; // dificuldade e modo somem quando a sala abre (o bilhete da sala fica no lugar)
     label(310, 'Cor da roupa');
     this.swatches = OUTFITS.map((color, i) => {
       const sw = this.add.circle(GAME_W / 2 + (i - 2.5) * 60, 352, 20, color).setStrokeStyle(4, 0x120e0b).setInteractive({ useHandCursor: true });
@@ -59,7 +60,7 @@ class SetupScene extends Phaser.Scene {
       this.playBtn = button(this, GAME_W / 2 + 110, 650, 200, 56, 'ENTRAR', () => this.joinRoom(), 26);
       this.playBtn.text.setColor(UI.gold);
     } else {
-      label(410, 'Dificuldade');
+      this.rowsToHide.push(label(410, 'Dificuldade'));
       const won = medals(this.choice.level);
       this.diffButtons = DIFFICULTIES.map((d, i) => {
         const b = button(this, GAME_W / 2 + (i - 1.5) * 200, 452, 180, 46, `${d.name}${won.includes(d.id) ? ' ★' : ''}`, () => { this.choice.difficulty = i; this.refresh(); }, 20);
@@ -67,7 +68,7 @@ class SetupScene extends Phaser.Scene {
         return b;
       });
 
-      label(512, 'Modo');
+      this.rowsToHide.push(label(512, 'Modo'));
       const inf = infiniteUnlocked(this.choice.level);
       this.modeNormal = button(this, GAME_W / 2 - 160, 554, 280, 46, `Normal (${lv.wavesToWin} hordas)`, () => { this.choice.infinite = false; this.refresh(); }, 18);
       const rec = infiniteRecord(this.choice.level);
@@ -83,8 +84,50 @@ class SetupScene extends Phaser.Scene {
     }
     button(this, GAME_W / 2 - 110, 650, 160, 56, 'Voltar', () => this.back(), 20);
     this.input.keyboard.on('keydown-ESC', () => this.back());
-    this.events.once('shutdown', () => Net.on({}));
+    this.events.once('shutdown', () => { Net.on({}); document.title = 'Hordew'; });
     this.refresh();
+  }
+
+  // Bilhete de papel da sala: código, link e a lista de quem está dentro
+  showRoomNote(title, lines, foot) {
+    if (!this.note) {
+      const y = 505;
+      this.rowsToHide.forEach((o) => o.setVisible(false));
+      (this.diffButtons || []).concat(this.modeNormal ? [this.modeNormal, this.modeInf] : []).forEach((b) => {
+        b.setVisible(false);
+        b.bg.disableInteractive();
+      });
+      this.status.setVisible(false);
+      this.note = this.add.container(GAME_W / 2, y).setAngle(-0.6);
+      this.note.add([
+        plate(this, 0, 0, 780, 236, 'papel'),
+        tape(this, -370, -112, -30, 56),
+        tape(this, 370, -112, 30, 56),
+      ]);
+      this.noteTitle = this.add.text(0, -92, '', { fontFamily: TITLE_FONT, fontSize: '30px', color: UI.ink }).setOrigin(0.5);
+      this.noteBody = this.add.text(-350, -58, '', { fontFamily: NOTE_FONT, fontSize: '18px', color: UI.ink, lineSpacing: 5 });
+      this.noteFoot = this.add.text(0, 101, '', { fontFamily: NOTE_FONT, fontSize: '16px', color: '#34501a' }).setOrigin(0.5);
+      this.note.add([this.noteTitle, this.noteBody, this.noteFoot]);
+    }
+    this.noteTitle.setText(title);
+    this.noteBody.setText(lines.join('\n')).setScale(1);
+    // Link de prévia comprido: encolhe o texto para não passar da borda do papel
+    if (this.noteBody.width > 700) this.noteBody.setScale(700 / this.noteBody.width);
+    this.noteFoot.setText(foot || '').setColor('#34501a');
+  }
+
+  // Aviso curto: no bilhete se ele já está na tela, senão na linha de status
+  say(msg, color) {
+    if (this.note) this.noteFoot.setText(msg).setColor(color === UI.blood ? '#8a1a10' : '#34501a');
+    else this.status.setText(msg).setColor(color || UI.gold);
+  }
+
+  // Alguém entrou: som, o bilhete pula e o título da aba avisa (para quem está em outra aba)
+  ping(nome) {
+    Sfx.pick();
+    if (this.note) this.tweens.add({ targets: this.note, scale: 1.04, duration: 120, yoyo: true });
+    document.title = `★ ${nome} entrou! · Hordew`;
+    this.time.delayedCall(6000, () => { document.title = 'Hordew'; });
   }
 
   back() {
@@ -137,9 +180,19 @@ class SetupScene extends Phaser.Scene {
 
   roomText() {
     const r = this.room;
+    const nomes = [`${CHARACTERS[this.choice.char].name} (você, anfitrião)`];
+    r.guests.forEach((g, id) => nomes.push(`${CHARACTERS[g.char].name}${Net.via(id) === 'retransmissão' ? '  (pela retransmissão)' : ''}`));
+    const lv = LEVELS[this.choice.level];
+    const jogo = `${lv.name} · ${DIFFICULTIES[this.choice.difficulty].name} · ${this.choice.infinite ? 'Infinito' : `Normal (${lv.wavesToWin} hordas)`}`;
+    const ids = ['h', ...r.guests.keys()];
+    const lines = [`Link: ${Net.inviteLink(r.code)}`, `Partida: ${jogo}`];
+    for (let i = 0; i < 4; i++) lines.push(nomes[i] ? `✓ ${nomes[i]}` : '·  esperando...');
     const n = r.guests.size;
-    const quem = n ? `${n} amigo${n > 1 ? 's' : ''} na sala: ${[...r.guests.values()].map((g) => CHARACTERS[g.char].name).join(', ')}. Aperte JOGAR quando quiser.` : 'Esperando o amigo abrir o link...';
-    this.status.setText(`Sala ${r.code} · link: ${Net.inviteLink(r.code)}\n${quem}`);
+    this.showRoomNote(`SALA ${r.code}`, lines, n
+      ? `${n} amigo${n > 1 ? 's' : ''} na sala! Aperte JOGAR quando todos estiverem aqui.`
+      : 'Mande o link para o amigo. Quando ele entrar, aparece aqui com um aviso.');
+    // Os amigos também veem quem está na sala
+    Net.broadcast({ t: 'sala', nomes, ids, jogo });
   }
 
   copyLink() {
@@ -164,8 +217,10 @@ class SetupScene extends Phaser.Scene {
         saiu: (id) => { this.room.guests.delete(id); this.roomText(); },
         msg: (m, de) => {
           if (m.t !== 'ola') return;
+          const novo = !this.room.guests.has(de);
           this.room.guests.set(de, { char: CHARACTERS[m.char] ? m.char : 0, outfit: OUTFITS[m.outfit] !== undefined ? m.outfit : 0 });
           this.roomText();
+          if (novo) this.ping(CHARACTERS[this.room.guests.get(de).char].name);
         },
       });
       this.friendBtn.set('Copiar link');
@@ -181,7 +236,7 @@ class SetupScene extends Phaser.Scene {
     if (this.joined) return;
     this.saveChoice();
     this.playBtn.set('Conectando...', false);
-    this.status.setText(`Procurando a sala ${this.sala}...`).setColor(UI.gold);
+    this.say(`Procurando a sala ${this.sala}... (pode levar uns 10 segundos)`);
     Net.join(this.sala).then((me) => {
       if (!this.scene.isActive()) return;
       this.joined = true;
@@ -189,19 +244,30 @@ class SetupScene extends Phaser.Scene {
         saiu: () => {
           this.joined = false;
           this.playBtn.set('ENTRAR');
-          this.status.setText('O anfitrião fechou a sala.').setColor(UI.blood);
+          this.showRoomNote(`SALA ${this.sala}`, ['O anfitrião fechou a sala ou a conexão caiu.', '', 'Clique em ENTRAR para tentar de novo,', 'ou peça um link novo.'], '');
         },
         msg: (m) => {
+          if (m.t === 'sala' && Array.isArray(m.nomes)) {
+            const lines = [`Partida: ${m.jogo || 'o anfitrião escolhe'}`];
+            for (let i = 0; i < 4; i++) {
+              if (!m.nomes[i]) { lines.push('·  esperando...'); continue; }
+              const nome = String(m.nomes[i]).replace(' (você, anfitrião)', ' (anfitrião)').replace('  (pela retransmissão)', '');
+              lines.push(`✓ ${nome}${m.ids && m.ids[i] === me ? ' (você)' : ''}`);
+            }
+            this.showRoomNote(`SALA ${this.sala} · você entrou!`, lines, 'Esperando o anfitrião apertar JOGAR... (dá para trocar o boneco)');
+            return;
+          }
           if (m.t !== 'comecar') return;
           this.scene.start('Game', { ...m.setup, char: this.choice.char, outfit: this.choice.outfit, net: { role: 'guest', me, roster: m.roster } });
         },
       });
       this.refresh(); // manda o 'ola' com o boneco escolhido
       this.playBtn.set('Na sala!', false);
-      this.status.setText('Você está na sala. Esperando o anfitrião apertar JOGAR...\n(dá para trocar o boneco enquanto isso)');
+      this.showRoomNote(`SALA ${this.sala} · você entrou!`, ['Conectado' + (Net.via('h') === 'retransmissão' ? ' (pela retransmissão)' : '') + '.', '', 'Esperando a lista de jogadores...'], 'Esperando o anfitrião apertar JOGAR...');
+      Sfx.pick();
     }).catch((e) => {
       this.playBtn.set('ENTRAR');
-      this.status.setText(e.message).setColor(UI.blood);
+      this.say(e.message, UI.blood);
     });
   }
 }
