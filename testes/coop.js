@@ -37,12 +37,16 @@ function servidor() {
   fs.rmSync(SAIDA, { recursive: true, force: true });
   fs.mkdirSync(SAIDA, { recursive: true });
   const srv = await servidor();
-  const url = `http://127.0.0.1:${srv.address().port}/index.html`;
+  const url = process.env.URL || `http://127.0.0.1:${srv.address().port}/index.html`; // URL=site publicado para testar o de verdade
   const exe = NAVEGADORES.find((n) => fs.existsSync(n));
   const browser = await chromium.launch({ executablePath: exe, args: ['--disable-features=WebRtcHideLocalIpsWithMdns'] });
   const erros = [];
   const abrir = async (nome) => {
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+    // RETRANSMISSAO=1: o amigo fica sem WebRTC, como numa rede que não fecha conexão direta
+    if (nome === 'amigo' && process.env.RETRANSMISSAO) {
+      await ctx.addInitScript(() => { window.RTCPeerConnection = undefined; window.webkitRTCPeerConnection = undefined; });
+    }
     const page = await ctx.newPage();
     page.on('console', (m) => { if (m.type() === 'error' && !m.text().startsWith('Failed to load resource')) erros.push(`${nome}: ${m.text()}`); });
     page.on('pageerror', (e) => erros.push(`${nome} pageerror: ${e.message}`));
@@ -78,6 +82,13 @@ function servidor() {
     await amigo.waitForFunction(() => game.scene.getScene('Setup').joined, null, { timeout: 30000 });
     await host.waitForFunction(() => game.scene.getScene('Setup').room.guests.size === 1, null, { timeout: 10000 });
     checar('anfitrião vê o amigo na sala', true);
+    const aviso = await host.evaluate(() => ({ titulo: document.title, bilhete: game.scene.getScene('Setup').noteBody.text }));
+    checar('anfitrião é avisado (título da aba e bilhete)', aviso.titulo.includes('entrou') && aviso.bilhete.split('✓').length === 3 && aviso.bilhete.includes('Partida:'), aviso.titulo);
+    const via = await amigo.evaluate(() => Net.via('h'));
+    checar('caminho da conexão', process.env.RETRANSMISSAO ? via === 'retransmissão' : !!via, via);
+    await amigo.waitForFunction(() => game.scene.getScene('Setup').noteBody.text.includes('(você)'), null, { timeout: 5000 });
+    checar('amigo vê a lista da sala', true);
+    await foto(amigo, 'c03b_amigo_ve_lista');
     await foto(host, 'c03_amigo_na_sala');
 
     await host.evaluate(() => game.scene.getScene('Setup').play());
