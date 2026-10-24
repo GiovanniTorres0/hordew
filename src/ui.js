@@ -415,6 +415,9 @@ class Hud {
     this.hpText = fixed(scene.add.text(596, 24, '', { ...TEXT, fontSize: '14px', strokeThickness: 3 }).setOrigin(0.5), 22);
     this.baseText = fixed(scene.add.text(846, 24, '', { ...TEXT, fontSize: '14px', strokeThickness: 3 }).setOrigin(0.5), 22);
     this.moneyText = fixed(scene.add.text(GAME_W - 18, 8, '', { ...TEXT, fontSize: '24px', color: UI.gold }).setOrigin(1, 0), 21);
+    // Botão do menu de pausa (o mesmo que Esc ou P)
+    this.menuBtn = button(scene, 1030, 24, 92, 34, '☰ Menu', () => scene.togglePause(), 16);
+    this.menuBtn.list.forEach((o) => fixed(o, 22));
     this.statusText = fixed(scene.add.text(GAME_W / 2, top + 8, '', { ...TEXT, fontSize: '18px', color: UI.gold }).setOrigin(0.5, 0), 21);
 
     // Placa de madeira do intervalo: tempo até a próxima horda e atalhos
@@ -571,16 +574,38 @@ class Hud {
     g.lineStyle(1, 0xe9e1cc, 0.5).strokeRect(x + cam.scrollX * k, y + cam.scrollY * k, GAME_W * k, GAME_H * k);
   }
 
+  // Menu de pausa: continuar, recomeçar (só sozinho) e voltar ao menu principal
   setPaused(paused) {
-    if (!this.pauseText) {
-      const sc = this.scene;
-      this.pauseDim = fixed(sc.add.rectangle(0, 0, GAME_W, GAME_H, 0x0c0a08, 0.55).setOrigin(0), 39);
-      this.pauseText = fixed(sc.add.text(GAME_W / 2, GAME_H / 2, 'PAUSADO\n[P] para voltar', {
-        fontFamily: TITLE_FONT, fontSize: '64px', color: UI.text, stroke: '#120e0b', strokeThickness: 10, align: 'center',
-      }).setOrigin(0.5), 40);
+    const sc = this.scene;
+    if (!this.pauseMenu && !paused) return;
+    if (!this.pauseMenu) {
+      const cx = GAME_W / 2;
+      const cy = GAME_H / 2;
+      const objs = [
+        sc.add.rectangle(0, 0, GAME_W, GAME_H, 0x0c0a08, 0.6).setOrigin(0).setInteractive(), // segura os cliques do jogo
+        plate(sc, cx, cy + (sc.net ? -20 : 0), 440, sc.net ? 300 : 360, 'madeira'),
+        tape(sc, cx - 200, cy - (sc.net ? 160 : 170), -30),
+        tape(sc, cx + 200, cy - (sc.net ? 160 : 170), 30),
+        sc.add.text(cx, cy - 115, sc.net ? 'MENU' : 'PAUSADO', { ...TEXT, fontFamily: TITLE_FONT, fontSize: '52px', strokeThickness: 8 }).setOrigin(0.5),
+      ];
+      const acts = [['Continuar', () => sc.togglePause()]];
+      if (!sc.net) acts.push(['Recomeçar', () => sc.restartGame()]);
+      acts.push(['Sair para o menu', () => sc.toMenu()]);
+      acts.forEach(([label, fn], i) => {
+        const b = button(sc, cx, cy - 40 + i * 64, 300, 50, label, fn, 22);
+        if (i === 0) b.text.setColor(UI.gold);
+        b.list[0].destroy(); // sem moldura de escolhido: aqui não há opção marcada
+        objs.push(b.bg, b.text);
+      });
+      let note = '[Esc] ou [P] continua';
+      if (sc.isHost) note = 'O jogo continua rodando.\nSe você sair, a partida dos amigos acaba.';
+      else if (sc.isGuest) note = 'O jogo continua rodando enquanto o menu está aberto.';
+      objs.push(sc.add.text(cx, cy + (sc.net ? 72 : 140), note, { ...TEXT, fontSize: '15px', color: '#d8ccb0', strokeThickness: 3, align: 'center' }).setOrigin(0.5));
+      this.pauseMenu = objs.map((o) => fixed(o, 40));
     }
-    this.pauseDim.setVisible(paused);
-    this.pauseText.setVisible(paused);
+    this.pauseMenu.forEach((o) => o.setVisible(paused));
+    // Menu fechado não pode segurar clique
+    this.pauseMenu[0].input.enabled = paused;
   }
 
   banner(text, color = UI.blood) {
@@ -602,7 +627,7 @@ class Hud {
     this.bannerText.setAlpha(0);
   }
 
-  endScreen(title, reason, stats, hint) {
+  endScreen(title, reason, stats, hint, actions = []) {
     const s = this.scene;
     s.tweens.killTweensOf(this.bannerText);
     this.bannerText.setAlpha(0);
@@ -616,7 +641,14 @@ class Hud {
     fixed(s.add.text(GAME_W / 2, GAME_H / 2 - 100, title, { ...base, fontFamily: TITLE_FONT, fontSize: '84px', color: title.startsWith('VIT') ? UI.green : UI.blood }).setOrigin(0.5), 31);
     fixed(s.add.text(GAME_W / 2, GAME_H / 2 - 25, reason, { ...base, fontSize: '26px' }).setOrigin(0.5), 31);
     fixed(s.add.text(GAME_W / 2, GAME_H / 2 + 25, stats, { ...base, fontSize: '20px', wordWrap: { width: 800 } }).setOrigin(0.5), 31);
-    fixed(s.add.text(GAME_W / 2, GAME_H / 2 + 105, hint, { ...base, fontSize: '22px', color: UI.gold }).setOrigin(0.5), 31);
+    fixed(s.add.text(GAME_W / 2, GAME_H / 2 + 82, hint, { ...base, fontSize: '18px', color: UI.gold, strokeThickness: 4 }).setOrigin(0.5), 31);
+    this.menuBtn.setVisible(false);
+    // Botões clicáveis além das teclas
+    actions.forEach(([label, fn], i) => {
+      const b = button(s, GAME_W / 2 + (i - (actions.length - 1) / 2) * 250, GAME_H / 2 + 130, 220, 46, label, fn, 20);
+      if (i === 0) b.text.setColor(UI.gold);
+      b.list.forEach((o) => fixed(o, 32));
+    });
   }
 }
 

@@ -91,6 +91,8 @@ function servidor() {
     await foto(amigo, 'c03b_amigo_ve_lista');
     await foto(host, 'c03_amigo_na_sala');
 
+    // Espera na sala como gente de verdade: mais de 20 s parado no lobby derrubava todo mundo ao começar
+    await host.waitForTimeout(21000);
     await host.evaluate(() => game.scene.getScene('Setup').play());
     await host.waitForFunction(() => game.scene.isActive('Game'), null, { timeout: 10000 });
     await amigo.waitForFunction(() => game.scene.isActive('Game'), null, { timeout: 10000 });
@@ -183,6 +185,13 @@ function servidor() {
     await foto(amigo, 'c08_amigo_atacado');
 
     // Fim de jogo no anfitrião aparece no amigo
+    // Menu online: abre por cima sem parar o jogo de ninguém
+    await amigo.keyboard.press('Escape');
+    await amigo.waitForTimeout(300);
+    const menu = await amigo.evaluate(() => { const g = game.scene.getScene('Game'); return g.menuOpen && !g.paused && !g.physics.world.isPaused; });
+    checar('menu online abre sem pausar', menu);
+    await foto(amigo, 'c08b_menu_online');
+    await amigo.keyboard.press('Escape');
     await host.evaluate(() => game.scene.getScene('Game').gameOver('Teste'));
     await amigo.waitForTimeout(800);
     const fim = await amigo.evaluate(() => game.scene.getScene('Game').state);
