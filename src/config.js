@@ -102,7 +102,7 @@ const ZOMBIES = {
   charger: { name: 'Charger', tex: 'z_charger', hp: 22, speed: 40, reward: 18, dps: 20, radius: 20, struct: 1.5, from: 7, weight: 0.5, special: true },
   jockey: { name: 'Jockey', tex: 'z_jockey', hp: 6, speed: 75, reward: 15, dps: 6, radius: 11, struct: 0.5, from: 8, weight: 0.5, special: true },
   tank: { name: 'Tank', tex: 'z_tank', hp: 200, speed: 40, reward: 100, dps: 45, radius: 30, struct: 1.2, from: 999, weight: 0, boss: true },
-  witch: { name: 'Witch', tex: 'z_witch', hp: 40, speed: 215, reward: 150, dps: 80, radius: 14, struct: 0.5, from: 999, weight: 0 },
+  witch: { name: 'Witch', tex: 'z_witch', hp: 40, speed: 130, reward: 150, dps: 80, radius: 14, struct: 0.5, from: 999, weight: 0 },
 };
 
 // Construções. hp = vida (zumbis atacam); costStep = quanto cada nova do mesmo tipo fica mais cara.
