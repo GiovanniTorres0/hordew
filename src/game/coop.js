@@ -1,7 +1,8 @@
 // Cooperativo online. O anfitrião simula tudo e manda o estado do mundo ~15 vezes por segundo; cada amigo
 // move o próprio boneco e atira (na tela dele as balas são só de enfeite: o dano é calculado no anfitrião)
 // e pede ao anfitrião o que mexe no mundo: construir, upgrade, consertar, vender, comprar e chamar a horda.
-// O dinheiro é um só, da equipe. Zumbis comuns atacam quem estiver mais perto; os especiais (Hunter,
+// Cada jogador tem o próprio dinheiro (o anfitrião guarda a carteira de todos) e no máximo 1 pet.
+// Zumbis comuns atacam quem estiver mais perto; os especiais (Hunter,
 // Jockey, Smoker, Charger, Boomer) continuam só com o anfitrião.
 const SNAP_MS = 66; // anfitrião -> amigos
 const EU_MS = 50; // amigo -> anfitrião
@@ -17,6 +18,7 @@ const CoopLogic = {
     this.netShots = [];
     this.netAt = 0;
     this.zombieById = new Map();
+    this.netPets = new Map(); // pets de todos, vistos pelo amigo (dono -> sprite)
     this.lastSnap = this.game.loop.time;
     n.roster.forEach((r, i) => { if (r.id !== n.me) this.addOther(r, i); });
     Net.on({ msg: (m, de) => this.netMessage(m, de), saiu: (id) => this.netLeft(id) });
@@ -53,7 +55,7 @@ const CoopLogic = {
     const tag = this.add.text(0, 0, r.id === 'h' ? `${char.name} (anfitrião)` : char.name, {
       ...TEXT, fontSize: '13px', color: UI.gold, strokeThickness: 3,
     }).setOrigin(0.5, 1).setDepth(6);
-    const o = { id: r.id, s, gun, tag, tx: s.x, ty: s.y, aim: 0, mv: 0, wid: 'pistola', hp: char.hp, maxHp: char.hp, down: false, dmg: 0 };
+    const o = { id: r.id, s, gun, tag, tx: s.x, ty: s.y, aim: 0, mv: 0, wid: 'pistola', hp: char.hp, maxHp: char.hp, down: false, dmg: 0, money: this.money, pet: null };
     o.seen = this.game.loop.time;
     s.ally = o;
     this.others.set(r.id, o);
@@ -65,7 +67,31 @@ const CoopLogic = {
     o.s.destroy();
     o.gun.destroy();
     o.tag.destroy();
+    if (o.pet) o.pet.destroy();
     this.others.delete(id);
+  },
+
+  // ---------- Dinheiro (cada jogador tem o seu) ----------
+
+  // Prêmio de morte: vai para quem atirou; torres e fogo dividem igualmente entre todos
+  payKill(amount) {
+    const owner = this.killer;
+    if (owner && this.net && owner === this.net.me) { this.money += amount; return; }
+    const o = owner && this.others.get(owner);
+    if (o) { o.money += amount; return; }
+    this.payAll(Math.max(1, Math.round(amount / (this.others.size + 1))));
+  },
+
+  payAll(amount) {
+    this.money += amount;
+    this.others.forEach((o) => { o.money += amount; });
+  },
+
+  // Roda um pedido de construção/upgrade/etc. de um amigo cobrando da carteira dele
+  withWallet(o, fn) {
+    const host = this.money;
+    this.money = o.money;
+    try { fn(); } finally { o.money = this.money; this.money = host; }
   },
 
   updateOthers(dt) {
@@ -157,9 +183,13 @@ const CoopLogic = {
       s.durability === undefined ? -1 : +s.durability.toFixed(1), s.gun ? +s.gun.rotation.toFixed(2) : 0, s.spent]);
     const dmg = {};
     this.others.forEach((o) => { if (o.dmg > 0) { dmg[o.id] = +o.dmg.toFixed(1); o.dmg = 0; } });
-    const pet = this.pet ? [this.pet.texture.key, r(this.pet.x), r(this.pet.y), this.pet.flipX ? 1 : 0, +this.pet.depth.toFixed(3)] : null;
+    const pets = [];
+    const addPet = (id, pt) => { if (pt) pets.push([id, pt.texture.key, r(pt.x), r(pt.y), pt.flipX ? 1 : 0, +pt.depth.toFixed(3)]); };
+    addPet(this.net.me, this.pet);
+    const mm = { [this.net.me]: this.money };
+    this.others.forEach((o) => { addPet(o.id, o.pet); mm[o.id] = o.money; });
     Net.broadcast({
-      t: 's', z, p, st, pet, dmg, b: [r(this.base.hp), this.base.maxHp], m: this.money, w: this.wave, ws: this.state,
+      t: 's', z, p, st, pets, dmg, b: [r(this.base.hp), this.base.maxHp], mm, w: this.wave, ws: this.state,
       il: +(this.intermissionLeft || 0).toFixed(1), ev: this.event, dk: +this.darkness.toFixed(2), sq: this.spawnQueue.length,
       bc: this.builtCount, tiros: this.netShots, e: this.netEvents,
     });
@@ -203,15 +233,18 @@ const CoopLogic = {
     const achar = (id) => (id === 0 ? this.base : this.structures.find((s) => s.nid === id));
     if (m.t === 'tiro') this.allyShot(o, m);
     else if (m.t === 'construir' && BUILDINGS[m.tipo]) {
-      const antes = this.buildType;
-      this.buildType = m.tipo;
-      this.tryBuild({ x: +m.x, y: +m.y });
-      this.buildType = antes;
-    } else if (m.t === 'upgrade') { const s = achar(m.id); if (s && s !== this.base) this.upgrade(s, m.linha | 0); }
-    else if (m.t === 'consertar') { const s = achar(m.id); if (s) this.repair(s); }
-    else if (m.t === 'vender') { const s = achar(m.id); if (s) this.sell(s); }
+      this.withWallet(o, () => {
+        const antes = this.buildType;
+        this.buildType = m.tipo;
+        this.tryBuild({ x: +m.x, y: +m.y });
+        this.buildType = antes;
+      });
+    } else if (m.t === 'upgrade') { const s = achar(m.id); if (s && s !== this.base) this.withWallet(o, () => this.upgrade(s, m.linha | 0)); }
+    else if (m.t === 'consertar') { const s = achar(m.id); if (s) this.withWallet(o, () => this.repair(s)); }
+    else if (m.t === 'vender') { const s = achar(m.id); if (s) this.withWallet(o, () => this.sell(s)); }
     else if (m.t === 'chamar') this.startWave(true);
     else if (m.t === 'compra') this.allyBuy(o, m);
+    else if (m.t === 'pet' && PETS[m.id]) this.spawnPet(m.id, o);
     else if (m.t === 'reparo') this.base.hp = Math.min(this.base.maxHp, this.base.hp + 200);
   },
 
@@ -228,10 +261,10 @@ const CoopLogic = {
   },
 
   allyBuy(o, m) {
-    const def = m.kind === 'weapon' ? WEAPONS[m.id] : m.kind === 'item' ? SHOP_ITEMS.find((i) => i.id === m.id) : null;
+    const def = m.kind === 'weapon' ? WEAPONS[m.id] : m.kind === 'pet' ? PETS[m.id] : m.kind === 'item' ? SHOP_ITEMS.find((i) => i.id === m.id) : null;
     if (!def || this.state !== 'intermission') return Net.sendTo(o.id, { t: 'recusado', msg: 'A loja só abre entre as hordas' });
-    if (this.money < def.cost) return Net.sendTo(o.id, { t: 'recusado', msg: 'Dinheiro insuficiente' });
-    this.money -= def.cost;
+    if (o.money < def.cost) return Net.sendTo(o.id, { t: 'recusado', msg: 'Dinheiro insuficiente' });
+    o.money -= def.cost;
     Net.sendTo(o.id, { t: 'compra_ok', item: { kind: m.kind, id: m.id, name: def.name } });
   },
 
@@ -295,19 +328,18 @@ const CoopLogic = {
       z.setAngle(z.netAnim === 1 ? Math.sin((now + z.wobble) / 160) * (anim ? 3 : 6) : 0);
       z.setScale(z.baseScale, z.baseScale * (1 + Math.sin((now + z.wobble) / 120) * 0.04));
     });
-    const pet = this.netPet;
-    if (pet) {
+    this.netPets.forEach((pet) => {
       const mv = Math.abs(pet.tx - pet.x) + Math.abs(pet.ty - pet.y) > 2;
       pet.x += (pet.tx - pet.x) * k;
       pet.y += (pet.ty - pet.y) * k;
       this.animate(pet, mv ? 'andar' : null, 1);
       this.moveShadow(pet);
-    }
+    });
   },
 
   applySnapshot(m) {
     if (this.state === 'over') return;
-    this.money = m.m;
+    if (m.mm[this.net.me] !== undefined) this.money = m.mm[this.net.me];
     this.wave = m.w;
     this.state = m.ws;
     this.intermissionLeft = m.il;
@@ -382,21 +414,25 @@ const CoopLogic = {
     this.structures.slice().forEach((s) => { if (!obras.has(s.nid)) this.removeStructure(s); });
     this.builtCount = m.bc;
 
-    if (m.pet) {
-      const [tex, x, y, flip, depth] = m.pet;
-      if (!this.netPet) {
-        this.netPet = this.add.sprite(x, y, tex);
-        this.addShadow(this.netPet, 30);
+    const comPet = new Set();
+    m.pets.forEach(([dono, tex, x, y, flip, depth]) => {
+      comPet.add(dono);
+      let pet = this.netPets.get(dono);
+      if (!pet) {
+        pet = this.add.sprite(x, y, tex);
+        this.addShadow(pet, 30);
+        this.netPets.set(dono, pet);
       }
-      const pet = this.netPet;
       if (pet.texture.key !== tex) pet.setTexture(tex);
       pet.tx = x;
       pet.ty = y;
       pet.setFlipX(!!flip).setDepth(depth);
-    } else if (this.netPet) {
-      this.netPet.destroy();
-      this.netPet = null;
-    }
+    });
+    this.netPets.forEach((pet, dono) => {
+      if (comPet.has(dono)) return;
+      pet.destroy();
+      this.netPets.delete(dono);
+    });
 
     const dano = m.dmg && m.dmg[this.net.me];
     if (dano) this.hurtPlayer(dano);

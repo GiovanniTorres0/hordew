@@ -34,7 +34,8 @@ class GameScene extends Phaser.Scene {
     this.spawnQueue = [];
     this.director = 1;
     this.event = null;
-    this.pet = null;
+    this.pet = null; // sprite do pet (só no anfitrião/solo)
+    this.petId = null; // pet que eu tenho (no amigo, só o id: o sprite fica no anfitrião)
     this.camoUntil = 0;
     this.bileUntil = 0;
     this.pinnedBy = null;
@@ -49,6 +50,12 @@ class GameScene extends Phaser.Scene {
     this.isGuest = !!(this.net && this.net.role === 'guest');
     this.others = new Map(); // bonecos dos outros jogadores
     this.shotOwner = 0;
+    this.killer = 0; // dono da bala que está causando a morte (0 = torres e fogo: o prêmio é dividido)
+    // No cooperativo os zumbis ficam um pouco mais lentos (equilíbrio com mais gente atirando)
+    Object.values(ZOMBIES).forEach((d) => {
+      if (d.baseSpeed === undefined) d.baseSpeed = d.speed;
+      d.speed = d.baseSpeed * (this.net ? COOP_ZOMBIE_SPEED : 1);
+    });
     this.netShots = [];
     this.netEvents = [];
   }
@@ -352,7 +359,7 @@ class GameScene extends Phaser.Scene {
     const p = this.player;
     if (this.down) return;
     const k = this.keys;
-    let speed = this.char.speed * (this.pet && this.pet.def.speedBuff ? this.pet.def.speedBuff : 1);
+    let speed = this.char.speed * (this.petId && PETS[this.petId].speedBuff ? PETS[this.petId].speedBuff : 1);
     let vx = (k.D.isDown ? 1 : 0) - (k.A.isDown ? 1 : 0);
     let vy = (k.S.isDown ? 1 : 0) - (k.W.isDown ? 1 : 0);
     const v = new Phaser.Math.Vector2(vx, vy).normalize().scale(speed);
@@ -456,6 +463,11 @@ class GameScene extends Phaser.Scene {
     if (this.pet && this.pet.id !== 'gaviao') this.pet.setDepth(feet(this.pet));
     if (this.pet) this.moveShadow(this.pet);
     this.others.forEach((o) => {
+      if (!o.pet) return;
+      if (o.pet.id !== 'gaviao') o.pet.setDepth(feet(o.pet));
+      this.moveShadow(o.pet);
+    });
+    this.others.forEach((o) => {
       o.s.setDepth(feet(o.s));
       o.gun.setDepth(o.s.depth + 0.001);
       this.moveShadow(o.s);
@@ -515,6 +527,7 @@ class GameScene extends Phaser.Scene {
     if (shot.tint) bullet.setTint(shot.tint); else bullet.clearTint();
     bullet.body.enable = true;
     bullet.body.setSize(Math.min(bullet.width, 10), Math.min(bullet.height, 10));
+    bullet.owner = this.shotOwner;
     bullet.damage = shot.damage * damageMul;
     bullet.pierce = shot.pierce || 0;
     bullet.blast = this.isGuest ? 0 : shot.blast || 0; // na tela do amigo a explosão vem do anfitrião
@@ -548,7 +561,7 @@ class GameScene extends Phaser.Scene {
       const age = now - b.born;
       if (b.texture.key === 'flame') b.setScale(1 + age / 200).setAlpha(1 - age / b.life);
       if (age > b.life || b.x < 0 || b.x > WORLD_W || b.y < 0 || b.y > WORLD_H) {
-        if (b.blast) this.explode(b.x, b.y, b.blast, b.damage);
+        if (b.blast) this.explode(b.x, b.y, b.blast, b.damage, b.owner);
         this.killBullet(b);
       }
     });
@@ -567,23 +580,27 @@ class GameScene extends Phaser.Scene {
       return;
     }
     if (bullet.blast) {
-      this.explode(bullet.x, bullet.y, bullet.blast, bullet.damage);
+      this.explode(bullet.x, bullet.y, bullet.blast, bullet.damage, bullet.owner);
       return this.killBullet(bullet);
     }
     if (!bullet.burn) this.bloodSplash(z.x, z.y - z.displayHeight * 0.15, bullet.rotation, 5);
+    this.killer = bullet.owner;
     this.damageZombie(z, bullet.damage, bullet.burn);
+    this.killer = 0;
     if (bullet.pierce > 0) bullet.pierce -= 1;
     else this.killBullet(bullet);
   }
 
-  explode(x, y, radius, damage) {
+  explode(x, y, radius, damage, owner = 0) {
     this.fireParticles.explode(24, x, y);
     this.cameras.main.shake(120, 0.006);
     Sfx.boom();
     this.netEvent(['x', Math.round(x), Math.round(y)]);
+    this.killer = owner;
     this.zombies.getChildren().slice().forEach((z) => {
       if (Phaser.Math.Distance.Between(x, y, z.x, z.y) < radius + z.def.radius) this.damageZombie(z, damage);
     });
+    this.killer = 0;
   }
 
   hurtPlayer(amount) {
@@ -669,7 +686,7 @@ class GameScene extends Phaser.Scene {
     this.shop.close();
     if (early && this.intermissionLeft > 1) {
       const bonus = Math.floor(this.intermissionLeft * EARLY_BONUS * this.diff.money);
-      this.money += bonus;
+      this.payAll(bonus);
       this.announceFloat(`+$${bonus} por chamar antes`);
     }
     this.wave += 1;
@@ -703,7 +720,7 @@ class GameScene extends Phaser.Scene {
       playerDowned: this.downThisWave,
     });
     const bonus = Math.round((20 + this.wave * 4) * this.diff.money * (this.event === 'dupla' ? 2 : 1));
-    this.money += bonus;
+    this.payAll(bonus);
     this.respawnPlayer();
     this.netEvent(['onda']);
     if (this.wave >= this.wavesToWin) return this.victory();
@@ -826,7 +843,10 @@ class GameScene extends Phaser.Scene {
       if (!this.owned.includes(id)) this.owned.push(id);
       this.weapon = WEAPONS[id];
     }
-    if (kind === 'pet') this.spawnPet(id);
+    if (kind === 'pet') {
+      if (this.isGuest) { this.petId = id; this.ask({ t: 'pet', id }); }
+      else this.spawnPet(id);
+    }
     if (id === 'colete') { this.maxHp += 50; this.hp += 50; }
     if (id === 'kit') this.hp = this.maxHp;
     if (id === 'reparo') {

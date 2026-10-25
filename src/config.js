@@ -163,6 +163,7 @@ const EVENTS = {
 const TITLE_FONT = '"Rubik Dirt", Impact, sans-serif';
 
 const START_MONEY = 200;
+const COOP_ZOMBIE_SPEED = 0.9; // no cooperativo, zumbis e monstros 10% mais lentos
 const BASE_ARMOR = 0.3; // a base recebe só 30% do dano dos zumbis
 const BASE_FIRE = { range: 260, fireDelay: 450, damage: 1 }; // a família atira pela janela
 const INTERMISSION = 30; // segundos entre hordas

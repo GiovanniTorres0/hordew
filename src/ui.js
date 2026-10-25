@@ -530,7 +530,7 @@ class Hud {
       if (gun) gun.setAlpha(can ? 1 : 0.45);
       cost.setText(`$${c}`).setColor(can ? UI.gold : '#b0453a');
     });
-    const pet = s.pet ? s.pet.def.name : 'nenhum';
+    const pet = s.petId ? PETS[s.petId].name : 'nenhum';
     this.toolText.setText(`${s.weapon.name.toUpperCase()}  [Q]      Pet: ${pet}`);
     this.infoText.setText('Botão direito numa torre: upgrade e conserto · [H] dicas · [U] som');
 
@@ -688,7 +688,7 @@ class Shop {
     }
     if (this.tab === 'pet') {
       return Object.keys(PETS).map((id) => ({
-        kind: 'pet', id, name: PETS[id].name, desc: PETS[id].desc, cost: PETS[id].cost, owned: s.pet && s.pet.id === id, icon: PETS[id].tex,
+        kind: 'pet', id, name: PETS[id].name, desc: PETS[id].desc, cost: PETS[id].cost, owned: s.petId === id, icon: PETS[id].tex,
       }));
     }
     return SHOP_ITEMS.map((it) => ({ kind: 'item', ...it, owned: false }));
@@ -753,13 +753,10 @@ class Shop {
       this.note.setText('Dinheiro insuficiente').setColor(UI.blood);
       return;
     }
-    // No cooperativo o dinheiro é da equipe e fica com o anfitrião: o amigo pede e a caixa cai quando ele aprova
+    // No cooperativo cada um tem o próprio dinheiro, guardado pelo anfitrião: o amigo pede e a caixa cai quando ele aprova
     if (s.isGuest) {
-      if (e.kind === 'pet') this.note.setText('Pet só para quem criou a sala').setColor(UI.blood);
-      else {
-        s.ask({ t: 'compra', kind: e.kind, id: e.id });
-        this.note.setText('Pedido enviado...').setColor(UI.gold);
-      }
+      s.ask({ t: 'compra', kind: e.kind, id: e.id });
+      this.note.setText('Pedido enviado...').setColor(UI.gold);
       return;
     }
     s.money -= e.cost;

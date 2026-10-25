@@ -389,7 +389,7 @@ const ZombieLogic = {
     this.bloodStain(z.x, z.y + z.displayHeight / 2 - 4, def.radius / 12);
     this.netEvent(['m', Math.round(z.x), Math.round(z.y + z.displayHeight / 2 - 4), def.radius]);
     if (def.radius > 20) this.cameras.main.shake(250, 0.01);
-    this.money += Math.max(1, Math.round(def.reward * this.diff.money * (this.event === 'dupla' ? 2 : 1)));
+    this.payKill(Math.max(1, Math.round(def.reward * this.diff.money * (this.event === 'dupla' ? 2 : 1))));
     if (this.pinnedBy === z) this.releasePins();
     if (this.smokedBy === z) this.smokedBy = null;
     if (def === ZOMBIES.boomer) {
