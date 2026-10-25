@@ -234,7 +234,10 @@ class GameScene extends Phaser.Scene {
     this.keys = this.input.keyboard.addKeys('W,A,S,D');
     this.input.mouse.disableContextMenu();
     BUILD_ORDER.forEach((type) => this.input.keyboard.on(`keydown-${BUILDINGS[type].key}`, () => this.setBuild(type)));
-    this.input.keyboard.on('keydown-ESC', () => { this.setBuild(null); this.shop.close(); this.panel.close(); });
+    // Esc fecha o que estiver aberto; se não há nada aberto, abre o menu de pausa
+    this.input.keyboard.on('keydown-ESC', () => {
+      if (this.buildType || this.shop.isOpen || this.panel.target) { this.setBuild(null); this.shop.close(); this.panel.close(); } else this.togglePause();
+    });
     this.input.keyboard.on('keydown-L', () => this.shop.toggle());
     this.input.keyboard.on('keydown-Q', () => this.nextWeapon());
     this.input.keyboard.on('keydown-P', () => this.togglePause());
@@ -244,17 +247,9 @@ class GameScene extends Phaser.Scene {
       else if (this.state === 'intermission' && !this.paused) this.startWave(true);
     });
     // No cooperativo só o anfitrião recomeça; os amigos recomeçam junto quando ele recomeça
-    this.input.keyboard.on('keydown-R', () => { if (this.state === 'over' && !this.isGuest) this.scene.restart(this.setup); });
-    this.input.keyboard.on('keydown-M', () => {
-      if (this.state !== 'over') return;
-      if (this.net) Net.leave();
-      this.scene.start('Menu');
-    });
-    this.input.keyboard.on('keydown-N', () => {
-      if (this.state === 'over' && this.won && !this.isGuest && this.levelIndex + 1 < LEVELS.length) {
-        this.scene.restart({ ...this.setup, level: this.levelIndex + 1 });
-      }
-    });
+    this.input.keyboard.on('keydown-R', () => { if (this.state === 'over' && !this.isGuest) this.restartGame(); });
+    this.input.keyboard.on('keydown-M', () => { if (this.state === 'over') this.toMenu(); });
+    this.input.keyboard.on('keydown-N', () => { if (this.state === 'over' && this.won) this.nextLevel(); });
 
     this.ghost = this.add.image(0, 0, 'turret_base').setAlpha(0.6).setVisible(false).setDepth(4);
     this.input.on('pointerdown', (pointer, over) => {
@@ -283,9 +278,37 @@ class GameScene extends Phaser.Scene {
     this.weapon = WEAPONS[this.owned[(i + 1) % this.owned.length]];
   }
 
+  // Sai da pausa antes de trocar de cena: física, relógio e animações não podem ficar parados
+  unpause() {
+    if (this.paused) this.togglePause();
+  }
+
+  restartGame() {
+    this.unpause();
+    this.scene.restart(this.setup);
+  }
+
+  nextLevel() {
+    if (this.isGuest || this.levelIndex + 1 >= LEVELS.length) return;
+    this.scene.restart({ ...this.setup, level: this.levelIndex + 1 });
+  }
+
+  toMenu() {
+    this.unpause();
+    if (this.net) Net.leave();
+    this.scene.start('Menu');
+  }
+
+  // Menu de pausa (Esc, P ou o botão Menu). Online o mundo não para: só abre o menu por cima
   togglePause() {
-    if (this.state === 'over' || this.net) return; // online não dá para parar o mundo dos outros
+    if (this.state === 'over') return;
+    if (this.net) {
+      this.menuOpen = !this.menuOpen;
+      this.hud.setPaused(this.menuOpen);
+      return;
+    }
     this.paused = !this.paused;
+    this.menuOpen = this.paused;
     if (this.paused) {
       this.physics.pause();
       this.time.paused = true;
@@ -337,7 +360,7 @@ class GameScene extends Phaser.Scene {
     const wp = this.worldPointer();
     this.aim = Phaser.Math.Angle.Between(p.x, p.y, wp.x, wp.y);
     this.face(p, this.aim);
-    let canShoot = !this.buildType && !this.shop.isOpen && !this.clickOnUI;
+    let canShoot = !this.buildType && !this.shop.isOpen && !this.clickOnUI && !this.menuOpen;
 
     // Presos por especiais: Hunter imobiliza, Jockey conduz, Smoker puxa
     // (se o zumbi sumiu sem passar pela morte, o jogador fica livre em vez de travado para sempre)
@@ -828,7 +851,8 @@ class GameScene extends Phaser.Scene {
     this.setBuild(null);
     let stats = this.wave > 0 ? `Você chegou à horda ${this.wave} (${this.diff.name}).` : `Antes da primeira horda (${this.diff.name}).`;
     if (this.infinite) stats += ` Recorde no modo infinito: horda ${saveInfiniteRecord(this.levelIndex, this.wave)}.`;
-    this.hud.endScreen('FIM DE JOGO', reason, stats, '[R] recomeçar   [M] menu');
+    this.hud.setPaused(false);
+    this.hud.endScreen('FIM DE JOGO', reason, stats, '[R] recomeçar   [M] menu', [['Recomeçar', () => this.restartGame()], ['Menu principal', () => this.toMenu()]]);
     Sfx.lose();
     this.netEvent(['fim', 'FIM DE JOGO', reason, stats, false]);
     this.netFlush();
@@ -848,7 +872,9 @@ class GameScene extends Phaser.Scene {
       ? `${this.level.name} limpo! Mas o helicóptero só pousa mais adiante...`
       : 'O helicóptero de resgate chegou. A família está a salva (e o pet também)!';
     const hint = hasNext ? `[N] próximo nível: ${LEVELS[this.levelIndex + 1].name}   [M] menu` : '[R] jogar de novo   [M] menu';
-    this.hud.endScreen('VITÓRIA!', reason, `Medalha ${this.diff.name} conquistada. Modo infinito liberado neste nível.`, hint);
+    const acts = [hasNext ? ['Próximo nível', () => this.nextLevel()] : ['Jogar de novo', () => this.restartGame()], ['Menu principal', () => this.toMenu()]];
+    this.hud.setPaused(false);
+    this.hud.endScreen('VITÓRIA!', reason, `Medalha ${this.diff.name} conquistada. Modo infinito liberado neste nível.`, hint, acts);
     Sfx.win();
     this.netEvent(['fim', 'VITÓRIA!', reason, 'Vocês seguraram a casa juntos!', true]);
     this.netFlush();

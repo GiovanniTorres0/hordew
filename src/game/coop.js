@@ -7,6 +7,7 @@ const SNAP_MS = 66; // anfitrião -> amigos
 const EU_MS = 50; // amigo -> anfitrião
 // Sem notícia de alguém por este tempo, a conexão caiu (aba fechada sem aviso, internet caiu).
 // Folgado porque aba em segundo plano quase para de rodar o jogo.
+// Contado no relógio do jogo (game.loop.time): o relógio da cena só anda depois do create e começa atrasado.
 const SILENCIO_MS = 20000;
 
 const CoopLogic = {
@@ -16,7 +17,7 @@ const CoopLogic = {
     this.netShots = [];
     this.netAt = 0;
     this.zombieById = new Map();
-    this.lastSnap = this.time.now;
+    this.lastSnap = this.game.loop.time;
     n.roster.forEach((r, i) => { if (r.id !== n.me) this.addOther(r, i); });
     Net.on({ msg: (m, de) => this.netMessage(m, de), saiu: (id) => this.netLeft(id) });
     this.events.once('shutdown', () => Net.on({}));
@@ -53,7 +54,7 @@ const CoopLogic = {
       ...TEXT, fontSize: '13px', color: UI.gold, strokeThickness: 3,
     }).setOrigin(0.5, 1).setDepth(6);
     const o = { id: r.id, s, gun, tag, tx: s.x, ty: s.y, aim: 0, mv: 0, wid: 'pistola', hp: char.hp, maxHp: char.hp, down: false, dmg: 0 };
-    o.seen = this.time.now;
+    o.seen = this.game.loop.time;
     s.ally = o;
     this.others.set(r.id, o);
   },
@@ -116,7 +117,7 @@ const CoopLogic = {
   },
 
   netTick() {
-    const now = this.time.now;
+    const now = this.game.loop.time;
     if (now < this.netAt) return;
     // Pela retransmissão manda menos pacotes (o servidor público não aguenta a mesma rajada)
     this.netAt = now + (this.isGuest ? (Net.lento() ? 90 : EU_MS) : (Net.lento() ? 100 : SNAP_MS));
@@ -181,7 +182,7 @@ const CoopLogic = {
       return;
     }
     if (this.isGuest) {
-      if (m.t === 's') { this.lastSnap = this.time.now; this.applySnapshot(m); }
+      if (m.t === 's') { this.lastSnap = this.game.loop.time; this.applySnapshot(m); }
       else if (m.t === 'compra_ok') {
         this.deliver(m.item);
         if (this.shop.isOpen) { this.shop.note.setText('Comprado! Pegue a caixa que cair do céu').setColor(UI.green); this.shop.render(); }
@@ -193,7 +194,7 @@ const CoopLogic = {
     }
     const o = this.others.get(de);
     if (!o) return;
-    o.seen = this.time.now;
+    o.seen = this.game.loop.time;
     if (m.t === 'eu') {
       Object.assign(o, { tx: +m.x || 0, ty: +m.y || 0, aim: +m.a || 0, mv: m.mv ? 1 : 0, wid: WEAPONS[m.w] ? m.w : 'pistola', hp: m.hp, maxHp: m.mh, down: !!m.d });
       return;
@@ -448,7 +449,9 @@ const CoopLogic = {
     this.shop.close();
     this.panel.close();
     this.setBuild(null);
-    this.hud.endScreen(title, reason, stats, '[M] menu  ·  o anfitrião pode recomeçar');
+    this.menuOpen = false;
+    this.hud.setPaused(false);
+    this.hud.endScreen(title, reason, stats, '[M] menu  ·  o anfitrião pode recomeçar', [['Menu principal', () => this.toMenu()]]);
     if (won) Sfx.win(); else Sfx.lose();
   },
 };

@@ -167,6 +167,8 @@ class SetupScene extends Phaser.Scene {
       // Cooperativo: a cena do jogo avisa os amigos e eles começam junto
       const roster = [{ id: 'h', char: c.char, outfit: c.outfit }];
       this.room.guests.forEach((g, id) => roster.push({ id, char: g.char, outfit: g.outfit }));
+      // Conectado mas o "olá" com o boneco ainda não chegou: entra com o boneco padrão em vez de ficar de fora
+      Net.peers().forEach((id) => { if (!this.room.guests.has(id)) roster.push({ id, char: 0, outfit: 0 }); });
       this.scene.start('Game', { ...c, net: { role: 'host', me: 'h', roster } });
       return;
     }
