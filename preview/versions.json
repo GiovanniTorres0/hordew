@@ -1,5 +1,6 @@
 [
-{"slug":"claude-issue-6-20261025-0421","branch":"claude/issue-6-20261025-0421","date":"25/10/2026 04:22","msg":"Reduz a velocidade de movimento da Witch (215 -> 130)","sha":"8112105"}
+{"slug":"revert-8-test","branch":"revert-8-test","date":"27/10/2026 19:24","msg":"Revert \"test caceta\"","sha":"e73725a"}
+,{"slug":"claude-issue-6-20261025-0421","branch":"claude/issue-6-20261025-0421","date":"25/10/2026 04:22","msg":"Reduz a velocidade de movimento da Witch (215 -> 130)","sha":"8112105"}
 ,{"slug":"claude-issue-5-20261025-0352","branch":"claude/issue-5-20261025-0352","date":"25/10/2026 03:55","msg":"Multiplayer: dinheiro e pet por jogador, zumbis 10% mais lentos no coop","sha":"b8fcfa9"}
 ,{"slug":"claude-issue-4-20261023-0247","branch":"claude/issue-4-20261023-0247","date":"23/10/2026 02:48","msg":"Noite: zumbis só aparecem na luz e lanterna do jogador em cone","sha":"777da43"}
 ,{"slug":"claude-issue-3-20261023-0059","branch":"claude/issue-3-20261023-0059","date":"22/10/2026 23:35","msg":"feat: adiciona um rio longe da casa","sha":"363305d"}
